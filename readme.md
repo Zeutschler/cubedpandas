@@ -1,15 +1,21 @@
 # CubedPandas 
 A Python library for easy and fast multi-dimensional data analysis of Pandas DataFrames.
 
-Doing multi-dimensional data analysis with Pandas DataFrames can be cumbersome and slow. 
-CubedPandas is a library that wraps a Pandas DataFrames into a multi-dimensional cube.
+Doing multi-dimensional data analysis with Pandas DataFrames can be cumbersome and even slow. 
+CubedPandas is a library that wraps and provides a Pandas DataFrames as a multi-dimensional data cube.
 This allows for an intuitive multi-dimensional data analysis. If you are familiar with
-Pivot Tables in Excel, you will feel right at home with CubedPandas. And if you are
-familiar with OLAP cubes, you will appreciate the simplicity and speed of CubedPandas.
+Pivot Tables in Excel or OLAP cubes, you will feel right at home with CubedPandas. 
 
-To speed up the data analysis, CubedPandas uses caching and lazy evaluation. This means
-that the data is only aggregated when needed and the results are cached for future use.
-The speedup can be significant, up to 100x times, especially for large DataFrames.
+To speed up the data analysis, CubedPandas uses caching, lazy evaluation and uses Numpy for data aggregations.
+The speedup compared to a Pandas DataFrame can be significant, up to 10x or even 100x times, especially for 
+larger DataFrames and repetitive access to certain dimension members.
+
+A cube schema can be defined to customize the cube and to provide additional information about the dimensions and measures.
+But it is not required, as CubedPandas can automatically infer the schema from the DataFrame: Numeric columns are treated as measures,
+and non-numeric columns are treated as dimensions.
+
+With a single line of code, you can create a cube from a Pandas DataFrame and start doing multi-dimensional 
+data analysis: `cube = cubed(df)`.
 
 CubedPandas is still in the early stages of development. The goal is to provide a
 simple and fast way to do multi-dimensional data analysis with Pandas DataFrames.
@@ -22,7 +28,7 @@ pip install cubedpandas
 
 ## Usage
 ```python
-import cubedpandas as cpd
+from cubedpandas import cubed
 import pandas as pd
 
 df = pd.DataFrame({

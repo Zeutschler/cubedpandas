@@ -1,6 +1,9 @@
 # Backlog 
 Missing and pending features to be implemented.
 
+### Datasets
+- Convert car_price dataset to parquet format
+
 ### Cube
 - info() method to get information about the cube
 - filters on members, e.g.: quantity > 10

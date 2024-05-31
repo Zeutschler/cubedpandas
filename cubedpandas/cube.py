@@ -22,20 +22,19 @@ class CubeAggregationFunctionType(IntEnum):
     AN = 11
 
 class Cube:
-    """Wraps an exiting Pandas dataframe into a multi-dimensional data structure for fast cell based data access
-    to numerical values from the dataframe. The multi-dimensional schema, the dimensions of a cube, can be either
-    inferred automatically from the underlying dataframe or defined explicitly.
+    """Wraps and provides a Pandas dataframe as a multi-dimensional data cube for simple and fast cell based data access
+    to numerical values from the underlying dataframe. The multi-dimensional cube schema, aka as the dimensions and
+    measures of a cube, can be either inferred automatically from the underlying dataframe (default) or defined explicitly.
 
-    In addition, easy to use methods to filter, slice, access and manipulate data are provided.
+    In addition, easy to use methods to filter, slice, access and manipulate the dataframe are provided.
     """
 
     def __init__(self, df: pd.DataFrame, schema=None,
-                 infer_schema_if_not_provided: bool = True, enable_caching: bool = False,
+                 infer_schema_if_not_provided: bool = True, enable_caching: bool = True,
                  enable_write_back: bool = False):
         """
-        Initializes a new Cube wrapping an existing Pandas dataframe. The schema of the Cube can be either inferred
-        automatically from the dataframe or defined explicitly. The underlying dataframe will not be changed be
-        accessed directly.
+        Initializes a new Cube wrapping and providing a Pandas dataframe as a multi-dimensional data cube.
+        The schema of the Cube can be either inferred automatically from the dataframe  (default) or defined explicitly.
 
         :param df: The Pandas dataframe to wrap into a Cube.
         :param schema: The schema of the Cube. If not provided, the schema will be inferred from the dataframe if
@@ -298,3 +297,21 @@ class CubeAggregationFunction:
 
     def __setitem__(self, key, value):
         raise NotImplementedError("Not implemented yet")
+
+
+def cubed(df: pd.DataFrame, schema=None,
+                 infer_schema_if_not_provided: bool = True, enable_caching: bool = True,
+                 enable_write_back: bool = False) -> Cube:
+        """
+        Initializes a new Cube wrapping and providing a Pandas dataframe as a multi-dimensional data cube.
+        The schema of the Cube can be either inferred automatically from the dataframe  (default) or defined explicitly.
+
+        :param df: The Pandas dataframe to wrap into a Cube.
+        :param schema: The schema of the Cube. If not provided, the schema will be inferred from the dataframe if
+                parameter 'infer_schema_if_not_provided' is set to True.
+        :param infer_schema_if_not_provided:  If True, the schema will be inferred from the dataframe if not provided.
+        :param enable_caching: If True, intermediate results are cached for faster data access.
+        :param enable_write_back: If True, the Cube will be writeable and changes to the data will be written back to the
+                underlying dataframe.
+        """
+        return Cube(df, schema, infer_schema_if_not_provided, enable_caching, enable_write_back)
