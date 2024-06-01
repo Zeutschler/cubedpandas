@@ -56,8 +56,20 @@ def car_sales():
     path = Path("datasets/car_prices.csv")
     df = pd.read_csv(path)  # containing 1.000 rows
     schema = {
-        "dimensions": ["year", "make" ,"model", "trim", "body", "transmission", "vin", "state", "condition",
-                       "odometer", "color", "interior", "seller", "saledate"
+        "dimensions": ["year",
+                       "make" ,
+                       "model",
+                       "trim",
+                       "body",
+                       "transmission",
+                       # "vin",
+                       "state",
+                       "condition",
+                       "odometer",
+                       "color",
+                       "interior",
+                       "seller",
+                       "saledate"
         ],
         "measures": [ "odometer", "mmr", "sellingprice"]
     }

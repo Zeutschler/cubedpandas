@@ -32,7 +32,7 @@ print(cube["A"])
 # multiple measures. Please note that the measure always needs to be the last argument in the tuple.
 print(cube["A", "sales"])
 
-# It is recommended (and faster) to use explicit dimension names to define the dimension a member is related too.
+# It is recommended (and faster) to use explicit measure names to define the measure a member is related too.
 print(cube["products:A", "sales"])
 
 # 3. More advanced cell-based data access

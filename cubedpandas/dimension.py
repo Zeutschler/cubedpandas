@@ -9,7 +9,7 @@ from pandas.api.types import (is_string_dtype, is_numeric_dtype, is_bool_dtype,
                               is_datetime64_any_dtype, is_timedelta64_dtype, is_categorical_dtype, is_object_dtype)
 
 class Dimension(Iterable, ABC):
-    """ Represents a dimension of a cube."""
+    """ Represents a measure of a cube."""
     def __init__(self, df: pd.DataFrame, column, enable_caching: bool = False):
         self._df: pd.DataFrame = df
         self._column = column

@@ -5,6 +5,9 @@ import json
 from typing import Self, Any
 from dimension import Dimension
 from dimension_collection import DimensionCollection
+from measure import Measure
+from measure_collection import MeasureCollection
+
 
 
 class Schema:
@@ -38,7 +41,7 @@ class Schema:
         self._df: pd.DataFrame | None = df
         self._schema: Schema | Any = schema
         self._dimensions: DimensionCollection = DimensionCollection()
-        self._measures: list = []
+        self._measures: MeasureCollection = MeasureCollection()
         self._validation_message: str = ""
         self._enable_caching: bool = enable_caching
 
@@ -75,20 +78,20 @@ class Schema:
                     self._validation_message = "Dimension column not found in schema."
                     return False
 
-        self._measures = []
+        self._measures = MeasureCollection()
         for measure in self._schema["measures"]:
             if "column" in measure:
                 column = measure["column"]
                 if column not in df.columns:
                     self._validation_message = f"Measure column '{column}' not found in dataframe."
                     return False
-                self._measures.append(column)
+                self._measures.add(Measure(df, column))
             else:
                 if isinstance(measure, str) or isinstance(measure, int):
                     if measure not in df.columns:
                         self._validation_message = f"Measure column '{measure}' not found in dataframe."
                         return False
-                    self._measures.append(measure)
+                    self._measures.add(Measure(df, measure))
                 else:
                     self._validation_message = "Measure column not found in schema."
                     return False
@@ -100,7 +103,7 @@ class Schema:
         return self._dimensions
 
     @property
-    def measures(self) -> list:
+    def measures(self) -> MeasureCollection:
         """ Returns the measures of the schema."""
         return self._measures
 
@@ -116,7 +119,7 @@ class Schema:
         The inference process tries to identify the dimensions and their hierarchies of the cube as
         well as the measures of the cube. If no schema cannot be inferred, an exception is raised.
 
-        By default, string, datetime and boolean columns are assumed to be dimension columns and
+        By default, string, datetime and boolean columns are assumed to be measure columns and
         numerical columns are assumed to be measures for cube computations. By default, all columns
         of the Pandas dataframe will be used to infer the schema. However, a subset of columns can be
         specified to infer the schema from. The subset needs to contain at least two columns, one

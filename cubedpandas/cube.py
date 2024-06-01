@@ -1,10 +1,17 @@
+import sys
+from types import ModuleType, FunctionType
+from gc import get_referents
 from enum import IntEnum
 import typing
+import sys
 import numpy as np
 import pandas as pd
+from datetime import datetime
 from schema import Schema
+from measure_collection import MeasureCollection
 from dimension_collection import DimensionCollection
-
+from caching_strategy import CachingStrategy
+from dimension import Dimension
 
 class CubeAggregationFunctionType(IntEnum):
     """Aggregation functions supported for the value in a cube.
@@ -30,7 +37,7 @@ class Cube:
     """
 
     def __init__(self, df: pd.DataFrame, schema=None,
-                 infer_schema_if_not_provided: bool = True, enable_caching: bool = True,
+                 infer_schema_if_not_provided: bool = True, enable_caching: bool = False,
                  enable_write_back: bool = False):
         """
         Initializes a new Cube wrapping and providing a Pandas dataframe as a multi-dimensional data cube.
@@ -55,7 +62,7 @@ class Cube:
             schema = Schema(df, schema, enable_caching=enable_caching)
         self._schema: Schema = schema
         self._dimensions: DimensionCollection = schema.dimensions
-        self._measures = schema.measures
+        self._measures: MeasureCollection = schema.measures
 
         # setup operations
         self._sum_op = CubeAggregationFunction(self, CubeAggregationFunctionType.SUM)
@@ -88,6 +95,42 @@ class Cube:
 
     def __len__(self):
         return len(self._df)
+
+    @property
+    def memory_usage(self) -> int:
+        """Returns the memory usage of the Cube in bytes."""
+        df_memory = self._df.memory_usage(deep=True).sum()
+        own_memory = self._getsize(self) - df_memory
+
+        return df_memory + own_memory
+
+
+    def _getsize(self, obj):
+        """sum size of object & members."""
+        blacklist = type, ModuleType, FunctionType, pd.DataFrame
+        if isinstance(obj, blacklist):
+            raise TypeError('getsize() does not take argument of type: ' + str(type(obj)))
+        seen_ids = set()
+        size = 0
+        objects = [obj]
+        while objects:
+            need_referents = []
+            for obj in objects:
+                if not isinstance(obj, blacklist) and id(obj) not in seen_ids:
+                    seen_ids.add(id(obj))
+                    size += sys.getsizeof(obj)
+                    need_referents.append(obj)
+            objects = get_referents(*need_referents)
+        return size
+
+    def _name_of_object(self, obj):
+        try:
+            return obj.__name__
+        except AttributeError:
+            return id(obj)
+
+
+
     # endregion
 
     # region Data Access Methods
@@ -166,7 +209,7 @@ class Cube:
         if not self._islist(address):
             address = [address,]
 
-        # process all arguments of the address
+        # Process all arguments of the address
         measure = None          # the measure to be used for the operation
         unresolved_parts = []   # parts of the address that could not be resolved from dimensions
         row_mask: np.ndarray | None = None         # the mask to filter the rows of the dataframe
@@ -188,10 +231,10 @@ class Cube:
                                      f"Dimension '{dimension}' not found in cube schema.")
 
 
-            elif self._islist(part): # a tuple of members from 1 dimension ("A", "B", "C")
-                # A list of members from a single dimension is expected, e.g. ("A", "B", "C")
+            elif self._islist(part): # a tuple of members from 1 measure ("A", "B", "C")
+                # A list of members from a single measure is expected, e.g. ("A", "B", "C")
 
-                # Note: an empty tuple is allowed and means all members of whatever dimension,
+                # Note: an empty tuple is allowed and means all members of whatever measure,
                 # e.g. cube[()] returns the sum of all values in the cube. As this operation has no
                 # effect on the row_mask, it is not necessary to process it.
                 if len(part) > 0:
@@ -208,7 +251,7 @@ class Cube:
                                          f"or not found in any dimension.")
                     row_mask = dimension._resolve(part, row_mask)
 
-            else: # a single value from a single dimension, e.g. "A" or 42 or a measure name
+            else: # a single value from a single measure, e.g. "A" or 42 or a measure name
                 resolved = False
 
                 if isinstance(part, str):
@@ -216,10 +259,10 @@ class Cube:
                     if part in self._measures:
                         if measure:
                             raise ValueError("Multiple measures found in address, but only one measure is allowed.")
-                        measure = part
+                        measure = self._measures[part]
                         resolved = True
                     else:
-                        # Check if the part contains a dimension and a member, e.g. "product:A".
+                        # Check if the part contains a measure and a member, e.g. "product:A".
                         if ":" in part:
                             parts = part.split(":")
                             dimension = parts[0]
@@ -229,7 +272,7 @@ class Cube:
                                 resolved = True
 
                         if not resolved:
-                            # No dimension specified, try to resolve the member in all dimensions.
+                            # No measure specified, try to resolve the member in all dimensions.
                             # This can be a very exhaustive operation, but it is necessary to support
                             # addresses like ("A", "B", "C") where the members are from different dimensions
                             for dimension in self._dimensions:
@@ -251,7 +294,7 @@ class Cube:
         # First convert entire column to numpy array and then apply the mask.
         # This is slightly to much faster than applying the mask directly to the
         # dataframe by using: self._df.iloc[row_mask, measure_ordinal].to_numpy()
-        values = self._df[measure].to_numpy()
+        values = self._df[measure.column].to_numpy()
         values: np.ndarray = values[row_mask]
 
         # Use numpy for the aggregation functions, slightly faster than Pandas

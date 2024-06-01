@@ -10,7 +10,7 @@ cube = Cube(df, schema=schema)
 
 def full():
     inner_cube = Cube(df, schema=schema)
-    value = inner_cube["Yangon"]  # 'Yangon' is a member of dimension 'City'
+    value = inner_cube["Yangon"]  # 'Yangon' is a member of measure 'City'
     return value
 
 def value_only():
