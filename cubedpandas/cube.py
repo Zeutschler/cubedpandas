@@ -10,7 +10,7 @@ from datetime import datetime
 from schema import Schema
 from measure_collection import MeasureCollection
 from dimension_collection import DimensionCollection
-from caching_strategy import CachingStrategy
+from caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 from dimension import Dimension
 
 class CubeAggregationFunctionType(IntEnum):
@@ -29,15 +29,18 @@ class CubeAggregationFunctionType(IntEnum):
     AN = 11
 
 class Cube:
-    """Wraps and provides a Pandas dataframe as a multi-dimensional data cube for simple and fast cell based data access
-    to numerical values from the underlying dataframe. The multi-dimensional cube schema, aka as the dimensions and
-    measures of a cube, can be either inferred automatically from the underlying dataframe (default) or defined explicitly.
+    """Wraps a Pandas dataframe with a multi-dimensional data cube for simple and fast cell based data access
+    to numerical values from the underlying dataframe. The multi-dimensional cube schema, containing the dimensions and
+    measures of a cube, can be either inferred automatically from the underlying dataframe (default)
+    or defined explicitly.
 
-    In addition, easy to use methods to filter, slice, access and manipulate the dataframe are provided.
+    In addition, easy to use methods to filter, slice, access and manipulate the underlying dataframe are provided.
     """
 
     def __init__(self, df: pd.DataFrame, schema=None,
-                 infer_schema_if_not_provided: bool = True, enable_caching: bool = False,
+                 infer_schema_if_not_provided: bool = True,
+                 caching: CachingStrategy = CachingStrategy.LAZY,
+                 caching_threshold: int = EAGER_CACHING_THRESHOLD,
                  enable_write_back: bool = False):
         """
         Initializes a new Cube wrapping and providing a Pandas dataframe as a multi-dimensional data cube.
@@ -45,24 +48,35 @@ class Cube:
 
         :param df: The Pandas dataframe to wrap into a Cube.
         :param schema: The schema of the Cube. If not provided, the schema will be inferred from the dataframe if
-                parameter 'infer_schema_if_not_provided' is set to True.
+                parameter `infer_schema_if_not_provided` is set to `True`.
         :param infer_schema_if_not_provided:  If True, the schema will be inferred from the dataframe if not provided.
-        :param enable_caching: If True, intermediate results are cached for faster data access.
-        :param enable_write_back: If True, the Cube will be writeable and changes to the data will be written back to the
-                underlying dataframe.
+        :param caching: The caching strategy to be used for the Cube. Default and recommended value for almost all use
+                cases is `CachingStrategy.LAZY`, which caches dimension members on first access.
+                Please refer to the documentation of 'CachingStrategy' for more information.
+        :param caching_threshold: The threshold for EAGER caching. If the number of members in a dimension
+                is below this threshold, the dimension will be cached eagerly.
+                Default value is `EAGER_CACHING_THRESHOLD` := 256 members.
+        :param enable_write_back: If True, the Cube will become write-back enable and changes to the data
+                will be written to the underlying dataframe.
         """
         self._df: pd.DataFrame = df
         self._infer_schema: bool = infer_schema_if_not_provided
         self._enable_write_back: bool = enable_write_back
-        self._enable_caching: bool = enable_caching
+        self._caching: CachingStrategy = caching
+        self._caching_threshold: int = caching_threshold
 
+        # get and prepare the cube schema
         if (schema is None) and infer_schema_if_not_provided:
             schema = Schema(df).infer_schema()
         else:
-            schema = Schema(df, schema, enable_caching=enable_caching)
+            schema = Schema(df, schema, caching=caching)
         self._schema: Schema = schema
         self._dimensions: DimensionCollection = schema.dimensions
         self._measures: MeasureCollection = schema.measures
+
+        # warm up cache if required
+        if caching >= CachingStrategy.EAGER:
+            self._warm_up_cache()
 
         # setup operations
         self._sum_op = CubeAggregationFunction(self, CubeAggregationFunctionType.SUM)
@@ -98,15 +112,16 @@ class Cube:
 
     @property
     def memory_usage(self) -> int:
-        """Returns the memory usage of the Cube in bytes."""
+        """
+        Returns the memory usage of the Cube object instance in bytes,
+        memory for the underlying dataframe in not included."""
         df_memory = self._df.memory_usage(deep=True).sum()
         own_memory = self._getsize(self) - df_memory
-
         return df_memory + own_memory
 
-
-    def _getsize(self, obj):
-        """sum size of object & members."""
+    @staticmethod
+    def _getsize(obj):
+        """Returns the memory usage of an object in bytes."""
         blacklist = type, ModuleType, FunctionType, pd.DataFrame
         if isinstance(obj, blacklist):
             raise TypeError('getsize() does not take argument of type: ' + str(type(obj)))
@@ -123,14 +138,16 @@ class Cube:
             objects = get_referents(*need_referents)
         return size
 
-    def _name_of_object(self, obj):
-        try:
-            return obj.__name__
-        except AttributeError:
-            return id(obj)
+    def _warm_up_cache(self):
+        """Warms up the cache of the Cube, if required."""
+        if self._caching >= CachingStrategy.EAGER:
+            for dimension in self._dimensions:
+                dimension._cache_warm_up(caching_threshold=self._caching_threshold)
 
-
-
+    def clear_cache(self):
+        """Clears the cache for all dimensions of the Cube."""
+        for dimension in self._dimensions:
+            dimension.clear_cache()
     # endregion
 
     # region Data Access Methods
@@ -206,13 +223,14 @@ class Cube:
         return isinstance(item, typing.List) or isinstance(item, typing.Tuple)
 
     def _evaluate(self, operation: CubeAggregationFunctionType, address):
+        """Evaluates an aggregation operation for a given address in the cube."""
         if not self._islist(address):
             address = [address,]
 
-        # Process all arguments of the address
-        measure = None          # the measure to be used for the operation
-        unresolved_parts = []   # parts of the address that could not be resolved from dimensions
-        row_mask: np.ndarray | None = None         # the mask to filter the rows of the dataframe
+        # 1. Process all arguments of the address
+        measure = None          # the single measure to be used for the aggregation
+        unresolved_parts = []   # parts of the address that could not be resolved from dimensions or measures
+        row_mask: np.ndarray | None = None  # the mask to filter the relevant rows of the dataframe
         for index, part in enumerate(address):
 
             # Parse and evaluate the argument
@@ -286,18 +304,16 @@ class Cube:
         if len(unresolved_parts) > 1:
             raise ValueError(f"Multiple unresolved member arguments found in address: {unresolved_parts}")
 
-        if not measure:
-            # Use the first measure as default if no measure is specified.
+        if measure is None:  # Use the first measure as default if no measure is specified.
             measure = self._measures[0]
 
-        # 2-step approach to get values to aggregate
-        # First convert entire column to numpy array and then apply the mask.
-        # This is slightly to much faster than applying the mask directly to the
-        # dataframe by using: self._df.iloc[row_mask, measure_ordinal].to_numpy()
+        # 2. Get values to aggregate using Numpy (slightly faster than using Pandas)
+        # Note: The next statement does not generate some copy of the data, but returns a reference
+        #       to internal Numpy ndarray of the Pandas dataframe. So, its memory efficient and fast.
         values = self._df[measure.column].to_numpy()
         values: np.ndarray = values[row_mask]
 
-        # Use numpy for the aggregation functions, slightly faster than Pandas
+        # 3. Execute aggregation function
         match operation:
             case CubeAggregationFunctionType.SUM:
                 return np.nansum(values)
@@ -341,20 +357,3 @@ class CubeAggregationFunction:
     def __setitem__(self, key, value):
         raise NotImplementedError("Not implemented yet")
 
-
-def cubed(df: pd.DataFrame, schema=None,
-                 infer_schema_if_not_provided: bool = True, enable_caching: bool = True,
-                 enable_write_back: bool = False) -> Cube:
-        """
-        Initializes a new Cube wrapping and providing a Pandas dataframe as a multi-dimensional data cube.
-        The schema of the Cube can be either inferred automatically from the dataframe  (default) or defined explicitly.
-
-        :param df: The Pandas dataframe to wrap into a Cube.
-        :param schema: The schema of the Cube. If not provided, the schema will be inferred from the dataframe if
-                parameter 'infer_schema_if_not_provided' is set to True.
-        :param infer_schema_if_not_provided:  If True, the schema will be inferred from the dataframe if not provided.
-        :param enable_caching: If True, intermediate results are cached for faster data access.
-        :param enable_write_back: If True, the Cube will be writeable and changes to the data will be written back to the
-                underlying dataframe.
-        """
-        return Cube(df, schema, infer_schema_if_not_provided, enable_caching, enable_write_back)

@@ -1,6 +1,10 @@
 from pathlib import Path
-
 import pandas as pd
+from pathlib import Path
+
+def convert_to_parquet(file_path: str):
+    df = pd.read_csv(file_path)
+    df.to_parquet(file_path.replace(".csv", ".parquet"))
 
 def simple_sales():
     data = {
@@ -53,8 +57,10 @@ def supermarket_sales():
 def car_sales():
     # year,make,model,trim,body,transmission,vin,state,condition,odometer,color,interior,seller,mmr,sellingprice,saledate
     # 2015,Kia,Sorento,LX,SUV,automatic,5xyktca69fg566472,ca,5,16639,white,black,kia motors america  inc,20500,21500,Tue Dec 16 2014 12:30:00 GMT-0800 (PST)
-    path = Path("datasets/car_prices.csv")
-    df = pd.read_csv(path)  # containing 1.000 rows
+    # containing 550.000 rows
+
+    # df = pd.read_csv(Path("datasets/car_prices.csv"))
+    df = pd.read_parquet(Path("datasets/car_prices.parquet"))
     schema = {
         "dimensions": ["year",
                        "make" ,
@@ -65,10 +71,9 @@ def car_sales():
                        # "vin",
                        "state",
                        "condition",
-                       "odometer",
                        "color",
                        "interior",
-                       "seller",
+                       # "seller",
                        "saledate"
         ],
         "measures": [ "odometer", "mmr", "sellingprice"]

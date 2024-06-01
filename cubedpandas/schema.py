@@ -7,6 +7,7 @@ from dimension import Dimension
 from dimension_collection import DimensionCollection
 from measure import Measure
 from measure_collection import MeasureCollection
+from caching_strategy import CachingStrategy
 
 
 
@@ -19,31 +20,30 @@ class Schema:
     to ensure the schema is valid for the table.
     """
 
-    def __init__(self, df: pd.DataFrame | None = None, schema: Self | Any = None, enable_caching: bool = False):
+    def __init__(self, df: pd.DataFrame | None = None, schema: Self | Any = None, caching: CachingStrategy = CachingStrategy.LAZY):
         """
         Initializes a new schema for a Cube upon a given Pandas dataframe. If the dataframe is not provided,
         the schema needs to be built manually and can also not be validated against the Pandas dataframe.
 
         For building a schema manually, you can either create a new schema from scratch or you can load, extend
-        and modify an existing schema as defined by parameter ‘schema’. The parameter 'schema' can either be
+        and modify an existing schema as defined by parameter `schema`. The parameter `schema` can either be
         another Schema object, a Python dictionary containing valid schema information, a json string containing
         valid schema information or a file name or path to a json file containing valid schema information.
 
         :param df: (optional) the Pandas dataframe to build the schema from or for.
-
-        :param schema: (optional) a schema to initialize the Schema with. The parameter 'schema' can either be
+        :param schema: (optional) a schema to initialize the Schema with. The parameter `schema` can either be
                 another Schema object, a Python dictionary containing valid schema information, a json string
                 containing valid schema information or a file name or path to a json file containing valid schema
                 information.
-        :param enable_caching: (optional) if True, caching is enabled for the schema. Caching can speed up
-            the access to the data of the cube. By default, caching is disabled.
+        :param caching: The caching strategy to be used for the Cube. Default is `CachingStrategy.LAZY`. Please refer to
+                the documentation of 'CachingStrategy' for more information.
         """
         self._df: pd.DataFrame | None = df
         self._schema: Schema | Any = schema
         self._dimensions: DimensionCollection = DimensionCollection()
         self._measures: MeasureCollection = MeasureCollection()
         self._validation_message: str = ""
-        self._enable_caching: bool = enable_caching
+        self._caching: CachingStrategy = caching
 
         if schema is not None:
             if not self.validate(self._df):
@@ -67,13 +67,13 @@ class Schema:
                 if column not in df.columns:
                     self._validation_message = f"Dimension column '{column}' not found in dataframe."
                     return False
-                self._dimensions.add(Dimension(df, column, self._enable_caching))
+                self._dimensions.add(Dimension(df, column, self._caching))
             else:
                 if isinstance(dimension, str) or isinstance(dimension, int):
                     if dimension not in df.columns:
                         self._validation_message = f"Dimension column '{dimension}' not found in dataframe."
                         return False
-                    self._dimensions.add(Dimension(df, dimension, self._enable_caching))
+                    self._dimensions.add(Dimension(df, dimension, self._caching))
                 else:
                     self._validation_message = "Dimension column not found in schema."
                     return False
