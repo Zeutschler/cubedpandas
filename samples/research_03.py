@@ -21,7 +21,7 @@ cached_cube = Cube(df, schema=schema, caching=caching_strategy)
 address = "make:BMW", "sellingprice"    # use another measure
 measure = "sellingprice"
 
-value = df.cubed["make:BMW", "sellingprice"]
+# value = df.cubed["make:BMW", "sellingprice"]
 
 def normal_read():
     value = cube[address]
