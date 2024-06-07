@@ -82,6 +82,10 @@ class Dimension(Iterable, ABC):
     def count(self, member):
         return np.count_nonzero(self._resolve(member))
 
+    @property
+    def dtype(self):
+        return self._dtype
+
     def __len__(self):
         self._load_members()
         return len(self._member_list)

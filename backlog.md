@@ -1,21 +1,20 @@
 # Backlog 
-Missing and pending features to be implemented.
+Missing and pending features to be implemented:
 
 ### Datasets
-- Convert car_price dataset to parquet format
+- *none*
 
 ### Cube
 - info() method to get information about the cube
 - filters on members, e.g.: quantity > 10
 
 ### Dimenions
-- get members
+- *none*
 
 ### Cell access
 - more complex filters on members, e.g.: quantity > 10 
 
-### Cell-Sets 
-- define cell-sets
+### Other... 
 - support for (simple) MDX queries
 
 

@@ -11,7 +11,7 @@ import numpy as np
 # noinspection PyProtectedMember
 
 if typing.TYPE_CHECKING:
-    import cube as ref_cube
+    from cube import Cube, CubeAggregationFunction
 
 
 class Slice(SupportsFloat):
@@ -51,7 +51,7 @@ class Slice(SupportsFloat):
 
     # region Initialization
     @classmethod
-    def create(cls, cube, address) -> Slice:
+    def create(cls, cube:Cube, address) -> Slice:
         slice = Slice()
         slice._cube  = cube
         slice._address = address
@@ -59,7 +59,7 @@ class Slice(SupportsFloat):
         return slice
 
     def __init__(self):
-        self._cube = None
+        self._cube:Cube | None = None
         self._address = None
         self._row_mask: np.ndarray | None = None
         self._measure = None
@@ -264,4 +264,60 @@ class Slice(SupportsFloat):
 
     def __ceil__(self):
         return self.numeric_value.__ceil__()
+    # endregion
+
+    #region Aggregation functions
+    def sum(self):
+        """Returns the sum of the values for a given address."""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.SUM, self._row_mask)
+
+    @property
+    def avg(self):
+        """Returns the average of the values for a given address."""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.AVG, self._row_mask)
+
+    @property
+    def median(self):
+        """Returns the median of the values for a given address."""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MEDIAN, self._row_mask)
+
+    @property
+    def min(self):
+        """Returns the minimum value for a given address."""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MIN, self._row_mask)
+
+    @property
+    def max(self):
+        """Returns the maximum value for a given address."""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MAX, self._row_mask)
+
+    @property
+    def count(self):
+        """Returns the number of the records matching a given address."""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.COUNT, self._row_mask)
+
+    @property
+    def stddev(self):
+        """Returns the standard deviation of the values for a given address."""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.STDDEV, self._row_mask)
+
+    @property
+    def var(self):
+        """Returns the variance of the values for a given address."""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.VAR, self._row_mask)
+
+    @property
+    def pof(self):
+        """Returns the percentage of the sum of values for a given address related to all values in the data frame."""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.POF, self._row_mask)
+
+    @property
+    def nan(self):
+        """Returns the number of non-numeric values for a given address. 'nan' stands for 'not a number'"""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.NAN, self._row_mask)
+
+    @property
+    def an(self):
+        """Returns the number of numeric values for a given address. 'an' stands for 'a number'"""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.AN, self._row_mask)
     # endregion

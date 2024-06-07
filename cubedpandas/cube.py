@@ -4,6 +4,7 @@ from typing import Any, List, Tuple
 import sys
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_datetime64_any_dtype as is_datetime
 from datetime import datetime
 
 from common import CubeAggregationFunctionType
@@ -59,8 +60,6 @@ class Cube:
         self._schema: Schema = schema
         self._dimensions: DimensionCollection = schema.dimensions
         self._measures: MeasureCollection = schema.measures
-
-        #self._row_mask: np.ndarray | None = None
 
         # warm up cache, if required
         if caching >= CachingStrategy.EAGER:
@@ -373,6 +372,14 @@ class Cube:
                     if not resolved:
                         unresolved_parts.append(part)
 
+                elif isinstance(part, (datetime, np.datetime64)):
+                    for dimension in self._dimensions:
+                        if is_datetime(dimension.dtype):
+                            row_mask = self._dimensions[dimension]._resolve(part, row_mask)
+                            resolved = True
+                    if not resolved:
+                        unresolved_parts.append(part)
+
         if len(unresolved_parts) > 1:
             raise ValueError(f"Multiple unresolved member arguments found in address: {unresolved_parts}")
 
@@ -413,13 +420,14 @@ class CubeAggregationFunction:
     Internal helper class that represents an aggregation function, like SUM, MIN, MAX, VAG etc.,
     which are provided through the 'Cube' object, e.g. cube.sum[("A", "B", "C")].
     """
-    def __init__(self, cube: Cube, operation: CubeAggregationFunctionType = CubeAggregationFunctionType.SUM):
+    def __init__(self, cube: Cube, operation: CubeAggregationFunctionType = CubeAggregationFunctionType.SUM,
+                 row_set: np.ndarray | None = None):
         self._cube: Cube = cube
         self._op: CubeAggregationFunctionType = operation
+        self._row_set: np.ndarray | None = row_set
 
     def __getitem__(self, address):
         return self._cube._get(self._op, address)
 
     def __setitem__(self, address, value):
         raise NotImplementedError("Not implemented yet")
-

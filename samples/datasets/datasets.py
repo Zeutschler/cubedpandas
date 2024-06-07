@@ -1,6 +1,7 @@
 from pathlib import Path
 import pandas as pd
 from pathlib import Path
+from datetime import datetime
 
 def convert_to_parquet(file_path: str):
     df = pd.read_csv(file_path)
@@ -17,6 +18,28 @@ def simple_sales():
         "dimensions": [
             {"column": "product"},
             {"column": "channel"}
+        ],
+        "measures": [
+            {"column": "sales"}
+        ]
+    }
+    return df, schema
+
+def simple_sales_with_date():
+    data = {
+        "product": ["A", "B", "C", "A", "B", "C"],
+        "channel": ["Online", "Online", "Online", "Retail", "Retail", "Retail"],
+        "date": [datetime(2024,6,1), datetime(2024,6,2),
+                 datetime(2024,7,1), datetime(2024,7,2),
+                 datetime(2024,12,1), datetime(2024,12,2)],
+        "sales": [100, 150, 300, 200, 250, 350]
+    }
+    df = pd.DataFrame.from_dict(data)
+    schema = {
+        "dimensions": [
+            {"column": "product"},
+            {"column": "channel"},
+            {"column": "date"}
         ],
         "measures": [
             {"column": "sales"}
