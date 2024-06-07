@@ -1,9 +1,10 @@
 import pandas as pd
 from unittest import TestCase
-from cubedpandas import Cube
+from cubedpandas import Cube, Schema
 
 
-class TestCube(TestCase):
+
+class TestSchema(TestCase):
     def setUp(self) -> None:
         data = {
             "product": ["A", "B", "C", "A", "B", "C"],
@@ -21,9 +22,18 @@ class TestCube(TestCase):
             ]
         }
 
-    def test_cube_from_schema(self):
+    def test_infer_schema(self):
 
-        cube = Cube(self.df, schema=self.schema)
+        # create a cube without a schema,
+        # this will force a call to Schema.infer_schema(...)
+        cube = Cube(self.df)
+        # get the created schema
+        generated_schema = cube.schema
+
+        # compare to expected schema
+        as_is = generated_schema.to_dict()
+        to_be = self.schema
+        self.assertEqual(as_is, to_be)
 
         value = cube["A"]
         self.assertEqual(value, 100 + 200)

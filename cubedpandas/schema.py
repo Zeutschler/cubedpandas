@@ -1,6 +1,9 @@
 import typing
 
 import pandas as pd
+from pandas.api.types import is_string_dtype
+from pandas.api.types import is_numeric_dtype
+
 import json
 from typing import Self, Any
 from dimension import Dimension
@@ -107,7 +110,7 @@ class Schema:
         """ Returns the measures of the schema."""
         return self._measures
 
-    def infer_schema(self, df: pd.DataFrame | None = None, columns: Any = None, sample_records: bool = False):
+    def infer_schema(self, df: pd.DataFrame | None = None, columns: Any = None, sample_records: bool = False) -> Self:
         """
         Infers a multidimensional schema from the Pandas dataframe of the Schema or another Pandas dataframe by
         analyzing the columns of the table and their contents.
@@ -140,7 +143,23 @@ class Schema:
 
         :return: Returns the inferred schema.
         """
-        raise NotImplementedError("Not implemented yet")
+        if df is None:
+            df = self._df
+        if df is None:
+            return None
+
+        schema = {"dimensions": [], "measures": []}
+        self._dimensions = DimensionCollection()
+        self._measures = MeasureCollection()
+        for column_name, dtype in df.dtypes.items():
+            if is_numeric_dtype(df[column_name]):
+                schema["measures"].append({"column": column_name})
+                self._measures.add(Measure(df, column_name))
+            else:
+                schema["dimensions"].append({"column": column_name})
+                self._dimensions.add(Dimension(df, column_name, self._caching))
+
+        return self
 
     # region Serialization
     @classmethod
@@ -175,7 +194,12 @@ class Schema:
 
         :return: Returns a dictionary containing the schema information.
         """
-        raise NotImplementedError("Not implemented yet")
+        schema = {"dimensions": [], "measures": []}
+        for measure in self._measures:
+            schema["measures"].append({"column": measure.column})
+        for dimension in self._dimensions:
+            schema["dimensions"].append({"column": dimension.column})
+        return schema
 
     def to_json(self) -> str:
         """

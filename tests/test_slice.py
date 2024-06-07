@@ -3,7 +3,7 @@ from unittest import TestCase
 from cubedpandas import Cube
 
 
-class TestCube(TestCase):
+class TestSlice(TestCase):
     def setUp(self) -> None:
         data = {
             "product": ["A", "B", "C", "A", "B", "C"],
@@ -21,27 +21,6 @@ class TestCube(TestCase):
             ]
         }
 
-    def test_cube_from_schema(self):
-
-        cube = Cube(self.df, schema=self.schema)
-
-        value = cube["A"]
-        self.assertEqual(value, 100 + 200)
-        value = cube["B"]
-        self.assertEqual(value, 150 + 250)
-        value = cube["C"]
-        self.assertEqual(value, 300 + 350)
-
-        value = cube["Online"]
-        self.assertEqual(value, 100 + 150 + 300)
-        value = cube["Retail"]
-        self.assertEqual(value, 200 + 250 + 350)
-
-        value = cube["A", "Online"]
-        self.assertEqual(value, 100)
-        value = cube["B", "Retail"]
-        self.assertEqual(value, 250)
-
     def test_slice(self):
 
         cube = Cube(self.df, schema=self.schema)
@@ -52,6 +31,9 @@ class TestCube(TestCase):
         float_value = some_slice + 100 - 100
         self.assertEqual(float_value, 100 + 200)
 
+        # a slice from a slice
         derived_slice = some_slice.slice("channel:Online")
         self.assertEqual(derived_slice.value, 100)
 
+        # direct access to 'a slice from a slice'
+        self.assertEqual(some_slice["channel:Online"], 100)

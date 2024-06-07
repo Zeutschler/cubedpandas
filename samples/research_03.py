@@ -7,10 +7,17 @@ from datasets.datasets import simple_sales, supermarket_sales, car_sales
 import timeit
 
 df, schema = car_sales()
-cube = Cube(df, schema=schema, caching=CachingStrategy.NONE)
+use_schema = False
+if use_schema:
+    cube = Cube(df, schema=schema, caching=CachingStrategy.NONE)
+else:
+    cube = Cube(df, caching=CachingStrategy.NONE)
 
 caching_strategy = CachingStrategy.LAZY
-cached_cube = Cube(df, schema=schema, caching=caching_strategy)
+if use_schema:
+    cached_cube = Cube(df, schema=schema, caching=caching_strategy)
+else:
+    cached_cube = Cube(df, caching=caching_strategy)
 
 # note: default measure is 'odometer'
 # address = {"make": "BMW"}
