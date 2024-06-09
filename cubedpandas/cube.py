@@ -1,15 +1,20 @@
 from types import ModuleType, FunctionType
 from gc import get_referents
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, TYPE_CHECKING
 import sys
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_datetime64_any_dtype as is_datetime
 from datetime import datetime
 
-from common import CubeAggregationFunctionType
+
+#if TYPE_CHECKING:
+from cube_aggregation import CubeAggregationFunctionType
+from cube_aggregation import CubeAggregationFunction
+
 from schema import Schema
 from measure_collection import MeasureCollection
+from measure import Measure
 from dimension_collection import DimensionCollection
 from caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 from slice import Slice
@@ -75,7 +80,7 @@ class Cube:
         self._min_op = CubeAggregationFunction(self, CubeAggregationFunctionType.MIN)
         self._max_op = CubeAggregationFunction(self, CubeAggregationFunctionType.MAX)
         self._count_op = CubeAggregationFunction(self, CubeAggregationFunctionType.COUNT)
-        self._stddev_op = CubeAggregationFunction(self, CubeAggregationFunctionType.STDDEV)
+        self._stddev_op = CubeAggregationFunction(self, CubeAggregationFunctionType.STD)
         self._var_op = CubeAggregationFunction(self, CubeAggregationFunctionType.VAR)
         self._pof_op = CubeAggregationFunction(self, CubeAggregationFunctionType.POF)
         self._nan_op = CubeAggregationFunction(self, CubeAggregationFunctionType.NAN)
@@ -142,6 +147,7 @@ class Cube:
 
     # region Data Access Methods
     def __getitem__(self, address):
+        return Slice(self, address)
         return self._get(CubeAggregationFunctionType.SUM, address)
 
     def __setitem__(self, address, value):
@@ -171,7 +177,8 @@ class Cube:
             # create new data or overwrite data for 2025 by copying all 2024 prices and adding 5% inflation
             cube.slice("2025", "Price") = cube.slice("2024", "Price") * 1.05
         """
-        return Slice.create(self, address)
+        #return Slice.create(self, address)
+        return Slice(self, address)
 
     @property
     def sum(self):
@@ -238,7 +245,7 @@ class Cube:
     def _islist(item):
         return isinstance(item, List) or isinstance(item, Tuple)
 
-    def _get(self, operation: CubeAggregationFunctionType, address, row_mask: np.ndarray | None = None):
+    def _get(self, operation: 'CubeAggregationFunctionType', address, row_mask: np.ndarray | None = None):
         """Evaluates an aggregation operation for a given address in the cube."""
         # Resolve address and get the row mask for the address
         row_mask, measure = self._resolve_address(address, row_mask)
@@ -247,7 +254,11 @@ class Cube:
         return self._evaluate(row_mask, measure, operation)
 
     def _delete(self, row_mask: np.ndarray | None = None, measure: Any = None):
-        """Deletes a value for a given address in the cube."""
+        """Deletes all values for a given address in the cube."""
+        raise NotImplementedError("Not implemented yet")
+
+    def _write_back(self, row_mask: np.ndarray | None = None, measure: Any = None, value: Any = None):
+        """Writes back a value for a given address in the cube."""
         raise NotImplementedError("Not implemented yet")
 
     def _evaluate(self, row_mask, measure, operation: CubeAggregationFunctionType = CubeAggregationFunctionType.SUM):
@@ -270,7 +281,7 @@ class Cube:
                 value = np.nanmax(records)
             case CubeAggregationFunctionType.COUNT:
                 value = len(records)
-            case CubeAggregationFunctionType.STDDEV:
+            case CubeAggregationFunctionType.STD:
                 value = np.nanstd(records)
             case CubeAggregationFunctionType.VAR:
                 value = np.nanvar(records)
@@ -280,8 +291,12 @@ class Cube:
                 value = np.count_nonzero(np.isnan(records))
             case CubeAggregationFunctionType.AN:
                 value = np.count_nonzero(~np.isnan(records))
+            case CubeAggregationFunctionType.ZERO:
+                value = np.count_nonzero(records == 0)
+            case CubeAggregationFunctionType.NZERO:
+                value = np.count_nonzero(records)
             case _:
-                value = None
+                value = np.nansum(records) # default operation is SUM
 
         if self._convert_values_to_python_data_types:
             value = self._convert_to_python_type(value)
@@ -291,14 +306,13 @@ class Cube:
         """Sets a value for a given address in the cube."""
         raise NotImplementedError("Not implemented yet")
 
-    def _resolve_address(self, address, row_mask: np.ndarray | None = None) -> (np.ndarray, Any):
+    def _resolve_address(self, address, row_mask: np.ndarray | None = None, measure: Measure | str |None = None) -> (np.ndarray, Any):
         """Resolves an address to a row mask and a measure.
         :param address: The address to be resolved.
         :param row_mask: A row mask to be used for subsequent address resolution.
         :return: The row mask and the measure to be used for the aggregation.
         """
         # 1. Process all arguments of the address
-        measure = None          # the single measure to be used for the aggregation
         unresolved_parts = []   # parts of the address that could not be resolved from dimensions or measures
         if not self._islist(address):
             address = [address,]
@@ -388,7 +402,7 @@ class Cube:
 
         return row_mask, measure
 
-    def _resolve_address_modifier(self, address, row_mask: np.ndarray | None = None):
+    def _resolve_address_modifier(self, address, row_mask: np.ndarray | None = None, measure: Measure | str |None = None):
         """Modifies an address for a given operation."""
         row_mask, measure = self._resolve_address(address, row_mask)
         return row_mask, measure
@@ -415,19 +429,3 @@ class Cube:
 
 
 
-class CubeAggregationFunction:
-    """
-    Internal helper class that represents an aggregation function, like SUM, MIN, MAX, VAG etc.,
-    which are provided through the 'Cube' object, e.g. cube.sum[("A", "B", "C")].
-    """
-    def __init__(self, cube: Cube, operation: CubeAggregationFunctionType = CubeAggregationFunctionType.SUM,
-                 row_set: np.ndarray | None = None):
-        self._cube: Cube = cube
-        self._op: CubeAggregationFunctionType = operation
-        self._row_set: np.ndarray | None = row_set
-
-    def __getitem__(self, address):
-        return self._cube._get(self._op, address)
-
-    def __setitem__(self, address, value):
-        raise NotImplementedError("Not implemented yet")

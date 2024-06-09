@@ -1,17 +1,13 @@
 from __future__ import annotations
-from common import CubeAggregationFunctionType
-from collections.abc import Iterable
-from typing import SupportsFloat
-import typing
-
-import pandas as pd
-import pyarrow as pa
+from typing import SupportsFloat, TYPE_CHECKING
 import numpy as np
 
-# noinspection PyProtectedMember
+# ___noinspection PyProtectedMember
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from cube import Cube, CubeAggregationFunction
+
+from cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction
 
 
 class Slice(SupportsFloat):
@@ -39,55 +35,43 @@ class Slice(SupportsFloat):
 
     __slots__ = "_cube", "_address", "_row_mask", "_measure"
 
-    #: Indicates that either subsequent rules should continue and do the calculation
-    #: work or that the cell value, either from a base-level or an aggregated cell,
-    #: form the underlying cube should be used.
-    CONTINUE = object()
-    #: Indicates that rules function was not able return a proper result (why ever).
-    NONE = object()
-    #: Indicates that the rules functions run into an error. Such errors will be
-    #: pushed up to initially calling cell request.
-    ERROR = object()
-
     # region Initialization
-    @classmethod
-    def create(cls, cube:Cube, address) -> Slice:
-        slice = Slice()
-        slice._cube  = cube
-        slice._address = address
-        slice._row_mask, slice._measure = cube._resolve_address(address)
-        return slice
+    def __init__(self, cube:Cube, address, row_mask:np.ndarray | None = None, measure:str | None = None):
+        self._cube:Cube = cube
+        self._address = address
+        if row_mask is None and measure is None:
+            row_mask, measure = cube._resolve_address(address)
+        else:
+            row_mask, measure = self._cube._resolve_address_modifier(address, row_mask, measure)
+        self._row_mask: np.ndarray | None = row_mask
+        self._measure = measure
 
-    def __init__(self):
-        self._cube:Cube | None = None
-        self._address = None
-        self._row_mask: np.ndarray | None = None
-        self._measure = None
-
-    def __new__(cls):
+    def __new__(cls, *args, **kwargs):
         return SupportsFloat.__new__(cls)
-
     # endregion
 
     # region Properties
     @property
     def value(self):
-        """Reads the value of the current cell idx_address from the underlying cube."""
+        """Returns the sum value of the current slice from the underlying cube."""
+        agg_function = CubeAggregationFunctionType.SUM
         if self._row_mask is None:
             return self._cube[self._address]
         else:
-            agg_function = CubeAggregationFunctionType.SUM
             return self._cube._evaluate(self._row_mask, self._measure, agg_function)
 
     @value.setter
     def value(self, value):
-        """Writes a value of the current cell idx_address to the underlying cube."""
+        """Writes a value of the current slkice  to the underlying cube."""
         self._cube[self._address] = value
 
     @property
     def numeric_value(self) -> float:
         """Reads the numeric value of the current cell idx_address from the underlying cube."""
-        value = self._cube[self._address]
+        if self._row_mask is None:
+            value = self._cube[self._address]
+        else:
+            value = self._cube._evaluate(self._row_mask, self._measure)
         if isinstance(value, (int, float, np.integer, np.floating, bool)):
             return float(value)
         else:
@@ -95,31 +79,38 @@ class Slice(SupportsFloat):
 
     @property
     def cube(self):
-        """Returns the cube the cell belongs to."""
+        """Returns the cube the slice belongs to."""
         return self._cube
 
-    # endregion
+    @property
+    def address(self):
+        """Returns the address of the slice."""
+        return self._address
+
+    @property
+    def measure(self):
+        """Returns the measure of the slice."""
+        return self._measure
 
 
     # region Cell manipulation via indexing/slicing
     def __getitem__(self, address):
-        row_mask, measure = self._cube._resolve_address_modifier(address, self._row_mask)
+        # row_mask, measure = self._cube._resolve_address_modifier(address, self._row_mask)
+        row_mask, measure = self._cube._resolve_address(address, self._row_mask, self._measure)
         return self._cube._evaluate(row_mask, measure=measure)
 
     def __setitem__(self, address, value):
-        row_mask, measure = self._cube._resolve_address_modifier(address, self._row_mask)
-        raise NotImplementedError("Slice.__setitem__ is not yet implemented.")
+        # row_mask, measure = self._cube._resolve_address_modifier(address, self._row_mask)
+        row_mask, measure = self._cube._resolve_address(address, self._row_mask, self._measure)
+        self._cube._write_back(row_mask, measure, value)
 
     def __delitem__(self, address):
-        row_mask, measure = self._cube._resolve_address_modifier(address, self._row_mask)
+        # row_mask, measure = self._cube._resolve_address_modifier(address, self._row_mask)
+        row_mask, measure = self._cube._resolve_address(address, self._row_mask, self._measure)
         self._cube._delete(row_mask, measure)
 
     def slice(self, address):
-        slice = Slice()
-        slice._cube = self._cube
-        slice._address = address
-        slice._row_mask, slice._measure = self._cube._resolve_address_modifier(address, self._row_mask)
-        return slice
+        return Slice(self._cube, address, self._row_mask, self._measure)
     # endregion
 
     # region - Dynamic attribute resolving
@@ -259,65 +250,93 @@ class Slice(SupportsFloat):
     def __str__(self):
         return self.value.__str__()
 
+    def __repr__(self):
+        return self.value.__repr__()
+
+    def __round__(self, n=None):
+        return self.numeric_value.__round__(n)
+
+    def __trunc__(self):
+        return self.numeric_value.__trunc__()
+
+    def __floor__(self):
+        return self.numeric_value.__floor__()
+
     def __int__(self):
         return self.numeric_value.__int__()
 
     def __ceil__(self):
         return self.numeric_value.__ceil__()
+
+    def __format__(self, format_spec):
+        # return self.numeric_value.__format__(format_spec)
+        return self.value.__format__(format_spec)
+
     # endregion
 
     #region Aggregation functions
+    @property
     def sum(self):
         """Returns the sum of the values for a given address."""
-        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.SUM, self._row_mask)
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.SUM, self._row_mask, self._measure)
 
     @property
     def avg(self):
         """Returns the average of the values for a given address."""
-        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.AVG, self._row_mask)
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.AVG, self._row_mask, self._measure)
 
     @property
     def median(self):
         """Returns the median of the values for a given address."""
-        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MEDIAN, self._row_mask)
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MEDIAN, self._row_mask, self._measure)
 
     @property
     def min(self):
         """Returns the minimum value for a given address."""
-        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MIN, self._row_mask)
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MIN, self._row_mask, self._measure)
 
     @property
     def max(self):
         """Returns the maximum value for a given address."""
-        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MAX, self._row_mask)
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MAX, self._row_mask, self._measure)
 
     @property
     def count(self):
         """Returns the number of the records matching a given address."""
-        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.COUNT, self._row_mask)
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.COUNT, self._row_mask, self._measure)
 
     @property
-    def stddev(self):
+    def std(self):
         """Returns the standard deviation of the values for a given address."""
-        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.STDDEV, self._row_mask)
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.STD, self._row_mask, self._measure)
 
     @property
     def var(self):
         """Returns the variance of the values for a given address."""
-        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.VAR, self._row_mask)
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.VAR, self._row_mask, self._measure)
 
     @property
     def pof(self):
         """Returns the percentage of the sum of values for a given address related to all values in the data frame."""
-        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.POF, self._row_mask)
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.POF, self._row_mask, self._measure)
 
     @property
     def nan(self):
         """Returns the number of non-numeric values for a given address. 'nan' stands for 'not a number'"""
-        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.NAN, self._row_mask)
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.NAN, self._row_mask, self._measure)
 
     @property
     def an(self):
         """Returns the number of numeric values for a given address. 'an' stands for 'a number'"""
-        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.AN, self._row_mask)
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.AN, self._row_mask, self._measure)
+
+    @property
+    def zero(self):
+        """Returns the number of zero values for a given address. 'nan' stands for 'not a number'"""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.ZERO, self._row_mask, self._measure)
+
+    @property
+    def nzero(self):
+        """Returns the number of non-zero values for a given address. 'an' stands for 'a number'"""
+        return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.NZERO, self._row_mask, self._measure)
     # endregion

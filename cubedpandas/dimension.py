@@ -4,7 +4,9 @@ from abc import ABC
 from typing import Iterable, Self
 import numpy as np
 import pandas as pd
-from caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
+
+from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.dates import parse_date
 
 from pandas.api.types import (is_string_dtype, is_numeric_dtype, is_bool_dtype,
                               is_datetime64_any_dtype, is_timedelta64_dtype, is_categorical_dtype, is_object_dtype)
@@ -103,6 +105,71 @@ class Dimension(Iterable, ABC):
         return self._column
 
     def _resolve(self, member, row_mask=None) -> np.array:
+        if isinstance(member, list):
+            member = tuple(member)
+        if not isinstance(member, tuple):
+            member = (member,)
+
+        # 1. check if the member definition is already in the cache...
+        if self._caching > CachingStrategy.NONE:
+            if member in self._cache:
+                # return self._cache[member]
+                if row_mask is None:
+                    return self._cache[member]
+                else:
+                    return np.intersect1d(row_mask, self._cache[member])
+
+        # 2. ...if not, resolve the member(s)
+        mask: np.ndarray | None = None
+        for m in member:
+            if mask is None:
+                mask = self._resolve_member(m, row_mask)
+            else:
+                mask = np.union1d(mask, self._resolve_member(m, row_mask))
+            if not len(mask):
+                break
+
+        # 3. cache the result
+        if self._caching > CachingStrategy.NONE:
+            self._cache[member] = mask
+
+        if row_mask is None:
+            return mask
+        else:
+            return np.intersect1d(row_mask, mask)
+
+    def _resolve_member(self, member, row_mask=None) -> np.ndarray:
+
+        # let's try to find the exact member
+        mask = self._df[self._column] == member
+        mask = mask[mask == True].index.to_numpy()
+
+        if len(mask) == 0:
+            # no direct match found, so...
+            # ...depending on the data types of member and dimension column,
+            # we test other ways to resolve the member.
+            if isinstance(member, str):
+
+                if is_datetime64_any_dtype(self._dtype):
+                    # for datetime dimension (and member is string), try to parse the string as a date or date range
+                    mask = np.array([])
+                    first_date, last_date = parse_date(member)
+                    if first_date is not None:
+                        if last_date is None:
+                            # a single date was returned
+                            mask = self._df[self._column] == member
+                            mask = mask[mask == True].index.to_numpy()
+                        else:
+                            # a date range (2 datetime values, first and last) was returned
+                            mask = self._df.loc[:, self._column].between(first_date, last_date)
+                            mask = mask[mask == True].index.to_numpy()
+                    else:
+                        # a valid date could not be parsed
+                        mask = np.array([])
+
+        return mask
+
+    def _resolve_old(self, member, row_mask=None) -> np.array:
         if isinstance(member, list):
             member = tuple(member)
         elif not isinstance(member, tuple):

@@ -24,3 +24,8 @@ class Measure:
 
     def __repr__(self):
         return self._column
+
+    def __eq__(self, other):
+        if isinstance(other, str):
+            return self._column == other
+        return  self._column == other._column and self._df.equals(other._df)

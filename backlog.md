@@ -1,8 +1,9 @@
 # Backlog 
 Missing and pending features to be implemented:
 
-### Datasets
-- *none*
+### Errors
+- cube[("A", "B"),] works, but cube[("A", "B")] does not work. But it should work.
+  Solution: check if member are all from same dimension and forward them as a tuple...
 
 ### Cube
 - info() method to get information about the cube
