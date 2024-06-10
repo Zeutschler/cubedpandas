@@ -1,5 +1,6 @@
 import pandas as pd
 from cube import Cube
+from slice import Slice
 from caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 
 @pd.api.extensions.register_dataframe_accessor("cubed")
@@ -14,8 +15,11 @@ class CubedPandasAccessor:
         if len(df) == 0:
             raise AttributeError("Method 'cubed' not provided for empty dataframe objects.")
 
-    def __getitem__(self, item):
-        return Cube(self._df)[item]
+    def __getitem__(self, address) -> Slice:
+        return Cube(self._df)[address]
+
+    def __setitem__(self, address, value):
+        Cube(self._df)[address] = value
 
     @property
     def cube(self, schema=None,

@@ -9,8 +9,7 @@ from datetime import datetime
 
 
 #if TYPE_CHECKING:
-from cube_aggregation import CubeAggregationFunctionType
-from cube_aggregation import CubeAggregationFunction
+from cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, CubeAllocationFunctionType
 
 from schema import Schema
 from measure_collection import MeasureCollection
@@ -85,6 +84,8 @@ class Cube:
         self._pof_op = CubeAggregationFunction(self, CubeAggregationFunctionType.POF)
         self._nan_op = CubeAggregationFunction(self, CubeAggregationFunctionType.NAN)
         self._an_op = CubeAggregationFunction(self, CubeAggregationFunctionType.AN)
+        self._zero_op = CubeAggregationFunction(self, CubeAggregationFunctionType.ZERO)
+        self._nzero_op = CubeAggregationFunction(self, CubeAggregationFunctionType.NZERO)
 
     # region Properties
     @property
@@ -146,12 +147,12 @@ class Cube:
     # endregion
 
     # region Data Access Methods
-    def __getitem__(self, address):
+    def __getitem__(self, address) -> Slice:
         return Slice(self, address)
-        return self._get(CubeAggregationFunctionType.SUM, address)
 
     def __setitem__(self, address, value):
-        raise NotImplementedError("Not implemented yet")
+        Slice(self, address).set(value)
+        # raise NotImplementedError("Not implemented yet")
 
     def slice(self, address) -> Slice:
         """
@@ -177,7 +178,6 @@ class Cube:
             # create new data or overwrite data for 2025 by copying all 2024 prices and adding 5% inflation
             cube.slice("2025", "Price") = cube.slice("2024", "Price") * 1.05
         """
-        #return Slice.create(self, address)
         return Slice(self, address)
 
     @property
@@ -234,6 +234,17 @@ class Cube:
     def an(self):
         """Returns the number of numeric values for a given address. 'an' stands for 'a number'"""
         return self._an_op
+
+    @property
+    def zero(self):
+        """Returns the number of zeros for a given address."""
+        return self._zero_op
+
+    @property
+    def nzero(self):
+        """Returns the number of non-zero values for a given address."""
+        return self._nzero_op
+
     # endregion
 
     # region Internal methods for data preparation and querying
@@ -245,13 +256,17 @@ class Cube:
     def _islist(item):
         return isinstance(item, List) or isinstance(item, Tuple)
 
-    def _get(self, operation: 'CubeAggregationFunctionType', address, row_mask: np.ndarray | None = None):
-        """Evaluates an aggregation operation for a given address in the cube."""
-        # Resolve address and get the row mask for the address
-        row_mask, measure = self._resolve_address(address, row_mask)
+    # def _get(self, operation: 'CubeAggregationFunctionType', address, row_mask: np.ndarray | None = None):
+    #     """Evaluates an aggregation operation for a given address in the cube."""
+    #     # Resolve address and get the row mask for the address
+    #     row_mask, measure = self._resolve_address(address, row_mask)
+    #
+    #     # Execute aggregation function on matching data
+    #     return self._evaluate(row_mask, measure, operation)
 
-        # Execute aggregation function on matching data
-        return self._evaluate(row_mask, measure, operation)
+    # def _set(self, address, value):
+    #     """Sets a value for a given address in the cube."""
+    #     raise NotImplementedError("Not implemented yet")
 
     def _delete(self, row_mask: np.ndarray | None = None, measure: Any = None):
         """Deletes all values for a given address in the cube."""
@@ -266,45 +281,43 @@ class Cube:
         # Note: The next statement does not generate some copy of the data, but returns a reference
         #       to internal Numpy ndarray of the Pandas dataframe. So, its memory efficient and fast.
         value_series = self._df[measure.column].to_numpy()
-        records: np.ndarray = value_series[row_mask]
+        values: np.ndarray = value_series[row_mask]
 
         match operation:
             case CubeAggregationFunctionType.SUM:
-                value = np.nansum(records)
+                value = np.nansum(values)
             case CubeAggregationFunctionType.AVG:
-                value = np.nanmean(records)
+                value = np.nanmean(values)
             case CubeAggregationFunctionType.MEDIAN:
-                value = np.nanmedian(records)
+                value = np.nanmedian(values)
             case CubeAggregationFunctionType.MIN:
-                value = np.nanmin(records)
+                value = np.nanmin(values)
             case CubeAggregationFunctionType.MAX:
-                value = np.nanmax(records)
+                value = np.nanmax(values)
             case CubeAggregationFunctionType.COUNT:
-                value = len(records)
+                value = len(values)
             case CubeAggregationFunctionType.STD:
-                value = np.nanstd(records)
+                value = np.nanstd(values)
             case CubeAggregationFunctionType.VAR:
-                value = np.nanvar(records)
+                value = np.nanvar(values)
             case CubeAggregationFunctionType.POF:
-                value = np.nansum(records) / self.df[measure].sum()
+                value = np.nansum(values) / self.df[measure].sum()
             case CubeAggregationFunctionType.NAN:
-                value = np.count_nonzero(np.isnan(records))
+                value = np.count_nonzero(np.isnan(values))
             case CubeAggregationFunctionType.AN:
-                value = np.count_nonzero(~np.isnan(records))
+                value = np.count_nonzero(~np.isnan(values))
             case CubeAggregationFunctionType.ZERO:
-                value = np.count_nonzero(records == 0)
+                value = np.count_nonzero(values == 0)
             case CubeAggregationFunctionType.NZERO:
-                value = np.count_nonzero(records)
+                value = np.count_nonzero(values)
             case _:
-                value = np.nansum(records) # default operation is SUM
+                value = np.nansum(values) # default operation is SUM
 
         if self._convert_values_to_python_data_types:
             value = self._convert_to_python_type(value)
         return value
 
-    def _set(self, address, value):
-        """Sets a value for a given address in the cube."""
-        raise NotImplementedError("Not implemented yet")
+
 
     def _resolve_address(self, address, row_mask: np.ndarray | None = None, measure: Measure | str |None = None) -> (np.ndarray, Any):
         """Resolves an address to a row mask and a measure.

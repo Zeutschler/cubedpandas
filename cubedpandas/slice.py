@@ -7,7 +7,7 @@ import numpy as np
 if TYPE_CHECKING:
     from cube import Cube, CubeAggregationFunction
 
-from cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction
+from cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, CubeAllocationFunctionType
 
 
 class Slice(SupportsFloat):

@@ -1,3 +1,7 @@
+# Copyright 2024 by Thomas Zeutschler. All rights reserved.
+# This file is part of the "CubedPandas" project, a multi-dimensional wrapper for Pandas DataFrames and is released
+# under the "MIT License Agreement". Please see the LICENSE file that should have been included as part of this package.
+
 import typing
 
 import pandas as pd

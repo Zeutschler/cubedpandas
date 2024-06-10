@@ -7,6 +7,19 @@ import numpy as np
 #if TYPE_CHECKING:
 #    from cube import Cube
 
+
+class CubeAllocationFunctionType(IntEnum):
+    """Allocation functions supported for value write back in a cube.
+    """
+    DISTRIBUTE = 1  # distribute the value to all affected records based on the current distribution
+    SET = 2         # set the value to all affected records
+    DELTA = 3       # add the value to all affected records
+    MULTIPLY = 4    # multiply the value with all affected records
+    ZERO = 5        # set the value to zero to all affected records
+    NAN = 6         # set the value to NaN to all affected records
+    DEL = 7         # delete all affected records / rows
+
+
 class CubeAggregationFunctionType(IntEnum):
     """Aggregation functions supported for the value in a cube.
     """
