@@ -33,7 +33,7 @@ class Slice(SupportsFloat):
         cube.slice("2025", "Price") = cube.slice("2024", "Price") * 1.05
     """
 
-    __slots__ = "_cube", "_address", "_row_mask", "_measure"
+    __slots__ = "_cube", "_address", "_row_mask", "_measure", "_state"
 
     # region Initialization
     def __init__(self, cube:Cube, address, row_mask:np.ndarray | None = None, measure:str | None = None):
@@ -62,8 +62,13 @@ class Slice(SupportsFloat):
 
     @value.setter
     def value(self, value):
-        """Writes a value of the current slkice  to the underlying cube."""
-        self._cube[self._address] = value
+        """Writes a value of the current slice to the underlying cube."""
+        allocation_function = CubeAllocationFunctionType.DISTRIBUTE
+        if self._row_mask is None:
+            self._cube[self._address] = value
+        else:
+            self._cube._allocate(self._row_mask, self._measure, value, allocation_function)
+
 
     @property
     def numeric_value(self) -> float:
@@ -108,6 +113,11 @@ class Slice(SupportsFloat):
         # row_mask, measure = self._cube._resolve_address_modifier(address, self._row_mask)
         row_mask, measure = self._cube._resolve_address(address, self._row_mask, self._measure)
         self._cube._delete(row_mask, measure)
+
+    def __del__(self):
+        #self._cube._delete(self._row_mask, self._measure)
+        pass
+
 
     def slice(self, address):
         return Slice(self._cube, address, self._row_mask, self._measure)

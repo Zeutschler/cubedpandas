@@ -21,6 +21,9 @@ class CubedPandasAccessor:
     def __setitem__(self, address, value):
         Cube(self._df)[address] = value
 
+    def __delitem__(self, address):
+        del Cube(self._df)[address]
+
     @property
     def cube(self, schema=None,
                  infer_schema_if_not_provided: bool = True,

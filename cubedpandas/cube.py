@@ -151,8 +151,13 @@ class Cube:
         return Slice(self, address)
 
     def __setitem__(self, address, value):
-        Slice(self, address).set(value)
+        slice:Slice = Slice(self, address)
+        slice.value = value
         # raise NotImplementedError("Not implemented yet")
+
+    def __delitem__(self, address):
+        slice: Slice = Slice(self, address)
+        self._delete(slice._row_mask)
 
     def slice(self, address) -> Slice:
         """
@@ -268,9 +273,6 @@ class Cube:
     #     """Sets a value for a given address in the cube."""
     #     raise NotImplementedError("Not implemented yet")
 
-    def _delete(self, row_mask: np.ndarray | None = None, measure: Any = None):
-        """Deletes all values for a given address in the cube."""
-        raise NotImplementedError("Not implemented yet")
 
     def _write_back(self, row_mask: np.ndarray | None = None, measure: Any = None, value: Any = None):
         """Writes back a value for a given address in the cube."""
@@ -317,7 +319,44 @@ class Cube:
             value = self._convert_to_python_type(value)
         return value
 
+    def _allocate(self, row_mask: np.ndarray | None = None, measure: Any = None, value: Any = None,
+                    operation: CubeAllocationFunctionType = CubeAllocationFunctionType.DISTRIBUTE):
+        """Allocates a value for a given address in the cube."""
 
+        # Get values to updates or delete
+        value_series = self._df[measure.column].to_numpy()
+        values: np.ndarray = value_series[row_mask]
+
+        # update values based on the requested operation
+        match operation:
+            case CubeAllocationFunctionType.DISTRIBUTE:
+                current = sum(values)
+                if current != 0:
+                    values = values / current * value
+            case CubeAllocationFunctionType.SET:
+                values = np.full_like(values, value)
+            case CubeAllocationFunctionType.DELTA:
+                values = values + value
+            case CubeAllocationFunctionType.MULTIPLY:
+                values = values * value
+            case CubeAllocationFunctionType.ZERO:
+                values = np.zeros_like(values)
+            case CubeAllocationFunctionType.NAN:
+                values = np.full_like(values, np.nan)
+            case CubeAllocationFunctionType.DEL:
+                raise NotImplementedError("Not implemented yet")
+            case _:
+                raise ValueError(f"Allocation operation {operation} not supported.")
+
+        # update the values in the dataframe
+        updated_values = pd.DataFrame({measure.column: values}, index=row_mask)
+        self._df.update(updated_values)
+
+    def _delete(self, row_mask: np.ndarray | None = None, measure: Any = None):
+        """Deletes all rows for a given address."""
+        self._df.drop(index=row_mask, inplace=True, errors="ignore")
+        # not yet required:  self._df.reset_index(drop=True, inplace=True)
+        pass
 
     def _resolve_address(self, address, row_mask: np.ndarray | None = None, measure: Measure | str |None = None) -> (np.ndarray, Any):
         """Resolves an address to a row mask and a measure.
@@ -327,6 +366,14 @@ class Cube:
         """
         # 1. Process all arguments of the address
         unresolved_parts = []   # parts of the address that could not be resolved from dimensions or measures
+
+        # special case: return all values of the cube
+        if address == "*":
+            if measure is None:  # Use the first measure as default if no measure is specified.
+                measure = self._measures[0]
+            row_mask = self._df.index.to_numpy()
+            return row_mask, measure
+
         if not self._islist(address):
             address = [address,]
         for index, part in enumerate(address):
