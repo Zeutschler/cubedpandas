@@ -21,7 +21,7 @@ dataframe into a multi-dimensional data cube, which can be aggregated, sliced, d
 updated and much more. 
 CubedPandas is inspired by OLAP cubes (online analytical processing), which are typically used
 for reporting, business intelligence, data warehousing and financial analysis purposes. 
-***Just give it a try, check out the sample code [below](#introduction) or [01_basic_usage.py](https://github.com/Zeutschler/cubedpandas/blob/master/samples/01_basic_usage.py)***. 
+***Just give it a try, check out the sample code below or file [01_basic_usage.py](https://github.com/Zeutschler/cubedpandas/blob/master/samples/01_basic_usage.py)***. 
    
 
 CubedPandas is licensed under the [MIT License](LICENSE) and is available on 
