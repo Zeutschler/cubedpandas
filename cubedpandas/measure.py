@@ -1,10 +1,16 @@
-import datetime
-from abc import ABC
-from typing import Iterable, Self
+# measure.py
+# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
+# ©2024 by Thomas Zeutschler. All rights reserved.
+# MIT License - please see the LICENSE file that should have been included in this package.
+
 import numpy as np
 import pandas as pd
 
 class Measure:
+    """
+    Represents a measure within a Cube. Each measure is mapped to a column in the underlying Pandas dataframe.
+    """
+
     def __init__(self, df: pd.DataFrame, column):
         self._df: pd.DataFrame = df
         self._column = column

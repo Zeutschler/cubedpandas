@@ -1,21 +1,19 @@
-# Copyright 2024 by Thomas Zeutschler. All rights reserved.
-# This file is part of the "CubedPandas" project, a multi-dimensional wrapper for Pandas DataFrames and is released
-# under the "MIT License Agreement". Please see the LICENSE file that should have been included as part of this package.
-
-import typing
-
-import pandas as pd
-from pandas.api.types import is_string_dtype
-from pandas.api.types import is_numeric_dtype
+# schema.py
+# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
+# ©2024 by Thomas Zeutschler. All rights reserved.
+# MIT License - please see the LICENSE file that should have been included in this package.
 
 import json
 from typing import Self, Any
-from dimension import Dimension
-from dimension_collection import DimensionCollection
-from measure import Measure
-from measure_collection import MeasureCollection
-from caching_strategy import CachingStrategy
 
+import pandas as pd
+from pandas.api.types import is_numeric_dtype
+
+from cubedpandas.caching_strategy import CachingStrategy
+from cubedpandas.dimension import Dimension
+from cubedpandas.dimension_collection import DimensionCollection
+from cubedpandas.measure import Measure
+from cubedpandas.measure_collection import MeasureCollection
 
 
 class Schema:

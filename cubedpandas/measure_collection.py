@@ -1,9 +1,17 @@
+# measure_collection.py
+# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
+# ©2024 by Thomas Zeutschler. All rights reserved.
+# MIT License - please see the LICENSE file that should have been included in this package.
+
 from typing import Iterable, Self
-import pandas as pd
 from cubedpandas.measure import Measure
 
 
 class MeasureCollection(Iterable[Measure]):
+    """
+    Represents the available/defined Measures of a Cube.
+    """
+
     def __init__(self):
         self._measures: dict = {}
         self._counter: int = 0

@@ -1,8 +1,16 @@
+# dimension_collection.py
+# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
+# ©2024 by Thomas Zeutschler. All rights reserved.
+# MIT License - please see the LICENSE file that should have been included in this package.
+
 from typing import Iterable, Self
 from cubedpandas.dimension import Dimension
 
 
 class DimensionCollection(Iterable[Dimension]):
+    """
+    Represents the available/defined Dimensions of a Cube.
+    """
     def __init__(self):
         self._dims: dict = {}
         self._counter: int = 0

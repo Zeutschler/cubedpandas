@@ -1,10 +1,18 @@
+# pandas_extension.py
+# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
+# ©2024 by Thomas Zeutschler. All rights reserved.
+# MIT License - please see the LICENSE file that should have been included in this package.
+
 import pandas as pd
 from cube import Cube
 from slice import Slice
-from caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 
 @pd.api.extensions.register_dataframe_accessor("cubed")
 class CubedPandasAccessor:
+    """
+    A Pandas extension that provides the 'cubed' accessor to Pandas dataframes.
+    """
     def __init__(self, pandas_obj):
         self._validate(pandas_obj)
         self._df: pd.DataFrame = pandas_obj

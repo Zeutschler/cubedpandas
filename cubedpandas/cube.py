@@ -1,27 +1,29 @@
+# cube.py
+# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
+# ©2024 by Thomas Zeutschler. All rights reserved.
+# MIT License - please see the LICENSE file that should have been included in this package.
+
+import sys
 from types import ModuleType, FunctionType
 from gc import get_referents
-from typing import Any, List, Tuple, TYPE_CHECKING
-import sys
+from typing import Any, List, Tuple
+from datetime import datetime
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_datetime64_any_dtype as is_datetime
-from datetime import datetime
 
-
-#if TYPE_CHECKING:
-from cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, CubeAllocationFunctionType
-
-from schema import Schema
-from measure_collection import MeasureCollection
-from measure import Measure
-from dimension_collection import DimensionCollection
-from caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
-from slice import Slice
+from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, CubeAllocationFunctionType
+from cubedpandas.schema import Schema
+from cubedpandas.measure_collection import MeasureCollection
+from cubedpandas.measure import Measure
+from cubedpandas.dimension_collection import DimensionCollection
+from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.slice import Slice
 
 
 class Cube:
-    """Wraps a Pandas dataframe with a multi-dimensional data cube for simple and fast cell based data access
-    to numerical values from the underlying dataframe. The multi-dimensional cube schema, containing the dimensions and
+    """Wrapper for Pandas dataframes to provide multi-dimensional access to mainly numerical values from
+    the underlying dataframe. The multi-dimensional cube schema, containing the dimensions and
     measures of a cube, can be either inferred automatically from the underlying dataframe (default)
     or defined explicitly.
 
@@ -151,13 +153,13 @@ class Cube:
         return Slice(self, address)
 
     def __setitem__(self, address, value):
-        slice:Slice = Slice(self, address)
-        slice.value = value
+        dest_slice:Slice = Slice(self, address)
+        dest_slice.value = value
         # raise NotImplementedError("Not implemented yet")
 
     def __delitem__(self, address):
-        slice: Slice = Slice(self, address)
-        self._delete(slice._row_mask)
+        dest_slice: Slice = Slice(self, address)
+        self._delete(dest_slice._row_mask)
 
     def slice(self, address) -> Slice:
         """

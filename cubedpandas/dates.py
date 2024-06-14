@@ -1,3 +1,8 @@
+# dates.py
+# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
+# ©2024 by Thomas Zeutschler. All rights reserved.
+# MIT License - please see the LICENSE file that should have been included in this package.
+
 import dateparser
 from datetime import datetime, timedelta
 

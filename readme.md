@@ -14,6 +14,10 @@
 
 -----------------
 
+***Note:*** CubedPandas is at an early stage of its development, 
+[Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
+[Feedback](https://github.com/Zeutschler/cubedpandas/discussions) welcome!*
+
 CubedPandas provides an easy, intuitive, fast and fun approach to perform multi-dimensional 
 data analysis & processing on Pandas dataframes. CubedPandas wraps almost any
 dataframe into a multi-dimensional data cube, which can be aggregated, sliced, diced, filtered, 

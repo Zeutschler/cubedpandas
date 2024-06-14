@@ -1,4 +1,8 @@
-import datetime
+# dimension.py
+# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
+# ©2024 by Thomas Zeutschler. All rights reserved.
+# MIT License - please see the LICENSE file that should have been included in this package.
+
 import sys
 from abc import ABC
 from typing import Iterable, Self
@@ -9,13 +13,19 @@ from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOL
 from cubedpandas.dates import parse_date
 
 from pandas.api.types import (is_string_dtype, is_numeric_dtype, is_bool_dtype,
-                              is_datetime64_any_dtype, is_timedelta64_dtype, is_categorical_dtype, is_object_dtype)
+                              is_datetime64_any_dtype, is_timedelta64_dtype,
+                              is_categorical_dtype, is_object_dtype)
 
 
 class Dimension(Iterable, ABC):
-    """ Represents a measure of a cube."""
+    """
+    Represents a dimension of a cube, mapped to a column in the underlying Pandas dataframe.
+    """
 
     def __init__(self, df: pd.DataFrame, column, caching: CachingStrategy = CachingStrategy.LAZY):
+        """
+        Initializes a new Dimension from a Pandas dataframe and a column name.
+        """
         self._df: pd.DataFrame = df
         self._column = column
         self._column_ordinal = df.columns.get_loc(column)

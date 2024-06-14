@@ -1,15 +1,16 @@
+# slice.py
+# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
+# ©2024 by Thomas Zeutschler. All rights reserved.
+# MIT License - please see the LICENSE file that should have been included in this package.
+
 from enum import IntEnum
 from typing import SupportsFloat, TYPE_CHECKING
 import numpy as np
 
-# ___noinspection PyProtectedMember
-
-#if TYPE_CHECKING:
-#    from cube import Cube
-
 
 class CubeAllocationFunctionType(IntEnum):
-    """Allocation functions supported for value write back in a cube.
+    """
+    Allocation functions supported for value write back in a cube.
     """
     DISTRIBUTE = 1  # distribute the value to all affected records based on the current distribution
     SET = 2         # set the value to all affected records
@@ -21,7 +22,8 @@ class CubeAllocationFunctionType(IntEnum):
 
 
 class CubeAggregationFunctionType(IntEnum):
-    """Aggregation functions supported for the value in a cube.
+    """
+    Aggregation functions supported for the value in a cube.
     """
     SUM = 1
     AVG = 2
@@ -40,8 +42,8 @@ class CubeAggregationFunctionType(IntEnum):
 
 class CubeAggregationFunction(SupportsFloat):
     """
-    Represents an aggregation function, like SUM, MIN, MAX, VAG etc.,
-    which are provided through the 'Cube' and 'Slice' object, e.g. cube.sum[("A", "B", "C")].
+    Represents aggregation functions, like SUM, MIN, MAX, VAG etc.,
+    which are provided through the 'Cube' and 'Slice' object, e.g. by cube.avg["Apple", "Online"].
     """
     def __new__(cls, *args, **kwargs):
         return SupportsFloat.__new__(cls)
@@ -67,7 +69,6 @@ class CubeAggregationFunction(SupportsFloat):
         """Reads the value of the current cell idx_address from the underlying cube."""
         if self._row_mask is None:
             return self._cube[None]
-
         return self._cube._evaluate(self._row_mask, self._measure,  self._op)
 
     @value.setter
