@@ -4,9 +4,8 @@
 
 ### Multi-dimensional data analysis for [Pandas](https://github.com/pandas-dev/pandas) dataframes.
 
-[![PyPI Latest Release](https://img.shields.io/pypi/v/cubedpandas.svg?label=PyPI)](https://pypi.org/project/cubedpandas/)
-[![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?label=PyPI%20downloads)](https://pypi.org/project/pandas/)
 [![PyPI version](https://badge.fury.io/py/cubedpandas.svg)](https://badge.fury.io/py/cubedpandas)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?label=PyPI%20downloads)](https://pypi.org/project/cubedpandas)
 [![CI - Test](https://github.com/pandas-dev/pandas/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/Zeutschler/cubedpandas/actions/workflows/unit-tests.yml)
 ![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas)   
 
@@ -22,7 +21,7 @@ dataframe into a multi-dimensional data cube, which can be aggregated, sliced, d
 updated and much more. 
 CubedPandas is inspired by OLAP cubes (online analytical processing), which are typically used
 for reporting, business intelligence, data warehousing and financial analysis purposes. 
-***Just give it a try, [check out the sample code below...](#introduction)*** 
+***Just give it a try, check out the sample code [below](#introduction) or [01_basic_usage.py](https://github.com/Zeutschler/cubedpandas/blob/master/samples/01_basic_usage.py)***. 
    
 
 CubedPandas is licensed under the [MIT License](LICENSE) and is available on 
