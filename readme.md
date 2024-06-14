@@ -1,6 +1,4 @@
-<picture align="center">
-  <img alt="Pandas Logo" src="logo.jpg">
-</picture>
+<picture align="center"><img alt="Pandas Logo" src="logo.jpg"></picture>
 
 # CubedPandas 
 
@@ -24,13 +22,15 @@ dataframe into a multi-dimensional data cube, which can be aggregated, sliced, d
 updated and much more. 
 CubedPandas is inspired by OLAP cubes (online analytical processing), which are typically used
 for reporting, business intelligence, data warehousing and financial analysis purposes. 
-Just give it a try...   
+***Just give it a try, [check out the sample code below...](#introduction)*** 
+   
 
 CubedPandas is licensed under the [MIT License](LICENSE) and is available on 
 [GitHub](https://github.com/Zeutschler/cubedpandas) and [PyPi](https://pypi.org/project/cubedpandas/).
 
-If you faven fallen in love with CubedPandas or find it otherwise valuable, please **consider to become CubedPandas sponsor**
-to support the further development of CubedPandas on [GitHub Sponsors](https://github.com/sponsors/Zeutschler). 
+If you have fallen in love with CubedPandas or find it otherwise valuable, please **consider to become 
+CubedPandas sponsor** on [GitHub Sponsors](https://github.com/sponsors/Zeutschler) to support the further 
+development of CubedPandas. 
 
 
 ### A. Installation
