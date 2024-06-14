@@ -1,5 +1,8 @@
 numpy
 pandas
-pyarrow
-pyroaring
+pyarrow >= 14.0.1
 dateparser
+
+# for deployment
+wheel
+twine

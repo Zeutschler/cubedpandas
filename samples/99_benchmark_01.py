@@ -31,15 +31,15 @@ measure = "sellingprice"
 # value = df.cubed["make:BMW", "sellingprice"]
 
 def normal_read():
-    value = cube[address]
+    value = cube[address].value
     return value
 
 def cached_read():
-    value = cached_cube[address]
+    value = cached_cube[address].value
     return value
 
 def df_read():
-    value = df.loc[df['make'] == 'BMW', measure].sum()
+    value = df.loc[df['make'] == 'BMW', 'sellingprice'].sum()
     return value
 
 # **********************
@@ -52,7 +52,7 @@ print(f"{records_total:,.0f} records in 'car_sales' dataset, {records_used:,.0f}
 
 # **********************
 duration = timeit.Timer('y = df_read()', globals=globals()).repeat(repeat=1, number=loops)[0]
-print(f"{loops:,.0f}x direct read from dataframe in {duration:.3f} seconds, "
+print(f"{loops:,.0f}x direct read from dataframe by 'df.loc[df['make'] == 'BMW', 'sellingprice'].sum()' in {duration:.3f} seconds, "
       f"{loops/duration:,.0f} ops/sec, "
       f"{loops / duration * records_used:,.0f} aggregations/sec, "
       f"{loops / duration * records_total:,.0f} processed records/sec,")
