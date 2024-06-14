@@ -1,4 +1,4 @@
-<picture align="center"><img alt="Pandas Logo" src="logo.jpg"></picture>
+<picture align="center"><img alt="Pandas Logo" src="https://github.com/Zeutschler/cubedpandas/blob/master/logo.jpg?raw=true"></picture>
 
 # CubedPandas 
 
