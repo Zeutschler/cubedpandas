@@ -4,8 +4,8 @@
 # MIT License - please see the LICENSE file that should have been included in this package.
 
 import pandas as pd
-from cube import Cube
-from slice import Slice
+from cubedpandas.cube import Cube
+from cubedpandas.slice import Slice
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 
 @pd.api.extensions.register_dataframe_accessor("cubed")

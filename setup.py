@@ -9,7 +9,7 @@ from cubedpandas import VERSION as CUBEDPANDAS_VERSION
 # ...to run the build and deploy process to pypi.org manually:
 # 1. delete folder 'build'
 # 2. python3 setup.py sdist bdist_wheel   # note: Wheel need to be installed: pip install wheel
-# 3. twine upload dist/*                  # note: Twine need to be installed: pip install twine
+# 3. twine upload -r  pypi dist/*         # note: Twine need to be installed: pip install twine
 
 # ... via Github actions
 # https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
@@ -35,10 +35,10 @@ setup(
     long_description=LONG_DESCRIPTION,
     classifiers=[
         "Topic :: Utilities",
-        "Topic :: Database :: Database Engines/Servers",
-        "Topic :: Scientific Engineering",
-        "Topic :: Scientific Engineering :: Information Analysis",
-
+        "Topic :: Database",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Scientific/Engineering :: Information Analysis",
+        "Topic :: Scientific/Engineering :: Mathematics",
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",

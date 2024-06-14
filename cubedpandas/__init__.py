@@ -6,7 +6,7 @@ from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.caching_strategy import CachingStrategy
 from cubedpandas.cube import Cube
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction
-from cubedpandas.pandas_extension import cubed, CubedPandasAccessor
+from cubedpandas.pandas_extension import cubed, CubedPandasAccessor, EAGER_CACHING_THRESHOLD
 
 VERSION = "0.1.0"
 
