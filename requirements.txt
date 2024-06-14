@@ -1,8 +1,9 @@
 numpy
 pandas
 pyarrow >= 14.0.1
-dateparser
+python-dateutil
 
 # for deployment
 wheel
 twine
+setuptools

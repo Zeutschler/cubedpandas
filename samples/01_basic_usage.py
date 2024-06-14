@@ -24,7 +24,7 @@ print(online["Apple"] + online["Banana"])  # 400 = 100 + 300 > Slices behave lik
 # You can also update, delete or insert values in the underlying dataframe
 cube["Apple", "Online"] *= 1.5         # increase the revenue of "Apple" in "Online" channel
 del cube["Pear"]                       # delete all data where "product" is "Pear"
-cube["product:Orange", "Online"] = 50  # add a new record for "Orange" in "Online" channel
+cube["product:Orange", "Online"] = 50  # NOT WORKING YET - add a new record for "Orange" in "Online" channel
 
 print(df)  # let's check, if the dataframe has been updated as expected
 

@@ -69,5 +69,7 @@ class TestCubeWithDates(TestCase):
         self.assertEqual(value, 0)
 
         value = cube["date:2024"]
-        self.assertEqual(value, 100 + 150 + 300 + 200 + 250) # all sales in 2024, Note: last value is from 2023
+        self.assertEqual(value, 100 + 150 + 300 + 200 + 250) # all sales in 2024
 
+        value = cube["date:June 2024"]
+        self.assertEqual(value, 100 + 150 ) # all sales in June 2024

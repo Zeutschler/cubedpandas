@@ -6,11 +6,12 @@
 import sys
 from abc import ABC
 from typing import Iterable, Self
+import datetime
 import numpy as np
 import pandas as pd
 
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
-from cubedpandas.dates import parse_date
+from cubedpandas.date_parser import parse_date
 
 from pandas.api.types import (is_string_dtype, is_numeric_dtype, is_bool_dtype,
                               is_datetime64_any_dtype, is_timedelta64_dtype,
@@ -151,7 +152,15 @@ class Dimension(Iterable, ABC):
     def _resolve_member(self, member, row_mask=None) -> np.ndarray:
 
         # let's try to find the exact member
-        mask = self._df[self._column] == member
+        mask = pd.Series([], dtype=pd.StringDtype())
+        if is_string_dtype(self._dtype) and isinstance(member, str):
+            mask = self._df[self._column] == member
+        elif is_numeric_dtype(self._dtype) and isinstance(member, (int, float)):
+            mask = self._df[self._column] == member
+        elif is_bool_dtype(self._dtype) and isinstance(member, bool):
+            mask = self._df[self._column] == member
+        elif is_datetime64_any_dtype(self._dtype) and isinstance(member, (datetime.datetime, datetime.timedelta)):
+            mask = self._df[self._column] == member
         mask = mask[mask == True].index.to_numpy()
 
         if len(mask) == 0:

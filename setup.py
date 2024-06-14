@@ -67,7 +67,7 @@ setup(
         'numpy',
         'pandas',
         'pyarrow',
-        'dateparser'
+        'python-dateutil',
     ],
     test_suite="cubedpandas.tests",
     packages=['cubedpandas'],
