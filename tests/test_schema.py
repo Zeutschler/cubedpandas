@@ -1,5 +1,5 @@
-import sys
-sys.path.append('../')
+from importmonkey import add_path  # In test.py
+add_path("../cubedpandas")
 
 import pandas as pd
 from unittest import TestCase
