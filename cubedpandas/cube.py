@@ -1,7 +1,4 @@
-# cube.py
-# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
-# ©2024 by Thomas Zeutschler. All rights reserved.
-# MIT License - please see the LICENSE file that should have been included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 
 import sys
 from types import ModuleType, FunctionType
@@ -328,7 +325,7 @@ class Cube:
             case CubeAggregationFunctionType.VAR:
                 value = np.nanvar(values)
             case CubeAggregationFunctionType.POF:
-                value = np.nansum(values) / self.df[measure].sum()
+                value = np.nansum(values) / self.df[str(measure)].sum()
             case CubeAggregationFunctionType.NAN:
                 value = np.count_nonzero(np.isnan(values))
             case CubeAggregationFunctionType.AN:
@@ -456,7 +453,7 @@ class Cube:
                                 if "*" in member or "?" in member:
                                     members = self._dimensions[dimension]._resolve_wildcard_members(member)
                                     if len(members) > 0:
-                                        row_mask = self._dimensions[dimension]._resolve(member, row_mask)
+                                        row_mask = self._dimensions[dimension]._resolve(members, row_mask)
                                         resolved = True
                                 else:
                                     row_mask = self._dimensions[dimension]._resolve(member, row_mask)

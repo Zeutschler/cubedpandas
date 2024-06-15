@@ -1,7 +1,4 @@
-# dimension.py
-# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
-# ©2024 by Thomas Zeutschler. All rights reserved.
-# MIT License - please see the LICENSE file that should have been included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 
 import sys
 from fnmatch import fnmatch
@@ -148,7 +145,8 @@ class Dimension(Iterable, ABC):
             if mask is None:
                 mask = self._resolve_member(m, row_mask)
             else:
-                mask = np.union1d(mask, self._resolve_member(m, row_mask))
+                new_mask = self._resolve_member(m, row_mask)
+                mask = np.union1d(mask, new_mask)
             if not len(mask):
                 break
 

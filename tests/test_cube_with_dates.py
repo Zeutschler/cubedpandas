@@ -1,3 +1,5 @@
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+
 import pandas as pd
 from unittest import TestCase
 from cubedpandas.cube import Cube
