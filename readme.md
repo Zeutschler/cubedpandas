@@ -11,7 +11,7 @@
 
 -----------------
 
-***Note:*** CubedPandas is at an early stage of its development, 
+***Note:*** CubedPandas is at an early stage of its development, and feature might be subject to change. 
 [Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
 [Feedback](https://github.com/Zeutschler/cubedpandas/discussions) welcome!*
 
