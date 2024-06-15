@@ -10,7 +10,7 @@ from cubedpandas.slice import Slice
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction
 from cubedpandas.pandas_extension import cubed, CubedPandasAccessor, EAGER_CACHING_THRESHOLD
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 __all__ = [
     "Schema",
