@@ -25,7 +25,7 @@ for reporting, business intelligence, data warehousing and financial analysis pu
 ***Just give it a try, check out the sample code below or file [01_basic_usage.py](https://github.com/Zeutschler/cubedpandas/blob/master/samples/01_basic_usage.py)***. 
    
 
-CubedPandas is licensed under the [MIT License](LICENSE) and is available on 
+CubedPandas is licensed under the [BSD 3-Clause License](LICENSE) and is available on 
 [GitHub](https://github.com/Zeutschler/cubedpandas) and [PyPi](https://pypi.org/project/cubedpandas/).
 
 If you have fallen in love with CubedPandas or find it otherwise valuable, please **consider to become 

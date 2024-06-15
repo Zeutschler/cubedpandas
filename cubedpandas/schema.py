@@ -1,7 +1,4 @@
-# schema.py
-# CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
-# ©2024 by Thomas Zeutschler. All rights reserved.
-# MIT License - please see the LICENSE file that should have been included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 
 import json
 from typing import Self, Any

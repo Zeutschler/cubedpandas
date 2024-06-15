@@ -21,7 +21,7 @@ CubedPandas is inspired by OLAP cubes (online analytical processing), which are 
 for reporting, business intelligence, data warehousing and financial analysis purposes. 
 Just give it a try...   
 
-CubedPandas is licensed under the [MIT License](LICENSE) and is available on 
+CubedPandas is licensed under the [BSD 3-Clause License](LICENSE) and is available on 
 [GitHub](https://github.com/Zeutschler/cubedpandas) and [PyPi](https://pypi.org/project/cubedpandas/).
 
 If you faven fallen in love with CubedPandas or find it otherwise valuable, please **consider to become CubedPandas sponsor**

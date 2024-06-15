@@ -1,4 +1,5 @@
-# 01_basic_usage.py:
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+
 import pandas as pd
 from cubedpandas import cubed
 

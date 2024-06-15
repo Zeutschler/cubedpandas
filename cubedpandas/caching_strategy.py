@@ -1,3 +1,5 @@
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+
 from enum import IntEnum
 
 EAGER_CACHING_THRESHOLD: int = 256  # upper dimension cardinality limit (# of members in dimension) for EAGER caching
