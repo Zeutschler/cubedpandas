@@ -1,8 +1,7 @@
 import pandas as pd
 from unittest import TestCase
-from cubedpandas import Cube, Schema
-
-
+from cubedpandas.cube import Cube
+from cubedpandas.schema import Schema
 
 class TestSchema(TestCase):
     def setUp(self) -> None:
