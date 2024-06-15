@@ -1,6 +1,6 @@
 import pandas as pd
 from unittest import TestCase
-from cubedpandas import Cube
+from cubedpandas.cube import Cube
 from datetime import datetime
 
 class TestCubeWithDates(TestCase):
@@ -52,7 +52,7 @@ class TestCubeWithDates(TestCase):
         value2 = cube["B", "Retail"]
         self.assertEqual(value2, 250)
 
-        # arithmetic operation on slices
+        # arithmetic operation on cells
         total = value1 + value2
         self.assertEqual(total, 350)
 

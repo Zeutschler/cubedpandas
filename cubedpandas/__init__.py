@@ -5,10 +5,12 @@ from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.caching_strategy import CachingStrategy
 from cubedpandas.cube import Cube
+from cubedpandas.cell import Cell
+from cubedpandas.slice import Slice
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction
 from cubedpandas.pandas_extension import cubed, CubedPandasAccessor, EAGER_CACHING_THRESHOLD
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 __all__ = [
     "Schema",
@@ -19,6 +21,8 @@ __all__ = [
     "CachingStrategy",
     "EAGER_CACHING_THRESHOLD",
     "Cube",
+    "Cell",
+    "Slice",
     "CubeAggregationFunctionType",
     "CubeAggregationFunction",
     "cubed",

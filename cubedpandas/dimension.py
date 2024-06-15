@@ -4,6 +4,7 @@
 # MIT License - please see the LICENSE file that should have been included in this package.
 
 import sys
+from fnmatch import fnmatch
 from abc import ABC
 from typing import Iterable, Self
 import datetime
@@ -114,6 +115,17 @@ class Dimension(Iterable, ABC):
 
     def __repr__(self):
         return self._column
+
+    def _resolve_wildcard_members(self, members) -> list:
+        if members == "*":
+            return self.members
+        else:
+            if not isinstance(members, list | tuple):
+                members = (members, )
+            l1 = self.members
+            l2 = set(members)
+            matched_members = [x for x in l1 if any(fnmatch(x, p) for p in l2)]
+            return matched_members
 
     def _resolve(self, member, row_mask=None) -> np.array:
         if isinstance(member, list):

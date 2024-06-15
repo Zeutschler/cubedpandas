@@ -3,7 +3,7 @@ from unittest import TestCase
 from cubedpandas import Cube
 
 
-class TestSlice(TestCase):
+class TestCell(TestCase):
     def setUp(self) -> None:
         data = {
             "product": ["A", "B", "C", "A", "B", "C"],
@@ -21,48 +21,48 @@ class TestSlice(TestCase):
             ]
         }
 
-    def test_slice(self):
+    def test_cell(self):
 
         cube = Cube(self.df, schema=self.schema)
 
-        some_slice = cube.slice("product:A")
-        self.assertEqual(some_slice.value, 100 + 200)
+        some_cell = cube.cell("product:A")
+        self.assertEqual(some_cell.value, 100 + 200)
 
-        float_value = some_slice + 100 - 100
+        float_value = some_cell + 100 - 100
         self.assertEqual(float_value, 100 + 200)
 
-        # a slice from a slice
-        derived_slice = some_slice.slice("channel:Online")
-        self.assertEqual(derived_slice.value, 100)
+        # a cell from a cell
+        derived_cell = some_cell.cell("channel:Online")
+        self.assertEqual(derived_cell.value, 100)
 
-        # direct access to 'a slice from a slice'
-        self.assertEqual(some_slice["channel:Online"], 100)
+        # direct access to 'a cell from a cell'
+        self.assertEqual(some_cell["channel:Online"], 100)
 
 
-    def test__derived_slice(self):
+    def test__derived_cell(self):
         cube = Cube(self.df, schema=self.schema)
 
-        slice = cube.slice("product:A")
-        derived_slice = slice.slice("channel:Online")
-        self.assertEqual(derived_slice.value, 100)
+        cell = cube.cell("product:A")
+        derived_cell = cell.cell("channel:Online")
+        self.assertEqual(derived_cell.value, 100)
 
-    def test_slice_properties(self):
+    def test_cell_properties(self):
 
         cube = Cube(self.df, schema=self.schema)
 
-        some_slice = cube.slice("product:A")
-        self.assertEqual(some_slice, 100 + 200)
-        self.assertEqual(some_slice.value, 100 + 200)
+        some_cell = cube.cell("product:A")
+        self.assertEqual(some_cell, 100 + 200)
+        self.assertEqual(some_cell.value, 100 + 200)
 
-        self.assertEqual(some_slice.measure, "sales")
-        self.assertEqual(some_slice.address, "product:A")
-        self.assertEqual(some_slice.cube, cube)
+        self.assertEqual(some_cell.measure, "sales")
+        self.assertEqual(some_cell.address, "product:A")
+        self.assertEqual(some_cell.cube, cube)
 
 
-    def test_slice_primary_aggregations(self):
+    def test_cell_primary_aggregations(self):
         cube = Cube(self.df, schema=self.schema)
 
-        a = cube.slice("product:A")  # 100 + 200 = 300
+        a = cube.cell("product:A")  # 100 + 200 = 300
         self.assertEqual(a, 300)
         self.assertEqual(a.sum, 300)
         self.assertEqual(a.min, 100)
@@ -77,10 +77,10 @@ class TestSlice(TestCase):
         self.assertEqual(a.zero, 0)
         self.assertEqual(a.nzero, 2)
 
-    def test_slice_secondary_aggregations(self):
+    def test_cell_secondary_aggregations(self):
         cube = Cube(self.df, schema=self.schema)
 
-        a = cube.slice("product:A")  # 100 + 200 = 300
+        a = cube.cell("product:A")  # 100 + 200 = 300
 
         self.assertEqual(a, 300)
         self.assertEqual(a["Online"], 100)  # (A, online) = 100
@@ -99,11 +99,11 @@ class TestSlice(TestCase):
         self.assertEqual(a.nzero["Online"], 1)
 
 
-    def test_slice_primary_arithmetic(self):
+    def test_cell_primary_arithmetic(self):
         cube = Cube(self.df, schema=self.schema)
 
-        a = cube.slice("product:A")  # 100 + 200 = 300
-        b = cube.slice("product:B")  # 150 + 250 = 400
+        a = cube.cell("product:A")  # 100 + 200 = 300
+        b = cube.cell("product:B")  # 150 + 250 = 400
         self.assertEqual(a, 300)
         self.assertEqual(b, 400)
 
@@ -169,11 +169,11 @@ class TestSlice(TestCase):
         self.assertEqual(c, 300 ** 2)
 
 
-    def test_slice_secondary_arithmetic(self):
+    def test_cell_secondary_arithmetic(self):
         cube = Cube(self.df, schema=self.schema)
 
-        a = cube.slice("product:A")  # 100 + 200 = 300
-        b = cube.slice("product:B")  # 150 + 250 = 400
+        a = cube.cell("product:A")  # 100 + 200 = 300
+        b = cube.cell("product:B")  # 150 + 250 = 400
         self.assertEqual(a, 300)
         self.assertEqual(b, 400)
 

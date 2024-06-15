@@ -18,6 +18,7 @@ from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.measure import Measure
 from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.cell import Cell
 from cubedpandas.slice import Slice
 
 
@@ -149,23 +150,30 @@ class Cube:
     # endregion
 
     # region Data Access Methods
-    def __getitem__(self, address) -> Slice:
-        return Slice(self, address)
+    def __getattr__(self, name) -> Cell:
+        # dynamic member or measure access
+        # print(f"cube.__getattr__({name})")
+        #if name in self._measures: # resolve measure first
+        #    return Cell(self, address="*", measure=name, dynamic_access=True)
+        return Cell(self, address=name, dynamic_access=True)
+
+    def __getitem__(self, address) -> Cell:
+        return Cell(self, address)
 
     def __setitem__(self, address, value):
-        dest_slice:Slice = Slice(self, address)
+        dest_slice:Cell = Cell(self, address)
         dest_slice.value = value
         # raise NotImplementedError("Not implemented yet")
 
     def __delitem__(self, address):
-        dest_slice: Slice = Slice(self, address)
+        dest_slice: Cell = Cell(self, address)
         self._delete(dest_slice._row_mask)
 
-    def slice(self, address) -> Slice:
+    def cell(self, address) -> Cell:
         """
-        Returns a slice of the cube for a given address.
+        Returns a cell of the cube for a given address.
 
-        A slice represents a multi-dimensional data cell or data area in a cube. Slice objects can
+        A cell represents a multi-dimensional data cell or data area in a cube. Cell objects can
         be used to navigate through and interact with the data space of a cube and the underlying dataframe.
         Slices behave like float values and can be directly used in mathematical calculations that read from
         or write to a cube.
@@ -179,13 +187,26 @@ class Cube:
             cube = cpd.Cube(df)
 
             # get a value from the cube and add 19% VAT
-            net_value = cube.slice("2024", "Aug", "Germany", "NetSales")
+            net_value = cube.cell("2024", "Aug", "Germany", "NetSales")
             gross_sales_usa = net_value * 1.19
 
             # create new data or overwrite data for 2025 by copying all 2024 prices and adding 5% inflation
-            cube.slice("2025", "Price") = cube.slice("2024", "Price") * 1.05
+            cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
         """
-        return Slice(self, address)
+        return Cell(self, address)
+
+    def slice(self, rows=None, columns=None, filters=None) -> Slice:
+        """
+        Returns a slice of the cube. A slice represents a view on a cube, and allows for easy
+        access to the underlying Pandas dataframe. Typically, a slice has rows, columns and filter,
+        just like in an Excel PivotTable. Slices are easy to define and use for convenient data analysis.
+
+        Sample usage:
+
+        .. code:: python
+            pass
+        """
+        raise NotImplementedError("Not implemented yet. Sorry...")
 
     @property
     def sum(self):
@@ -284,8 +305,10 @@ class Cube:
         # Get values to aggregate using Numpy (slightly faster than using Pandas)
         # Note: The next statement does not generate some copy of the data, but returns a reference
         #       to internal Numpy ndarray of the Pandas dataframe. So, its memory efficient and fast.
-        value_series = self._df[measure.column].to_numpy()
-        values: np.ndarray = value_series[row_mask]
+        values = self._df[measure.column].to_numpy()
+        if len(row_mask) == 0:
+            return 0
+        values: np.ndarray = values[row_mask]
 
         match operation:
             case CubeAggregationFunctionType.SUM:
@@ -360,101 +383,104 @@ class Cube:
         # not yet required:  self._df.reset_index(drop=True, inplace=True)
         pass
 
-    def _resolve_address(self, address, row_mask: np.ndarray | None = None, measure: Measure | str |None = None) -> (np.ndarray, Any):
+    def _resolve_address(self, address, row_mask: np.ndarray | None = None,
+                         measure: Measure | str |None = None, dynamic_access:bool = False) -> (np.ndarray, Any):
         """Resolves an address to a row mask and a measure.
         :param address: The address to be resolved.
+        :param measure: The measure to be used for the aggregation.
         :param row_mask: A row mask to be used for subsequent address resolution.
+        :param dynamic_access: If True, the address is resolved for a dynamic call, e.g. cube.Online.Apple.cost
         :return: The row mask and the measure to be used for the aggregation.
         """
         # 1. Process all arguments of the address
         unresolved_parts = []   # parts of the address that could not be resolved from dimensions or measures
 
-        # special case: return all values of the cube
-        if address == "*":
+        if address == "*":  # special case "*" return all values of the cube or current context
             if measure is None:  # Use the first measure as default if no measure is specified.
                 measure = self._measures[0]
-            row_mask = self._df.index.to_numpy()
+            if row_mask is None:
+                row_mask = self._df.index.to_numpy()
             return row_mask, measure
 
         if not self._islist(address):
             address = [address,]
-        for index, part in enumerate(address):
+        for index, arg in enumerate(address):
 
             # Parse and evaluate the argument
-            if isinstance(part, dict):
+            if isinstance(arg, dict):
                 # Something like {"product": "A"} or {"product": ["A", "B", "C"]} is expected...
-                if len(part) != 1:
-                    raise ValueError(f"Error in address argument {index}. Only 1 dimension is allowed in a dictionary "
-                                     f"address argument, but {len(part)} where found. "
-                                     f"Valid sample: {{'product': ['A', 'B', 'C']}}")
-                dimension = list(part.keys())[0]
-                members = part[dimension]
-                if dimension in self._dimensions:
-                    row_mask = self._dimensions[dimension]._resolve(members, row_mask)
-                else:
-                    raise ValueError(f"Error in address argument {index}. "
-                                     f"Dimension '{dimension}' not found in cube schema.")
+                for dimension, member in arg.items():
+                    if dimension in self._dimensions:
+                        row_mask = self._dimensions[dimension]._resolve(member, row_mask)
+                    else:
+                        raise ValueError(f"Error in address argument {arg}. "
+                                         f"Dimension '{dimension}' is not defined in cube schema.")
 
-
-            elif self._islist(part): # a tuple of members from 1 measure ("A", "B", "C")
+            elif self._islist(arg):
                 # A list of members from a single measure is expected, e.g. ("A", "B", "C")
 
                 # Note: an empty tuple is allowed and means all members of whatever measure,
                 # e.g. cube[()] returns the sum of all values in the cube. As this operation has no
                 # effect on the row_mask, it is not necessary to process it.
-                if len(part) > 0:
+                if len(arg) > 0:
                     dimension = None
                     resolved = False
                     for dimension in self._dimensions:
-                        resolved = dimension.contains(part)
+                        resolved = dimension.contains(arg)
                         if resolved:
                             dimension = dimension
                             break
                     if not resolved:
                         raise ValueError(f"Error in address argument {index}. "
-                                         f"Members '{part}' are not from the same dimension "
+                                         f"Members '{arg}' are not from the same dimension "
                                          f"or not found in any dimension.")
-                    row_mask = dimension._resolve(part, row_mask)
+                    row_mask = dimension._resolve(arg, row_mask)
 
             else: # a single value from a single measure, e.g. "A" or 42 or a measure name
                 resolved = False
 
-                if isinstance(part, str):
+                if isinstance(arg, str):
                     # Check for measure names first
-                    if part in self._measures:
-                        if measure:
+                    if arg in self._measures:
+                        if measure and ( not dynamic_access):
                             raise ValueError("Multiple measures found in address, but only one measure is allowed.")
-                        measure = self._measures[part]
+                        measure = self._measures[arg]
                         resolved = True
                     else:
                         # Check if the part contains a measure and a member, e.g. "product:A".
-                        if ":" in part:
-                            parts = part.split(":")
+                        if ":" in arg:
+                            parts = arg.split(":")
                             dimension = parts[0].strip()
                             member = parts[1].strip()
                             if dimension in self._dimensions:
-                                row_mask = self._dimensions[dimension]._resolve(member, row_mask)
-                                resolved = True
+                                if "*" in member or "?" in member:
+                                    members = self._dimensions[dimension]._resolve_wildcard_members(member)
+                                    if len(members) > 0:
+                                        row_mask = self._dimensions[dimension]._resolve(member, row_mask)
+                                        resolved = True
+                                else:
+                                    row_mask = self._dimensions[dimension]._resolve(member, row_mask)
+                                    resolved = True
 
                         if not resolved:
                             # No measure specified, try to resolve the member in all dimensions.
                             # This can be a very exhaustive operation, but it is necessary to support
                             # addresses like ("A", "B", "C") where the members are from different dimensions
-                            for dimension in self._dimensions:
-                                resolved = dimension.contains(part)
+                            for dimension in self._dimensions._dims.values():
+                                resolved = dimension.contains(arg)
                                 if resolved:
-                                    row_mask = self._dimensions[dimension]._resolve(part, row_mask)
+                                    row_mask = self._dimensions[dimension]._resolve(arg, row_mask)
                                     break
                     if not resolved:
-                        unresolved_parts.append(part)
+                        unresolved_parts.append(arg)
 
-                elif isinstance(part, (datetime, np.datetime64)):
+                elif isinstance(arg, (datetime, np.datetime64)):
                     for dimension in self._dimensions:
                         if is_datetime(dimension.dtype):
-                            row_mask = self._dimensions[dimension]._resolve(part, row_mask)
+                            row_mask = self._dimensions[dimension]._resolve(arg, row_mask)
                             resolved = True
                     if not resolved:
-                        unresolved_parts.append(part)
+                        unresolved_parts.append(arg)
 
         if len(unresolved_parts) > 1:
             raise ValueError(f"Multiple unresolved member arguments found in address: {unresolved_parts}")
@@ -464,9 +490,10 @@ class Cube:
 
         return row_mask, measure
 
-    def _resolve_address_modifier(self, address, row_mask: np.ndarray | None = None, measure: Measure | str |None = None):
+    def _resolve_address_modifier(self, address, row_mask: np.ndarray | None = None,
+                                  measure: Measure | str |None = None, dynamic_access:bool = False):
         """Modifies an address for a given operation."""
-        row_mask, measure = self._resolve_address(address, row_mask)
+        row_mask, measure = self._resolve_address(address, row_mask, measure, dynamic_access)
         return row_mask, measure
 
 
