@@ -2,9 +2,9 @@ numpy
 pandas
 pyarrow >= 14.0.1
 python-dateutil
-importmonkey
 
 # for deployment
 wheel
 twine
 setuptools
+pytest
