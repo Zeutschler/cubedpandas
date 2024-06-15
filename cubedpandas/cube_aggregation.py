@@ -43,7 +43,7 @@ class CubeAggregationFunctionType(IntEnum):
 class CubeAggregationFunction(SupportsFloat):
     """
     Represents aggregation functions, like SUM, MIN, MAX, VAG etc.,
-    which are provided through the 'Cube' and 'Slice' object, e.g. by cube.avg["Apple", "Online"].
+    which are provided through the 'Cube' and 'Cell' object, e.g. by cube.avg["Apple", "Online"].
     """
     def __new__(cls, *args, **kwargs):
         return SupportsFloat.__new__(cls)

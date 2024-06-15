@@ -1,4 +1,4 @@
-# slice.py
+# cell.py
 # CubedPandas - Multi-dimensional data analysis for Pandas dataframes.
 # ©2024 by Thomas Zeutschler. All rights reserved.
 # MIT License - please see the LICENSE file that should have been included in this package.
@@ -14,11 +14,11 @@ if TYPE_CHECKING:
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, CubeAllocationFunctionType
 
 
-class Slice(SupportsFloat):
+class Cell(SupportsFloat):
     """
-    A slice represents a multi-dimensional data cell or range from within a cube. Slice objects can
+    A cell represents a multi-dimensional data cell or range from within a cube. Cell objects can
     be used to navigate through and interact with the data space of a cube and the underlying dataframe.
-    Slices behave like float values and can be directly used in mathematical calculations that read from
+    Cells behave like float values and can be directly used in mathematical calculations that read from
     or write to a cube.
 
     Sample usage:
@@ -30,11 +30,11 @@ class Slice(SupportsFloat):
         cube = cpd.Cube(df)
 
         # get a value from the cube and add 19% VAT
-        net_value = cube.slice("2024", "Aug", "Germany", "NetSales")
+        net_value = cube.cell("2024", "Aug", "Germany", "NetSales")
         gross_sales_usa = net_value * 1.19
 
         # create new data or overwrite data for 2025 by copying all 2024 prices and adding 5% inflation
-        cube.slice("2025", "Price") = cube.slice("2024", "Price") * 1.05
+        cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
     """
 
     __slots__ = "_cube", "_address", "_row_mask", "_measure", "_state"
@@ -57,7 +57,7 @@ class Slice(SupportsFloat):
     # region Properties
     @property
     def value(self):
-        """Returns the sum value of the current slice from the underlying cube."""
+        """Returns the sum value of the current cell from the underlying cube."""
         agg_function = CubeAggregationFunctionType.SUM
         if self._row_mask is None:
             return self._cube[self._address]
@@ -66,7 +66,7 @@ class Slice(SupportsFloat):
 
     @value.setter
     def value(self, value):
-        """Writes a value of the current slice to the underlying cube."""
+        """Writes a value of the current cell to the underlying cube."""
         allocation_function = CubeAllocationFunctionType.DISTRIBUTE
         if self._row_mask is None:
             self._cube[self._address] = value
@@ -76,7 +76,7 @@ class Slice(SupportsFloat):
 
     @property
     def numeric_value(self) -> float:
-        """Reads the numeric value of the current cell idx_address from the underlying cube."""
+        """Returns the numeric value of the current cell from the underlying cube."""
         if self._row_mask is None:
             value = self._cube[self._address]
         else:
@@ -88,17 +88,17 @@ class Slice(SupportsFloat):
 
     @property
     def cube(self):
-        """Returns the cube the slice belongs to."""
+        """Returns the cube the cell belongs to."""
         return self._cube
 
     @property
     def address(self):
-        """Returns the address of the slice."""
+        """Returns the address of the cell."""
         return self._address
 
     @property
     def measure(self):
-        """Returns the measure of the slice."""
+        """Returns the measure of the cell."""
         return self._measure
 
 
@@ -123,8 +123,8 @@ class Slice(SupportsFloat):
         pass
 
 
-    def slice(self, address):
-        return Slice(self._cube, address, self._row_mask, self._measure)
+    def cell(self, address):
+        return Cell(self._cube, address, self._row_mask, self._measure)
     # endregion
 
     # region - Dynamic attribute resolving

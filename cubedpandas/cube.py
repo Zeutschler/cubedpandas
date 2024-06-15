@@ -18,7 +18,7 @@ from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.measure import Measure
 from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
-from cubedpandas.slice import Slice
+from cubedpandas.cell import Cell
 
 
 class Cube:
@@ -149,23 +149,23 @@ class Cube:
     # endregion
 
     # region Data Access Methods
-    def __getitem__(self, address) -> Slice:
-        return Slice(self, address)
+    def __getitem__(self, address) -> Cell:
+        return Cell(self, address)
 
     def __setitem__(self, address, value):
-        dest_slice:Slice = Slice(self, address)
+        dest_slice:Cell = Cell(self, address)
         dest_slice.value = value
         # raise NotImplementedError("Not implemented yet")
 
     def __delitem__(self, address):
-        dest_slice: Slice = Slice(self, address)
+        dest_slice: Cell = Cell(self, address)
         self._delete(dest_slice._row_mask)
 
-    def slice(self, address) -> Slice:
+    def cell(self, address) -> Cell:
         """
-        Returns a slice of the cube for a given address.
+        Returns a cell of the cube for a given address.
 
-        A slice represents a multi-dimensional data cell or data area in a cube. Slice objects can
+        A cell represents a multi-dimensional data cell or data area in a cube. Cell objects can
         be used to navigate through and interact with the data space of a cube and the underlying dataframe.
         Slices behave like float values and can be directly used in mathematical calculations that read from
         or write to a cube.
@@ -179,13 +179,13 @@ class Cube:
             cube = cpd.Cube(df)
 
             # get a value from the cube and add 19% VAT
-            net_value = cube.slice("2024", "Aug", "Germany", "NetSales")
+            net_value = cube.cell("2024", "Aug", "Germany", "NetSales")
             gross_sales_usa = net_value * 1.19
 
             # create new data or overwrite data for 2025 by copying all 2024 prices and adding 5% inflation
-            cube.slice("2025", "Price") = cube.slice("2024", "Price") * 1.05
+            cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
         """
-        return Slice(self, address)
+        return Cell(self, address)
 
     @property
     def sum(self):
