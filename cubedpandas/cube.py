@@ -404,83 +404,83 @@ class Cube:
 
         if not self._islist(address):
             address = [address,]
-        for index, part in enumerate(address):
+        for index, arg in enumerate(address):
 
             # Parse and evaluate the argument
-            if isinstance(part, dict):
+            if isinstance(arg, dict):
                 # Something like {"product": "A"} or {"product": ["A", "B", "C"]} is expected...
-                if len(part) != 1:
-                    raise ValueError(f"Error in address argument {index}. Only 1 dimension is allowed in a dictionary "
-                                     f"address argument, but {len(part)} where found. "
-                                     f"Valid sample: {{'product': ['A', 'B', 'C']}}")
-                dimension = list(part.keys())[0]
-                members = part[dimension]
-                if dimension in self._dimensions:
-                    row_mask = self._dimensions[dimension]._resolve(members, row_mask)
-                else:
-                    raise ValueError(f"Error in address argument {index}. "
-                                     f"Dimension '{dimension}' not found in cube schema.")
+                for dimension, member in arg.items():
+                    if dimension in self._dimensions:
+                        row_mask = self._dimensions[dimension]._resolve(member, row_mask)
+                    else:
+                        raise ValueError(f"Error in address argument {arg}. "
+                                         f"Dimension '{dimension}' is not defined in cube schema.")
 
-
-            elif self._islist(part): # a tuple of members from 1 measure ("A", "B", "C")
+            elif self._islist(arg):
                 # A list of members from a single measure is expected, e.g. ("A", "B", "C")
 
                 # Note: an empty tuple is allowed and means all members of whatever measure,
                 # e.g. cube[()] returns the sum of all values in the cube. As this operation has no
                 # effect on the row_mask, it is not necessary to process it.
-                if len(part) > 0:
+                if len(arg) > 0:
                     dimension = None
                     resolved = False
                     for dimension in self._dimensions:
-                        resolved = dimension.contains(part)
+                        resolved = dimension.contains(arg)
                         if resolved:
                             dimension = dimension
                             break
                     if not resolved:
                         raise ValueError(f"Error in address argument {index}. "
-                                         f"Members '{part}' are not from the same dimension "
+                                         f"Members '{arg}' are not from the same dimension "
                                          f"or not found in any dimension.")
-                    row_mask = dimension._resolve(part, row_mask)
+                    row_mask = dimension._resolve(arg, row_mask)
 
             else: # a single value from a single measure, e.g. "A" or 42 or a measure name
                 resolved = False
 
-                if isinstance(part, str):
+                if isinstance(arg, str):
                     # Check for measure names first
-                    if part in self._measures:
+                    if arg in self._measures:
                         if measure and ( not dynamic_access):
                             raise ValueError("Multiple measures found in address, but only one measure is allowed.")
-                        measure = self._measures[part]
+                        measure = self._measures[arg]
                         resolved = True
                     else:
                         # Check if the part contains a measure and a member, e.g. "product:A".
-                        if ":" in part:
-                            parts = part.split(":")
+                        if ":" in arg:
+                            parts = arg.split(":")
                             dimension = parts[0].strip()
                             member = parts[1].strip()
                             if dimension in self._dimensions:
-                                row_mask = self._dimensions[dimension]._resolve(member, row_mask)
-                                resolved = True
+                                if "*" in member or "?" in member:
+                                    members = self._dimensions[dimension]._resolve_wildcard_members(member)
+                                    if len(members) > 0:
+                                        row_mask = self._dimensions[dimension]._resolve(member, row_mask)
+                                        resolved = True
+                                else:
+                                    row_mask = self._dimensions[dimension]._resolve(member, row_mask)
+                                    resolved = True
 
                         if not resolved:
                             # No measure specified, try to resolve the member in all dimensions.
                             # This can be a very exhaustive operation, but it is necessary to support
                             # addresses like ("A", "B", "C") where the members are from different dimensions
                             for dimension in self._dimensions._dims.values():
-                                resolved = dimension.contains(part)
+                                resolved = dimension.contains(arg)
                                 if resolved:
-                                    row_mask = self._dimensions[dimension]._resolve(part, row_mask)
+                                    row_mask = self._dimensions[dimension]._resolve(arg, row_mask)
                                     break
                     if not resolved:
-                        unresolved_parts.append(part)
+                        unresolved_parts.append(arg)
 
-                elif isinstance(part, (datetime, np.datetime64)):
+                elif isinstance(arg, (datetime, np.datetime64)):
                     for dimension in self._dimensions:
                         if is_datetime(dimension.dtype):
-                            row_mask = self._dimensions[dimension]._resolve(part, row_mask)
+                            row_mask = self._dimensions[dimension]._resolve(arg, row_mask)
                             resolved = True
                     if not resolved:
-                        unresolved_parts.append(part)
+                        unresolved_parts.append(arg)
 
         if len(unresolved_parts) > 1:
             raise ValueError(f"Multiple unresolved member arguments found in address: {unresolved_parts}")

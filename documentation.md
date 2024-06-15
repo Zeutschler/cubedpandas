@@ -13,9 +13,10 @@
 ## 1. Introduction <a name="introduction"></a>
 
 CubedPandas provides an easy, intuitive, fast and fun approach to perform multi-dimensional 
-data analysis & processing on Pandas dataframes. CubedPandas wraps almost any
-dataframe into a multi-dimensional data cube, which can be aggregated, sliced, diced, filtered, 
+numerical data analysis & processing on Pandas dataframes. CubedPandas wraps almost any
+dataframe into a multi-dimensional cube, which can be aggregated, sliced, diced, filtered, 
 updated and much more. 
+
 CubedPandas is inspired by OLAP cubes (online analytical processing), which are typically used
 for reporting, business intelligence, data warehousing and financial analysis purposes. 
 Just give it a try...   
