@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../')
+
 import pandas as pd
 from unittest import TestCase
 from cubedpandas.cube import Cube
