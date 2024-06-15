@@ -1,6 +1,6 @@
 import pandas as pd
 from unittest import TestCase
-from cubedpandas.cube import Cube
+from cube import Cube
 
 
 class TestCell(TestCase):
