@@ -37,16 +37,18 @@ class Cell(SupportsFloat):
         cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
     """
 
-    __slots__ = "_cube", "_address", "_row_mask", "_measure", "_state"
+    __slots__ = "_cube", "_address", "_row_mask", "_measure", "_state", "_dynamic_call"
 
     # region Initialization
-    def __init__(self, cube:Cube, address, row_mask:np.ndarray | None = None, measure:str | None = None):
+    def __init__(self, cube:Cube, address, row_mask:np.ndarray | None = None, measure:str | None = None,
+                 dynamic_access:bool = False):
+        self._dynamic_call:bool = dynamic_access
         self._cube:Cube = cube
         self._address = address
         if row_mask is None and measure is None:
             row_mask, measure = cube._resolve_address(address)
         else:
-            row_mask, measure = self._cube._resolve_address_modifier(address, row_mask, measure)
+            row_mask, measure = self._cube._resolve_address_modifier(address, row_mask, measure, dynamic_access)
         self._row_mask: np.ndarray | None = row_mask
         self._measure = measure
 
@@ -72,7 +74,6 @@ class Cell(SupportsFloat):
             self._cube[self._address] = value
         else:
             self._cube._allocate(self._row_mask, self._measure, value, allocation_function)
-
 
     @property
     def numeric_value(self) -> float:
@@ -101,41 +102,30 @@ class Cell(SupportsFloat):
         """Returns the measure of the cell."""
         return self._measure
 
+    # region - Dynamic attribute resolving
+    def __getattr__(self, name) -> Cell:
+        # dynamic member / measure access e.g.: cube.Online.Apple.cost
+        return Cell(self._cube, address=name, row_mask=self._row_mask, measure=self._measure, dynamic_access=True)
+    # endregion
 
     # region Cell manipulation via indexing/slicing
     def __getitem__(self, address):
-        # row_mask, measure = self._cube._resolve_address_modifier(address, self._row_mask)
         row_mask, measure = self._cube._resolve_address(address, self._row_mask, self._measure)
         return self._cube._evaluate(row_mask, measure=measure)
 
     def __setitem__(self, address, value):
-        # row_mask, measure = self._cube._resolve_address_modifier(address, self._row_mask)
         row_mask, measure = self._cube._resolve_address(address, self._row_mask, self._measure)
         self._cube._write_back(row_mask, measure, value)
 
     def __delitem__(self, address):
-        # row_mask, measure = self._cube._resolve_address_modifier(address, self._row_mask)
         row_mask, measure = self._cube._resolve_address(address, self._row_mask, self._measure)
         self._cube._delete(row_mask, measure)
-
-    def __del__(self):
-        #self._cube._delete(self._row_mask, self._measure)
-        pass
 
 
     def cell(self, address):
         return Cell(self._cube, address, self._row_mask, self._measure)
     # endregion
 
-    # region - Dynamic attribute resolving
-    def __getattr__(self, name):
-        name = str(name).replace("_", " ")
-        return self.__getitem__(name)
-
-    # def __getattribute__(*args):
-    #     print("Class getattribute invoked")
-    #     return object.__getattribute__(*args)
-    # endregion
 
     # region operator overloading and float behaviour
     def __float__(self) -> float:  # type conversion to float

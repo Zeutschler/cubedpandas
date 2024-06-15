@@ -46,7 +46,6 @@ Please refer the [CubedPandas Documentation](documentation.md) for all features 
 ### B. Sample Usage
 
 ```python
-# 01_basic_usage.py:
 import pandas as pd
 from cubedpandas import cubed
 

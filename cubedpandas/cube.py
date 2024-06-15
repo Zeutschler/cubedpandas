@@ -19,6 +19,7 @@ from cubedpandas.measure import Measure
 from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 from cubedpandas.cell import Cell
+from cubedpandas.slice import Slice
 
 
 class Cube:
@@ -149,6 +150,13 @@ class Cube:
     # endregion
 
     # region Data Access Methods
+    def __getattr__(self, name) -> Cell:
+        # dynamic member or measure access
+        # print(f"cube.__getattr__({name})")
+        #if name in self._measures: # resolve measure first
+        #    return Cell(self, address="*", measure=name, dynamic_access=True)
+        return Cell(self, address=name, dynamic_access=True)
+
     def __getitem__(self, address) -> Cell:
         return Cell(self, address)
 
@@ -186,6 +194,19 @@ class Cube:
             cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
         """
         return Cell(self, address)
+
+    def slice(self, rows=None, columns=None, filters=None) -> Slice:
+        """
+        Returns a slice of the cube. A slice represents a view on a cube, and allows for easy
+        access to the underlying Pandas dataframe. Typically, a slice has rows, columns and filter,
+        just like in an Excel PivotTable. Slices are easy to define and use for convenient data analysis.
+
+        Sample usage:
+
+        .. code:: python
+            pass
+        """
+        raise NotImplementedError("Not implemented yet. Sorry...")
 
     @property
     def sum(self):
@@ -284,8 +305,10 @@ class Cube:
         # Get values to aggregate using Numpy (slightly faster than using Pandas)
         # Note: The next statement does not generate some copy of the data, but returns a reference
         #       to internal Numpy ndarray of the Pandas dataframe. So, its memory efficient and fast.
-        value_series = self._df[measure.column].to_numpy()
-        values: np.ndarray = value_series[row_mask]
+        values = self._df[measure.column].to_numpy()
+        if len(row_mask) == 0:
+            return 0
+        values: np.ndarray = values[row_mask]
 
         match operation:
             case CubeAggregationFunctionType.SUM:
@@ -360,20 +383,23 @@ class Cube:
         # not yet required:  self._df.reset_index(drop=True, inplace=True)
         pass
 
-    def _resolve_address(self, address, row_mask: np.ndarray | None = None, measure: Measure | str |None = None) -> (np.ndarray, Any):
+    def _resolve_address(self, address, row_mask: np.ndarray | None = None,
+                         measure: Measure | str |None = None, dynamic_access:bool = False) -> (np.ndarray, Any):
         """Resolves an address to a row mask and a measure.
         :param address: The address to be resolved.
+        :param measure: The measure to be used for the aggregation.
         :param row_mask: A row mask to be used for subsequent address resolution.
+        :param dynamic_access: If True, the address is resolved for a dynamic call, e.g. cube.Online.Apple.cost
         :return: The row mask and the measure to be used for the aggregation.
         """
         # 1. Process all arguments of the address
         unresolved_parts = []   # parts of the address that could not be resolved from dimensions or measures
 
-        # special case: return all values of the cube
-        if address == "*":
+        if address == "*":  # special case "*" return all values of the cube or current context
             if measure is None:  # Use the first measure as default if no measure is specified.
                 measure = self._measures[0]
-            row_mask = self._df.index.to_numpy()
+            if row_mask is None:
+                row_mask = self._df.index.to_numpy()
             return row_mask, measure
 
         if not self._islist(address):
@@ -422,7 +448,7 @@ class Cube:
                 if isinstance(part, str):
                     # Check for measure names first
                     if part in self._measures:
-                        if measure:
+                        if measure and ( not dynamic_access):
                             raise ValueError("Multiple measures found in address, but only one measure is allowed.")
                         measure = self._measures[part]
                         resolved = True
@@ -440,7 +466,7 @@ class Cube:
                             # No measure specified, try to resolve the member in all dimensions.
                             # This can be a very exhaustive operation, but it is necessary to support
                             # addresses like ("A", "B", "C") where the members are from different dimensions
-                            for dimension in self._dimensions:
+                            for dimension in self._dimensions._dims.values():
                                 resolved = dimension.contains(part)
                                 if resolved:
                                     row_mask = self._dimensions[dimension]._resolve(part, row_mask)
@@ -464,9 +490,10 @@ class Cube:
 
         return row_mask, measure
 
-    def _resolve_address_modifier(self, address, row_mask: np.ndarray | None = None, measure: Measure | str |None = None):
+    def _resolve_address_modifier(self, address, row_mask: np.ndarray | None = None,
+                                  measure: Measure | str |None = None, dynamic_access:bool = False):
         """Modifies an address for a given operation."""
-        row_mask, measure = self._resolve_address(address, row_mask)
+        row_mask, measure = self._resolve_address(address, row_mask, measure, dynamic_access)
         return row_mask, measure
 
 
