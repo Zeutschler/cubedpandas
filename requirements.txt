@@ -4,6 +4,7 @@ pyarrow >= 14.0.1
 python-dateutil
 
 # for deployment
+build
 wheel
 twine
 setuptools
