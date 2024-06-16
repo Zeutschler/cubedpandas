@@ -75,8 +75,8 @@ setup(
     test_suite="cubedpandas.tests",
     packages=['cubedpandas', 'tests'],
     project_urls={
-        'Homepage': 'https://github.com/Zeutschler/cubedpandas',
-        'Documentation': 'https://github.com/Zeutschler/cubedpandas',
+        'Homepage': 'https://zeutschler.github.io/cubedpandas/',
+        'Documentation': 'https://zeutschler.github.io/cubedpandas/',
         'GitHub': 'https://github.com/Zeutschler/cubedpandas',
     },
 )
