@@ -177,7 +177,8 @@ class Cube:
 
         Sample usage:
 
-        .. code:: python
+        . code:: python
+
             import cubedpandas as cpd
 
             df = get_your_dataframe()

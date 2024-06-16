@@ -1,0 +1,119 @@
+
+site_name: cubedpandas
+site_description: Multi-dimensional data analysis for Pandas dataframes.
+site_author: Thomas Zeutschler
+site_url: https://zeutschler.github.io/cubedpandas/
+
+copyright: Copyright &copy; 2024 Thomas Zeutschler
+
+repo_url: https://github.com/Zeutschler/cubedpandas
+repo_name: zeutschler/cubedpandas
+
+extra:
+  homepage: https://zeutschler.github.io/cubedpandas/
+  version:
+    provider: mike
+  analytics:
+    provider: google
+    property: G-P329GF2G3W
+  consent:
+    title: Cookie consent
+    description: >- 
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+    actions:
+      - accept
+      - manage
+      - reject
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/thomas-zeutschler/
+      name: Thomas on LinkedIn
+    - icon: fontawesome/brands/github
+      link: https://github.com/Zeutschler
+      name: Thomas on GitHub
+
+extra_css:
+  - stylesheets/extra.css
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.expand
+    - search.suggest
+
+  palette:
+    # primary: custom
+    # accent: custom
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+
+  favicon: assets/icons/favicon.ico
+  logo: assets/cube512.png
+  icon:
+    repo: fontawesome/brands/git-alt
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - toc:
+      permalink: true
+  - tables
+
+
+plugins:
+  - search
+  - privacy
+  - mkdocstrings:
+        enabled: !ENV [ENABLE_MKDOCSTRINGS, true]
+        default_handler: python
+        handlers:
+          python:
+            options:
+              docstring_style: google  # see https://mkdocstrings.github.io/griffe/docstrings/#google-style
+              show_source: false
+              show_bases: true
+  - mike:    # see https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
+  - exclude:
+      glob:
+        - "*.pptx"
+        - "readme.md"
+
+nav:
+  - Home:
+    - 'Welcome': 'index.md'
+    - 'FAQ': 'faq.md'
+    - 'Installation': 'installation.md'
+    - 'Basic Usage': 'basic-usage.md'
+    - 'Advanced Usage': 'advanced-usage.md'
+    - 'Best Practises': 'best-practises.md'
+    - 'Documentation':
+      - 'cubed method': 'method-cubed.md'
+      - 'Schema': 'class-schema.md'
+      - 'Cube': 'class-cube.md'
+      - 'Cell': 'class-cell.md'
+      - 'Slice': 'class-slice.md'
+      - 'Dimension': 'class-dimension.md'
+      - 'Measure': 'class-measure.md'
+      - 'Dataframe extension': 'class-pandas-ext.md'
+  - 'Blog':
+    - 'Why CubedPandas?': 'blog001_why_cpd.md'
+  - 'About':
+    - 'About me': 'thomas.md'
+    - 'License': 'license.md'
+    - 'Contributing': 'contributing.md'
+    - 'Release Notes': 'release-notes.md'

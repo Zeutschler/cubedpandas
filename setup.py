@@ -15,7 +15,7 @@ from cubedpandas import VERSION as CUBEDPANDAS_VERSION
 # https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
 
 VERSION = CUBEDPANDAS_VERSION
-DESCRIPTION = "CubedPandas: Multi-dimensional data analysis for Pandas dataframes."
+DESCRIPTION = "CubedPandas - Multi-dimensional data analysis for Pandas dataframes."
 LONG_DESCRIPTION = """
 CubedPandas provides an easy, intuitive, fast and fun approach to perform multi-dimensional 
 numerical data analysis & processing on Pandas dataframes. CubedPandas wraps almost any

@@ -9,3 +9,11 @@ wheel
 twine
 setuptools
 pytest
+
+# documentation related requirements
+mkdocs
+mkdocs-material
+mkdocs-exclude
+mkdocstrings
+mkdocstrings-python
+mike
