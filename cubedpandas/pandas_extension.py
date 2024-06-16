@@ -53,32 +53,3 @@ class CubedPandasAccessor:
                 will be written to the underlying dataframe.
         """
         return Cube(self._df, schema, infer_schema_if_not_provided, caching, caching_threshold, enable_write_back)
-
-
-def cubed(df: pd.DataFrame, schema=None,
-                 infer_schema_if_not_provided: bool = True,
-                 caching: CachingStrategy = CachingStrategy.LAZY,
-                 caching_threshold: int = EAGER_CACHING_THRESHOLD,
-                 enable_write_back: bool = False):
-        """
-        Initializes a new Cube wrapping and providing a Pandas dataframe as a multi-dimensional data cube.
-        The schema of the Cube can be either inferred automatically from the dataframe  (default) or defined explicitly.
-
-        Args:
-            df (Pandas.DataFrame): The Pandas dataframe to wrap into a Cube.
-
-            schema (dict | string): The schema of the Cube. If not provided, the schema will be inferred from the dataframe if
-                    parameter `infer_schema_if_not_provided` is set to `True`.
-
-            infer_schema_if_not_provided:  If True, the schema will be inferred from the dataframe if not provided.
-
-            caching: (optional) The caching strategy to be used for the Cube. Default and recommended value for almost all use
-                    cases is `CachingStrategy.LAZY`, which caches dimension members on first access.
-                    Please refer to the documentation of 'CachingStrategy' for more information.
-            caching_threshold: (optional) The threshold for EAGER caching. If the number of members in a dimension
-                    is below this threshold, the dimension will be cached eagerly.
-                    Default value is `EAGER_CACHING_THRESHOLD` := 256 members.
-            enable_write_back: (optional) If True, the Cube will become write-back enable and changes to the data
-                    will be written to the underlying dataframe. Default is False.
-        """
-        return Cube(df, schema, infer_schema_if_not_provided, caching, caching_threshold, enable_write_back)

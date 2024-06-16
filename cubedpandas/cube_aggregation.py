@@ -64,8 +64,8 @@ class CubeAggregationFunction(SupportsFloat):
     @property
     def value(self):
         """Reads the value of the current cell idx_address from the underlying cube."""
-        if self._row_mask is None:
-            return self._cube[None]
+        #if self._row_mask is None:
+        #    return self._cube[None]
         return self._cube._evaluate(self._row_mask, self._measure,  self._op)
 
     @value.setter

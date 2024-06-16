@@ -10,25 +10,26 @@ from cubedpandas.cube import Cube
 from cubedpandas.cell import Cell
 from cubedpandas.slice import Slice
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction
-from cubedpandas.pandas_extension import cubed, CubedPandasAccessor, EAGER_CACHING_THRESHOLD
+from cubedpandas.pandas_extension import CubedPandasAccessor, EAGER_CACHING_THRESHOLD
+from cubedpandas.common import cubed
 
 VERSION = "0.1.2"
 
 __all__ = [
-    "Schema",
-    "Dimension",
-    "Measure",
-    "DimensionCollection",
-    "MeasureCollection",
     "CachingStrategy",
+    "Cell",
+    "Dimension",
+    "DimensionCollection",
     "EAGER_CACHING_THRESHOLD",
     "Cube",
-    "Cell",
-    "Slice",
     "CubeAggregationFunctionType",
     "CubeAggregationFunction",
     "cubed",
     "CubedPandasAccessor",
+    "Measure",
+    "MeasureCollection",
+    "Schema",
+    "Slice",
     "VERSION"
 ]
 

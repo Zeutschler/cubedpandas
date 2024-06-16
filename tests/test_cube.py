@@ -3,6 +3,7 @@
 import pandas as pd
 from unittest import TestCase
 from cubedpandas.cube import Cube
+from cubedpandas.common import cubed
 
 
 class TestCube(TestCase):
@@ -22,6 +23,63 @@ class TestCube(TestCase):
                 {"column": "sales"}
             ]
         }
+
+    def test_measures_only_cube(self):
+        df = pd.DataFrame({"sales": [1, 2, 3]})
+        cdf = cubed(df)
+        self.assertEqual(cdf["sales"].avg, 2.0)
+        self.assertEqual(cdf["*"], 6)
+        self.assertEqual(cdf.sales, 6)
+        self.assertEqual(cdf["sales"], 6)
+        with self.assertRaises(ValueError):
+            a = cdf[1] # there is no dimension
+
+    def test_dims_and_schema_refer_same_column(self):
+        df = pd.DataFrame({"sales": [1, 2, 3]})
+
+        # create schema with single column used for both dimension and measure
+        schema = {"dimensions": [{"column": "sales"}], "measures": [{"column": "sales"}]}
+
+        cdf = cubed(df, schema)
+        self.assertEqual(cdf["sales"].avg, 2.0)
+        self.assertEqual(cdf["*"], 6)
+        self.assertEqual(cdf.sales, 6)
+        self.assertEqual(cdf["sales"], 6)
+
+        self.assertEqual(cdf[1], 1)
+        self.assertEqual(cdf[2], 2)
+        self.assertEqual(cdf[3], 3)
+
+        with self.assertRaises(ValueError):
+            a = cdf[4] # there is no member 4 in dimension sales
+
+    def test_dimension_only_cube(self):
+        df = pd.DataFrame({"customer": ["A", "B", "C"]})
+        cdf = cubed(df)
+        # special case:
+        # if no measures are defined, the cube will return the number of records
+        # matching the given filter
+        self.assertEqual(cdf["*"], 3)
+        self.assertEqual(cdf.A, 1)
+        self.assertEqual(cdf["B"], 1)
+
+
+    def test_cube_access_methods(self):
+        cdf = Cube(self.df, schema=self.schema)
+
+        self.assertEqual(cdf[{"product": "A"}], 100 + 200)
+        self.assertEqual(cdf["product:A"], 100 + 200)
+        self.assertEqual(cdf["A"], 100 + 200)
+        self.assertEqual(cdf.A, 100 + 200)
+
+        self.assertEqual(cdf[{"product": ("A", "B")}], 100 + 200 + 150 + 250)
+        self.assertEqual(cdf[("A", "B"),], 100 + 200 + 150 + 250)
+
+        with self.assertRaises(ValueError):
+            a = cdf["A", "B"]     # a dimension has been used multiple times
+        with self.assertRaises(ValueError):
+            a = cdf[("A", "B")]   # a dimension has been used multiple times
+
 
     def test_scalar_member_access(self):
         cube = Cube(self.df, schema=self.schema)

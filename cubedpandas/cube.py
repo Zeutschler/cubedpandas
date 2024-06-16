@@ -8,12 +8,18 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_datetime64_any_dtype as is_datetime
+from pandas.api.types import (is_numeric_dtype, is_string_dtype, is_bool_dtype,
+                              is_categorical_dtype, is_object_dtype, is_timedelta64_dtype,
+                              is_period_dtype, is_interval_dtype, is_complex_dtype,
+                              is_integer_dtype, is_float_dtype)
+
 
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, CubeAllocationFunctionType
 from cubedpandas.schema import Schema
 from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.measure import Measure
 from cubedpandas.dimension_collection import DimensionCollection
+from cubedpandas.dimension import Dimension
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 from cubedpandas.cell import Cell
 from cubedpandas.slice import Slice
@@ -155,15 +161,15 @@ class Cube:
         return Cell(self, address=name, dynamic_access=True)
 
     def __getitem__(self, address) -> Cell:
-        return Cell(self, address)
+        return Cell(self, address=address)
 
     def __setitem__(self, address, value):
-        dest_slice:Cell = Cell(self, address)
+        dest_slice:Cell = Cell(self, adress=address)
         dest_slice.value = value
         # raise NotImplementedError("Not implemented yet")
 
     def __delitem__(self, address):
-        dest_slice: Cell = Cell(self, address)
+        dest_slice: Cell = Cell(self, address=address)
         self._delete(dest_slice._row_mask)
 
     def cell(self, address) -> Cell:
@@ -191,7 +197,7 @@ class Cube:
             # create new data or overwrite data for 2025 by copying all 2024 prices and adding 5% inflation
             cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
         """
-        return Cell(self, address)
+        return Cell(self, address=address)
 
     def slice(self, rows=None, columns=None, filters=None) -> Slice:
         """
@@ -303,9 +309,17 @@ class Cube:
         # Get values to aggregate using Numpy (slightly faster than using Pandas)
         # Note: The next statement does not generate some copy of the data, but returns a reference
         #       to internal Numpy ndarray of the Pandas dataframe. So, its memory efficient and fast.
-        values = self._df[measure.column].to_numpy()
-        if len(row_mask) == 0:
-            return 0
+
+        if measure is None :
+            # special cases: if no measure is defined, always return the number of records.
+            return len(row_mask)
+        elif row_mask is None:
+            # special cases: if no row_mask is defined, then process all records.
+            values = self._df[measure.column].to_numpy()
+        else:
+            values = self._df[measure.column].to_numpy()
+            if len(row_mask) == 0:
+                return 0
         values: np.ndarray = values[row_mask]
 
         match operation:
@@ -392,10 +406,12 @@ class Cube:
         """
         # 1. Process all arguments of the address
         unresolved_parts = []   # parts of the address that could not be resolved from dimensions or measures
+        resolved_dims: set[Dimension] = set()  # dimensions that have been resolved
 
         if address == "*":  # special case "*" return all values of the cube or current context
             if measure is None:  # Use the first measure as default if no measure is specified.
-                measure = self._measures[0]
+                if len(self._measures) > 0:
+                    measure = self._measures[0]
             if row_mask is None:
                 row_mask = self._df.index.to_numpy()
             return row_mask, measure
@@ -408,14 +424,18 @@ class Cube:
             if isinstance(arg, dict):
                 # Something like {"product": "A"} or {"product": ["A", "B", "C"]} is expected...
                 for dimension, member in arg.items():
+                    # process only those dimensions that have not been resolved yet (to avoid conflicts)
                     if dimension in self._dimensions:
-                        row_mask = self._dimensions[dimension]._resolve(member, row_mask)
+                        dim = self._dimensions[dimension]
+                        row_mask = dim._resolve(member, row_mask)
+                        resolved_dims.add(dim)
                     else:
-                        raise ValueError(f"Error in address argument {arg}. "
-                                         f"Dimension '{dimension}' is not defined in cube schema.")
+                        raise ValueError(f"Failed to resolve address '{address}'. "
+                                         f"A dimension named '{dimension}' as defined in argument '{arg}'"
+                                         f" is not defined in cube schema.")
 
             elif self._islist(arg):
-                # A list of members from a single measure is expected, e.g. ("A", "B", "C")
+                # A list of members from a single dimension is expected, e.g. ("A", "B", "C")
 
                 # Note: an empty tuple is allowed and means all members of whatever measure,
                 # e.g. cube[()] returns the sum of all values in the cube. As this operation has no
@@ -423,15 +443,16 @@ class Cube:
                 if len(arg) > 0:
                     dimension = None
                     resolved = False
-                    for dimension in self._dimensions:
+                    for dimension in (self._dimensions.as_set - resolved_dims):
                         resolved = dimension.contains(arg)
                         if resolved:
+                            resolved_dims.add(dimension)
                             dimension = dimension
                             break
                     if not resolved:
-                        raise ValueError(f"Error in address argument {index}. "
-                                         f"Members '{arg}' are not from the same dimension "
-                                         f"or not found in any dimension.")
+                        raise ValueError(f"Failed to resolve address '{address}'. The members "
+                                         f"defined in argument '{arg}' are not from the same dimension "
+                                         f"or can not be found in any dimension.")
                     row_mask = dimension._resolve(arg, row_mask)
 
             else: # a single value from a single measure, e.g. "A" or 42 or a measure name
@@ -464,27 +485,67 @@ class Cube:
                             # No measure specified, try to resolve the member in all dimensions.
                             # This can be a very exhaustive operation, but it is necessary to support
                             # addresses like ("A", "B", "C") where the members are from different dimensions
-                            for dimension in self._dimensions._dims.values():
+                            for dimension in (self._dimensions.as_set - resolved_dims):
                                 resolved = dimension.contains(arg)
                                 if resolved:
                                     row_mask = self._dimensions[dimension]._resolve(arg, row_mask)
+                                    resolved_dims.add(dimension)
                                     break
                     if not resolved:
                         unresolved_parts.append(arg)
 
                 elif isinstance(arg, (datetime, np.datetime64)):
-                    for dimension in self._dimensions:
+                    for dimension in (self._dimensions.as_set - resolved_dims):
                         if is_datetime(dimension.dtype):
-                            row_mask = self._dimensions[dimension]._resolve(arg, row_mask)
+                            row_mask = dimension._resolve(arg, row_mask)
+                            resolved_dims.add(dimension)
                             resolved = True
+                            break
                     if not resolved:
                         unresolved_parts.append(arg)
+                else:
+                    # All other data types are considered as members of dimensions!
+                    # ...first with check common Python datatypes (int, bool, float) against
+                    #    dimensions with same/corresponding dtype.
+                    for dimension in (self._dimensions.as_set - resolved_dims):
+                        # ensure to check dimensions with a suitable data type
+                        if ((isinstance(arg, int) and is_integer_dtype(dimension.dtype)) or
+                                (isinstance(arg, bool) and is_bool_dtype(dimension.dtype)) or
+                                (isinstance(arg, float) and is_float_dtype(dimension.dtype))):
+                            row_mask = dimension._resolve(arg, row_mask)
+                            # Note: if the member could be found in multiple dimensions, the first one is used.
+                            #       this may lead to unexpected results, and can only be resolved by
+                            #       providing the dimension name in the address,
+                            #       e.g. {"dim_name": 1"}, {"dim_name": True"} etc.
+                            if len(row_mask) > 0:
+                                resolved_dims.add(dimension)
+                                resolved = True
+                                break
+                    if not resolved:
+                        # ...second we just use the first dimension that responds to the member
+                        for dimension in (self._dimensions.as_set - resolved_dims):
+                            row_mask = dimension._resolve(arg, row_mask)
+                            if len(row_mask) > 0:
+                                resolved = True
+                                break
 
-        if len(unresolved_parts) > 1:
-            raise ValueError(f"Multiple unresolved member arguments found in address: {unresolved_parts}")
+                if not resolved:
+                    unresolved_parts.append(arg)
+
+
+        if len(unresolved_parts) > 0:
+            if len(self._dimensions) == 0:
+                # special case: No dimensions defined in the cube schema
+                raise ValueError(f"Failed to resolve address '{address}'. "
+                                 f"No dimensions are available in the cube or schema.")
+            else:
+                raise ValueError(f"Failed to resolve address '{address}'. {len(unresolved_parts)}x unresolved "
+                                 f"member{'s' if len(unresolved_parts) > 1 else ''}: {unresolved_parts}. "
+                                 f"No dimension contains this member{'s' if len(unresolved_parts) > 1 else ''}.")
 
         if measure is None:  # Use the first measure as default if no measure is specified.
-            measure = self._measures[0]
+            if len(self._measures) > 0:
+                measure = self._measures[0]
 
         return row_mask, measure
 

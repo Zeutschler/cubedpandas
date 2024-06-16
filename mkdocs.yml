@@ -61,8 +61,8 @@ theme:
         icon: material/toggle-switch-off-outline
         name: Switch to light mode
 
-  favicon: pages/assets/icons/favicon.ico
-  logo: pages/assets/cube512.png
+  favicon: assets/icons/favicon.ico
+  logo: assets/cube512.png
   icon:
     repo: fontawesome/brands/git-alt
 
@@ -81,10 +81,19 @@ plugins:
   - mkdocstrings:
         enabled: !ENV [ENABLE_MKDOCSTRINGS, true]
         default_handler: python
+        docstring_section_style: list
         handlers:
           python:
             options:
-              docstring_style: google  # see https://mkdocstrings.github.io/griffe/docstrings/#google-style
+              docstring_style: google
+              ignore_init_summary: true
+              show_if_no_docstring: false
+              show_docstring_description: true
+              show_docstring_examples: true
+              show_docstring_raises: true
+              show_docstring_returns: true
+              show_docstring_warns: true
+              show_docstring_yields: true
               show_source: false
               show_bases: true
   - mike:    # see https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
