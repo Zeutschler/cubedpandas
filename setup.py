@@ -24,6 +24,9 @@ updated and much more.
 
 CubedPandas is inspired by OLAP cubes (online analytical processing), which are typically used
 for reporting, business intelligence, data warehousing and financial analysis purposes.
+
+IMPORTANT NOTE: 
+CubedPandas is under active development, not yet feature complete and may be subject to breaking changes.
  
 Just give it a try...   
 """

@@ -21,7 +21,7 @@
         <link rel="next" href="../class-slice/">
       
       
-      <link rel="icon" href="../pages/assets/icons/favicon.ico">
+      <link rel="icon" href="../assets/icons/favicon.ico">
       <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.26">
     
     
@@ -112,7 +112,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="https://zeutschler.github.io/cubedpandas/" title="cubedpandas" class="md-header__button md-logo" aria-label="cubedpandas" data-md-component="logo">
       
-  <img src="../pages/assets/cube512.png" alt="logo">
+  <img src="../assets/cube512.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -260,7 +260,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../blog001_why_cpd/" class="md-tabs__link">
+        <a href="../blog/" class="md-tabs__link">
           
   
   Blog
@@ -313,7 +313,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="https://zeutschler.github.io/cubedpandas/" title="cubedpandas" class="md-nav__button md-logo" aria-label="cubedpandas" data-md-component="logo">
       
-  <img src="../pages/assets/cube512.png" alt="logo">
+  <img src="../assets/cube512.png" alt="logo">
 
     </a>
     cubedpandas
@@ -981,13 +981,36 @@
   
   
   
+    
+  
   
     <li class="md-nav__item">
-      <a href="../blog001_why_cpd/" class="md-nav__link">
+      <a href="../blog/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Why CubedPandas?
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Archive
   </span>
   
 
@@ -1397,7 +1420,7 @@ cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
 
 
 <h2 id="cubedpandas.cell.Cell.address" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">address</span></code>
+            <code class="highlight language-python"><span class="n">address</span><span class="p">:</span> <span class="nb">str</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -1492,7 +1515,7 @@ cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
 
     <div class="doc doc-contents ">
 
-      <p>Returns the cube the cell belongs to.</p>
+      <p>Returns the Cube object the Cell has been created from.</p>
     </div>
 
 </div>
@@ -1523,7 +1546,7 @@ cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
 
 
 <h2 id="cubedpandas.cell.Cell.measure" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">measure</span></code>
+            <code class="highlight language-python"><span class="n">measure</span><span class="p">:</span> <span class="n">Measure</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -1534,7 +1557,11 @@ cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
 
     <div class="doc doc-contents ">
 
-      <p>Returns the measure of the cell.</p>
+      <p>Returns the <a href="class-measure">Measure</a> object the Cell is referring to.
+The measure refers to a column in the underlying dataframe that is used to calculate the value of the cell.
+Returns:
+    Measure: The Measure object the Cell is referring to.</p>
+<p>[[http://127.0.0.1:8000/cubedpandas/class-measure/]]</p>
     </div>
 
 </div>
@@ -1871,7 +1898,7 @@ cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
 
 
 <h4>Cookie consent</h4>
-<p>We use cookies to recognize your repeated visits and preferences, as well as to measure the effectiveness of our documentation and whether users find what they're searching for. With your consent, you're helping us to make our documentation better.</p>
+<p>We use cookies to recognize your repeated visits and preferences, as well as to measure the effectiveness of our documentation and whether users find what they're searching for. With your consent, you're helping us to make our documentation better. Many thanks!</p>
 <input class="md-toggle" type="checkbox" id="__settings" >
 <div class="md-consent__settings">
   <ul class="task-list">

@@ -22,7 +22,7 @@ extra:
       We use cookies to recognize your repeated visits and preferences, as well
       as to measure the effectiveness of our documentation and whether users
       find what they're searching for. With your consent, you're helping us to
-      make our documentation better.
+      make our documentation better. Many thanks!
     actions:
       - accept
       - manage
@@ -61,8 +61,8 @@ theme:
         icon: material/toggle-switch-off-outline
         name: Switch to light mode
 
-  favicon: pages/assets/icons/favicon.ico
-  logo: pages/assets/cube512.png
+  favicon: assets/icons/favicon.ico
+  logo: assets/cube512.png
   icon:
     repo: fontawesome/brands/git-alt
 
@@ -78,13 +78,25 @@ markdown_extensions:
 plugins:
   - search
   - privacy
+  - blog
+
   - mkdocstrings:
         enabled: !ENV [ENABLE_MKDOCSTRINGS, true]
         default_handler: python
+
         handlers:
           python:
             options:
-              docstring_style: google  # see https://mkdocstrings.github.io/griffe/docstrings/#google-style
+              docstring_style: google
+              docstring_section_style: list
+              ignore_init_summary: true
+              show_if_no_docstring: false
+              show_docstring_description: true
+              show_docstring_examples: true
+              show_docstring_raises: true
+              show_docstring_returns: true
+              show_docstring_warns: true
+              show_docstring_yields: true
               show_source: false
               show_bases: true
   - mike:    # see https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
@@ -111,7 +123,7 @@ nav:
       - 'Measure': 'class-measure.md'
       - 'Dataframe extension': 'class-pandas-ext.md'
   - 'Blog':
-    - 'Why CubedPandas?': 'blog001_why_cpd.md'
+    - blog/index.md
   - 'About':
     - 'About me': 'thomas.md'
     - 'License': 'license.md'

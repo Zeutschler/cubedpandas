@@ -1,7 +1,7 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 
 from __future__ import annotations
-from typing import SupportsFloat, TYPE_CHECKING
+from typing import SupportsFloat, TYPE_CHECKING, Any
 import numpy as np
 
 # ___noinspection PyProtectedMember
@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from cubedpandas.cube import Cube, CubeAggregationFunction
 
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, CubeAllocationFunctionType
+from cubedpandas.measure import Measure
 
 
 class Cell(SupportsFloat):
@@ -34,20 +35,21 @@ class Cell(SupportsFloat):
         cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
     """
 
-    __slots__ = "_cube", "_address", "_row_mask", "_measure", "_state", "_dynamic_call"
+    __slots__ = "_cube", "_address", "_row_mask", "_measure", "_state", "_dynamic_call", "_parent"
 
     # region Initialization
-    def __init__(self, cube:Cube, address, row_mask:np.ndarray | None = None, measure:str | None = None,
+    def __init__(self, cube: Cube, address: Any, parent:Cell | None = None, row_mask:np.ndarray | None = None, measure:str | None = None,
                  dynamic_access:bool = False):
         self._dynamic_call:bool = dynamic_access
         self._cube:Cube = cube
+        self._parent:Cell = parent
         self._address = address
         if row_mask is None and measure is None:
             row_mask, measure = cube._resolve_address(address)
         else:
             row_mask, measure = self._cube._resolve_address_modifier(address, row_mask, measure, dynamic_access)
         self._row_mask: np.ndarray | None = row_mask
-        self._measure = measure
+        self._measure:Measure = measure
 
     def __new__(cls, *args, **kwargs):
         return SupportsFloat.__new__(cls)
@@ -76,7 +78,10 @@ class Cell(SupportsFloat):
     def numeric_value(self) -> float:
         """Returns the numeric value of the current cell from the underlying cube."""
         if self._row_mask is None:
-            value = self._cube[self._address]
+            if self._measure is None:
+                value = self._cube[self._address]
+            else:
+                value = self._cube._evaluate(self._row_mask, self._measure)
         else:
             value = self._cube._evaluate(self._row_mask, self._measure)
         if isinstance(value, (int, float, np.integer, np.floating, bool)):
@@ -86,23 +91,32 @@ class Cell(SupportsFloat):
 
     @property
     def cube(self):
-        """Returns the cube the cell belongs to."""
+        """Returns the Cube object the Cell has been created from."""
         return self._cube
 
     @property
-    def address(self):
+    def address(self) -> str:
         """Returns the address of the cell."""
+        if self._parent is not None:
+            return f"{self._parent.address}:{self._address}"
         return self._address
 
     @property
-    def measure(self):
-        """Returns the measure of the cell."""
+    def measure(self) -> Measure:
+        """
+        Returns the [Measure](class-measure) object the Cell is referring to.
+        The measure refers to a column in the underlying dataframe that is used to calculate the value of the cell.
+        Returns:
+            Measure: The Measure object the Cell is referring to.
+
+        [[http://127.0.0.1:8000/cubedpandas/class-measure/]]
+        """
         return self._measure
 
     # region - Dynamic attribute resolving
     def __getattr__(self, name) -> Cell:
         # dynamic member / measure access e.g.: cube.Online.Apple.cost
-        return Cell(self._cube, address=name, row_mask=self._row_mask, measure=self._measure, dynamic_access=True)
+        return Cell(self._cube, address=name, parent=self, row_mask=self._row_mask, measure=self._measure, dynamic_access=True)
     # endregion
 
     # region Cell manipulation via indexing/slicing
@@ -120,7 +134,7 @@ class Cell(SupportsFloat):
 
 
     def cell(self, address):
-        return Cell(self._cube, address, self._row_mask, self._measure)
+        return Cell(self._cube, address=address, parent=None, row_mask= self._row_mask, measure=self._measure)
     # endregion
 
 

@@ -34,7 +34,7 @@ pip install cubedpandas
 ```
 
 ...you are ready to go. "Cubing" a Pandas DataFrame is as simple as this: `cdf = cubed(df)`.
-Please refer the [CubedPandas Documentation](documentation.md) for all features details and more examples.
+Please refer the [documentation](method-cubed.md) for all features details and more examples.
 
 ## Sample Usage
 

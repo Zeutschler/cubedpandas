@@ -36,7 +36,8 @@ print(f"Online apple sales = ${cdf.Apple.Online}")
 
 The `cubed` method provides the following parameters: 
 
-::: cubedpandas.pandas_extension.cubed
+::: cubedpandas.common
+    
 
 
 
