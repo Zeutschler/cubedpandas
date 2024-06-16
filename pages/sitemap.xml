@@ -21,6 +21,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://zeutschler.github.io/cubedpandas/become-a-sponsor/</loc>
+         <lastmod>2024-06-16</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://zeutschler.github.io/cubedpandas/best-practises/</loc>
          <lastmod>2024-06-16</lastmod>
          <changefreq>daily</changefreq>
@@ -102,6 +107,11 @@
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/thomas/</loc>
+         <lastmod>2024-06-16</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://zeutschler.github.io/cubedpandas/blog/</loc>
          <lastmod>2024-06-16</lastmod>
          <changefreq>daily</changefreq>
     </url>

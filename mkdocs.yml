@@ -22,7 +22,7 @@ extra:
       We use cookies to recognize your repeated visits and preferences, as well
       as to measure the effectiveness of our documentation and whether users
       find what they're searching for. With your consent, you're helping us to
-      make our documentation better.
+      make our documentation better. Many thanks!
     actions:
       - accept
       - manage
@@ -78,14 +78,17 @@ markdown_extensions:
 plugins:
   - search
   - privacy
+  - blog
+
   - mkdocstrings:
         enabled: !ENV [ENABLE_MKDOCSTRINGS, true]
         default_handler: python
-        docstring_section_style: list
+
         handlers:
           python:
             options:
               docstring_style: google
+              docstring_section_style: list
               ignore_init_summary: true
               show_if_no_docstring: false
               show_docstring_description: true
@@ -120,7 +123,7 @@ nav:
       - 'Measure': 'class-measure.md'
       - 'Dataframe extension': 'class-pandas-ext.md'
   - 'Blog':
-    - 'Why CubedPandas?': 'blog001_why_cpd.md'
+    - blog/index.md
   - 'About':
     - 'About me': 'thomas.md'
     - 'License': 'license.md'
