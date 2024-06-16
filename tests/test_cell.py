@@ -15,11 +15,11 @@ class TestCell(TestCase):
         self.df = pd.DataFrame.from_dict(data)
         self.schema = {
             "dimensions": [
-                {"column":"product"},
+                {"column": "product"},
                 {"column": "channel"}
             ],
             "measures": [
-                {"column":"sales"}
+                {"column": "sales"}
             ]
         }
 
