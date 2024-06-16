@@ -61,8 +61,8 @@ theme:
         icon: material/toggle-switch-off-outline
         name: Switch to light mode
 
-  favicon: assets/icons/favicon.ico
-  logo: assets/cube512.png
+  favicon: pages/assets/icons/favicon.ico
+  logo: pages/assets/cube512.png
   icon:
     repo: fontawesome/brands/git-alt
 

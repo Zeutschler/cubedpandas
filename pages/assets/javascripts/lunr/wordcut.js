@@ -1678,6 +1678,7 @@ function setopts (self, pattern, options) {
   self.options = self.minimatch.options
 }
 
+// TODO(isaacs): remove entirely in v6
 // exported to reset in tests
 exports.deprecationWarned
 function deprecationWarning(options) {
@@ -3574,7 +3575,7 @@ function parse (pattern, isSub) {
           // an invalid re. if so, re-walk the contents of the
           // would-be class to re-translate any characters that
           // were passed through as-is
-          // to do: It would probably be faster to determine this
+          // TODO: It would probably be faster to determine this
           // without a try/catch and a new RegExp, but it's tricky
           // to do safely.  For now, this is safe and works.
           var cs = pattern.substring(classStart + 1, i)
@@ -4278,7 +4279,7 @@ exports.dirname = function(path) {
 
 exports.basename = function(path, ext) {
   var f = splitPath(path)[2];
-  //  to do: make this comparison case-insensitive on windows?
+  // TODO: make this comparison case-insensitive on windows?
   if (ext && f.substr(-1 * ext.length) === ext) {
     f = f.substr(0, f.length - ext.length);
   }
