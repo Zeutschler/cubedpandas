@@ -41,7 +41,7 @@ class CubedPandasAccessor:
 
         :param df: The Pandas dataframe to wrap into a Cube.
         :param schema: The schema of the Cube. If not provided, the schema will be inferred from the dataframe if
-                parameter `infer_schema_if_not_provided` is set to `True`.
+                parameter `infer_schema` is set to `True`.
         :param infer_schema_if_not_provided:  If True, the schema will be inferred from the dataframe if not provided.
         :param caching: The caching strategy to be used for the Cube. Default and recommended value for almost all use
                 cases is `CachingStrategy.LAZY`, which caches dimension members on first access.

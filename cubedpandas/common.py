@@ -4,45 +4,70 @@ from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOL
 
 
 def cubed(df: pd.DataFrame, schema=None,
-          infer_schema_if_not_provided: bool = True,
+          infer_schema: bool = True,
           caching: CachingStrategy = CachingStrategy.LAZY,
           caching_threshold: int = EAGER_CACHING_THRESHOLD,
-          enable_write_back: bool = False):
+          read_only: bool = True):
     """
-    Initializes a new Cube wrapping and providing a Pandas dataframe as a multi-dimensional data cube.
-    The schema of the Cube can be either inferred automatically from the dataframe  (default) or defined explicitly.
+    Wraps a Pandas dataframes into a cube to provide convenient multi-dimensional access
+    to the underlying dataframe for easy aggregation, filtering, slicing, reporting and
+    data manipulation and write back.
 
     Args:
         df:
-            The Pandas dataframe to wrap into a Cube.
+            The Pandas dataframe to be wrapped into the CubedPandas `Cube` object.
 
         schema:
-            The schema of the Cube. If not provided, the schema will be inferred from the dataframe if
-            parameter `infer_schema_if_not_provided` is set to `True`.
+            (optional) A schema that defines the dimensions and measures of the Cube. If not provided, the schema will be inferred from the dataframe if
+            parameter `infer_schema` is set to `True`. For further details please refer to the documentation of the
+            `Schema` class.
+            Default value is `None`.
 
-        infer_schema_if_not_provided:
-            If True, the schema will be inferred from the dataframe if not provided. Default is True.
+        infer_schema:
+            (optional) If no schema is provided and `infer_schema` is set to True, a suitable
+            schema will be inferred from the unerlying dataframe. All numerical columns will
+            be treated as measures, all other columns as dimensions. If this behaviour is not
+            desired, a schema must be provided.
+            Default value is `True`.
+
         caching:
-            The caching strategy to be used for the Cube. Default and recommended value for almost all use
-            cases is `CachingStrategy.LAZY`, which caches dimension members on first access.
+            (optional) A caching strategy to be applied for accessing the cube. recommended
+            value for almost all use cases is `CachingStrategy.LAZY`, which caches
+            dimension members on first access. Caching can be beneficial for performance, but
+            may also consume more memory. To cache all dimension members eagerly (on
+            initialization of the cube), set this parameter to `CachingStrategy.EAGER`.
             Please refer to the documentation of 'CachingStrategy' for more information.
+            Default value is `CachingStrategy.LAZY`.
+
         caching_threshold:
-            The threshold as 'number of members' for EAGER caching. If the number of
-            distinct members in a dimension is below this threshold, the dimension will be cached eargerly, if caching
-            is set to CacheStrategy.EAGER or CacheStrategy.FULL. Above this threshold, the dimension will be cached
-            lazily if caching is set to CacheStrategy.EAGER. For CacheStrategy.FULL this threshold is ignored.
-            Default value is `EAGER_CACHING_THRESHOLD` 256 members.
-        enable_write_back:
-            If True, the Cube will become write-back enable and changes to the data
-            will be written to the underlying dataframe. Default is False.
+            (optional) The threshold as 'number of members' for EAGER caching only. If the number of
+            distinct members in a dimension is below this threshold, the dimension will be cached
+            eargerly, if caching is set to CacheStrategy.EAGER or CacheStrategy.FULL. Above this
+            threshold, the dimension will be cached lazily.
+            Default value is `EAGER_CACHING_THRESHOLD`, equivalent to 256 unique members per dimension.
+
+        read_only:
+            (optional) Defines if write backs to the underlying dataframe are permitted.
+            If read_only is set to `True`, write back attempts will raise an `PermissionError`.
+            If read_only is set to `False`, write backs are permitted and will be pushed back
+            to the underlying dataframe.
+            Default value is `True`.
 
     Returns:
         A new Cube object that wraps the dataframe.
 
+    Raises:
+        PermissionError:
+            If writeback is attempted on a read-only Cube.
+
+        ValueError:
+            If the schema is not valid or does not match the dataframe or if invalid
+            dimension, member, measure or address agruments are provided.
+
     Examples:
-        >>> df = pd.value({"hello": [1, 2, 3]})
+        >>> df = pd.value([{"product": ["A", "B", "C"]}, {"value": [1, 2, 3]}])
         >>> cdf = cubed(df)
-        >>> cdf["*"]
-        6
+        >>> cdf["product:B"]
+        2
     """
-    return Cube(df, schema, infer_schema_if_not_provided, caching, caching_threshold, enable_write_back)
+    return Cube(df, schema, infer_schema, caching, caching_threshold, read_only)

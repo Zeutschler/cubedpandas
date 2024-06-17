@@ -3,6 +3,7 @@
 from __future__ import annotations
 from typing import SupportsFloat, TYPE_CHECKING, Any
 import numpy as np
+import pandas as pd
 
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
@@ -14,25 +15,17 @@ from cubedpandas.measure import Measure
 
 class Cell(SupportsFloat):
     """
-    A cell represents a multi-dimensional data cell or range from within a cube. Cell objects can
-    be used to navigate through and interact with the data space of a cube and the underlying dataframe.
-    Cells behave like float values and can be directly used in mathematical calculations that read from
-    or write to a cube.
+    A cell represents a multi-dimensional data cell or area from within a cube. Cell objects can
+    be used to navigate and access the data of a cube and thereby the underlying dataframe.
 
-    Sample usage:
+    Cells behave like Python floats and return a numeric aggregation of the
+    underlying data. They are intended to be used in mathematical operations.
 
-    .. code:: python
-        import cubedpandas as cpd
-
-        df = get_your_dataframe()
-        cube = cpd.Cube(df)
-
-        # get a value from the cube and add 19% VAT
-        net_value = cube.cell("2024", "Aug", "Germany", "NetSales")
-        gross_sales_usa = net_value * 1.19
-
-        # create new data or overwrite data for 2025 by copying all 2024 prices and adding 5% inflation
-        cube.cell("2025", "Price") = cube.cell("2024", "Price") * 1.05
+    Samples:
+        >>> cdf = cubed(df)
+        >>> value = cdf.A + cdf.B / 2
+        200
+        >>> cdf.A *= 2
     """
 
     __slots__ = "_cube", "_address", "_row_mask", "_measure", "_state", "_dynamic_call", "_parent"
@@ -40,6 +33,30 @@ class Cell(SupportsFloat):
     # region Initialization
     def __init__(self, cube: Cube, address: Any, parent:Cell | None = None, row_mask:np.ndarray | None = None, measure:str | None = None,
                  dynamic_access:bool = False):
+        """
+        Initializes a new Cell object. Not indented for direct use, but for internal use only.
+        Args:
+            cube:
+                The cube object the cell is referring to.
+            address:
+                The address the cell is referring to.
+            parent:
+                (optional) A parent Cell for chaining
+            row_mask:
+                (optional) A row mask to filter the data for the cell.
+            measure:
+                (optional) A measure to calculate the value of the cell.
+            dynamic_access:
+                Identifies if the cell is accessed dynamically. e.g.: cube.Online.Apple.cost
+
+        Returns:
+            A new Cell object.
+
+        Raises:
+            ValueError:
+                If the address is invalid and does not refer to a
+                dimension, member or measure of the cube.
+        """
         self._dynamic_call:bool = dynamic_access
         self._cube:Cube = cube
         self._parent:Cell = parent
@@ -55,10 +72,13 @@ class Cell(SupportsFloat):
         return SupportsFloat.__new__(cls)
     # endregion
 
-    # region Properties
+    # region Public Properties
     @property
     def value(self):
-        """Returns the sum value of the current cell from the underlying cube."""
+        """
+        Returns:
+             The sum value of the current cell from the underlying cube.
+        """
         agg_function = CubeAggregationFunctionType.SUM
         if self._row_mask is None:
             return self._cube[self._address]
@@ -67,7 +87,9 @@ class Cell(SupportsFloat):
 
     @value.setter
     def value(self, value):
-        """Writes a value of the current cell to the underlying cube."""
+        """
+        Writes a value of the current cell to the underlying cube.
+        """
         allocation_function = CubeAllocationFunctionType.DISTRIBUTE
         if self._row_mask is None:
             self._cube[self._address] = value
@@ -76,7 +98,10 @@ class Cell(SupportsFloat):
 
     @property
     def numeric_value(self) -> float:
-        """Returns the numeric value of the current cell from the underlying cube."""
+        """
+        Returns:
+             The numerical value of the current cell from the underlying cube.
+        """
         if self._row_mask is None:
             if self._measure is None:
                 value = self._cube[self._address]
@@ -91,50 +116,186 @@ class Cell(SupportsFloat):
 
     @property
     def cube(self):
-        """Returns the Cube object the Cell has been created from."""
+        """
+        Returns:
+             The Cube object the Cell belongs to.
+        """
         return self._cube
 
     @property
-    def address(self) -> str:
-        """Returns the address of the cell."""
+    def df(self) -> pd.DataFrame:
+        """Returns:
+        The underlying Pandas dataframe of the Cube.
+        """
+        return self._cube.df
+
+    @property
+    def address(self) -> any:
+        """
+        Returns:
+            The partial address of the cell, as defined by the user
+            This does not include the addresses defined by predecessor
+            cells down to the cube.
+        """
+        return self._address
+
+    def cube_address(self) -> any:
+        """
+        Returns:
+            The full address of the cell, including all predecessor
+            cells down to the cube.
+        """
         if self._parent is not None:
-            return f"{self._parent.address}:{self._address}"
+            return f"{self._parent.cube_address}:{self._address}"
         return self._address
 
     @property
     def measure(self) -> Measure:
         """
-        Returns the [Measure](class-measure) object the Cell is referring to.
-        The measure refers to a column in the underlying dataframe that is used to calculate the value of the cell.
         Returns:
-            Measure: The Measure object the Cell is referring to.
-
-        [[http://127.0.0.1:8000/cubedpandas/class-measure/]]
+            The Measure object the Cell is currently referring to.
+            The measure refers to a column in the underlying dataframe
+            that is used to calculate the value of the cell.
         """
         return self._measure
+    @property
+    def mask(self) -> np.ndarray:
+        """
+        Returns:
+            The row mask of the cell. The row mask is a list (Numpy ndarray)
+            of the indexes of the rows represented by the cell. The row mask can be used
+            for subsequent processing of the underlying dataframe outside the cube.
+        """
+        return self._row_mask
+
+    @property
+    def mask_inverse(self) -> np.ndarray:
+        """
+        Returns:
+            The inverted row mask of the cell. The inverted row mask is a list (Numpy ndarray)
+            of the indexes of the rows NOT represented by the cell. The inverted row mask
+            can be used for subsequent processing of the underlying dataframe outside the cube.
+        """
+        return np.setdiff1d(self._cube._df.index.to_numpy(), self._row_mask)
+
+    # endregion
 
     # region - Dynamic attribute resolving
     def __getattr__(self, name) -> Cell:
-        # dynamic member / measure access e.g.: cube.Online.Apple.cost
+        """
+        Dynamically resolves member from the cube and predesessor cells.
+        This enables a more natural access to the cube data using the
+        Python dot notation.
+        Args:
+            name: Name of a member or measure in the cube.
+
+        Returns:
+            A Cell object that represents the cube data related to the address.
+
+        Samples:
+            >>> cdf = cubed(df)
+            >>> cdf.Online.Apple.cost
+            50
+        """
         return Cell(self._cube, address=name, parent=self, row_mask=self._row_mask, measure=self._measure, dynamic_access=True)
     # endregion
 
     # region Cell manipulation via indexing/slicing
     def __getitem__(self, address):
+        """
+        Returns a nested cell of the cube and for a given address.
+        Subsequent nested cells can bee seen as subsequent filters upon the underlying dataframe.
+
+        Args:
+            address:
+                A valid cube address.
+                Please refer the documentation for further details.
+
+        Returns:
+            A Cell object that represents the cube data related to the address
+            and all predecessor cells down to the cube.
+
+        Raises:
+            ValueError:
+                If the address is not valid or can not be resolved.
+        """
+
         row_mask, measure = self._cube._resolve_address(address, self._row_mask, self._measure)
         return self._cube._evaluate(row_mask, measure=measure)
 
     def __setitem__(self, address, value):
+        """
+        Sets a value for a given address in the cube.
+        Args:
+            address:
+                A valid cube address.
+                Please refer the documentation for further details.
+            value:
+                The value to be set for the data represented by the address.
+        Raises:
+            PermissionError:
+                If write back is attempted on a read-only Cube.
+        """
         row_mask, measure = self._cube._resolve_address(address, self._row_mask, self._measure)
         self._cube._write_back(row_mask, measure, value)
 
     def __delitem__(self, address):
+        """
+        Deletes the records represented by the given address from the underlying
+        dataframe of the cube.
+        Args:
+            address:
+                A valid cube address.
+                Please refer the documentation for further details.
+        Raises:
+            PermissionError:
+                If write back is attempted on a read-only Cube.
+        """
         row_mask, measure = self._cube._resolve_address(address, self._row_mask, self._measure)
         self._cube._delete(row_mask, measure)
 
 
     def cell(self, address):
+        """
+        Returns a cell of the cube for a given address.
+        Tip: Use indexed access `cell[ ... ]` for better readability.
+        Args:
+            address:
+                A valid cube address.
+                Please refer the documentation for further details.
+
+        Returns:
+            A Cell object that represents the cube data related to the address.
+
+        Raises:
+            ValueError:
+                If the address is not valid or can not be resolved.
+        """
         return Cell(self._cube, address=address, parent=None, row_mask= self._row_mask, measure=self._measure)
+
+    def slice(self, rows=None, columns=None, filters=None) -> Slice:
+        """
+        Returns a new slice for the cell. A slice represents a table-alike view to data in the cube.
+        Typically, a slice has rows, columns and filters, comparable to an Excel PivotTable.
+        Useful for printing in Jupyter, visual data analysis and reporting purposes.
+        Slices can be easily 'navigated' by setting and changing rows, columns and filters.
+
+        Please refer to the documentation of the Slice class for further details.
+
+        Samples:
+            >>> cdf = cubed(df)
+            >>> cdf.slice(rows="product", columns="region", filters={"year": 2020})
+            ------------------------------------
+            year: 2000
+            ------------------------------------
+            |         | (all) | North | South |
+            ------------------------------------
+            | (all)   |   550 |   300 |   250 |
+            | Apple   |   200 |   100 |   100 |
+            | Banana  |   350 |   200 |   150 |
+        """
+        raise NotImplementedError("Not implemented yet. Sorry...")
+
     # endregion
 
 
@@ -292,66 +453,105 @@ class Cell(SupportsFloat):
     #region Aggregation functions
     @property
     def sum(self):
-        """Returns the sum of the values for a given address."""
+        """
+        Returns:
+            The sum of the values for a given address.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.SUM, self._row_mask, self._measure)
 
     @property
     def avg(self):
-        """Returns the average of the values for a given address."""
+        """
+        Returns:
+            The average of the values for a given address.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.AVG, self._row_mask, self._measure)
 
     @property
     def median(self):
-        """Returns the median of the values for a given address."""
+        """
+        Returns:
+             The median of the values for a given address.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MEDIAN, self._row_mask, self._measure)
 
     @property
     def min(self):
-        """Returns the minimum value for a given address."""
+        """
+        Returns:
+            The minimum value for a given address.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MIN, self._row_mask, self._measure)
 
     @property
     def max(self):
-        """Returns the maximum value for a given address."""
+        """
+        Returns:
+             The maximum value for a given address.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.MAX, self._row_mask, self._measure)
 
     @property
     def count(self):
-        """Returns the number of the records matching a given address."""
+        """
+        Returns:
+             The number of the records matching a given address.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.COUNT, self._row_mask, self._measure)
 
     @property
     def std(self):
-        """Returns the standard deviation of the values for a given address."""
+        """
+        Returns:
+            The standard deviation of the values for a given address.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.STD, self._row_mask, self._measure)
 
     @property
     def var(self):
-        """Returns the variance of the values for a given address."""
+        """
+        Returns:
+            The variance of the values for a given address.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.VAR, self._row_mask, self._measure)
 
     @property
     def pof(self):
-        """Returns the percentage of the sum of values for a given address related to all values in the data frame."""
+        """
+        Returns:
+            The percentage of the sum of values for a given address related to all values in the data frame.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.POF, self._row_mask, self._measure)
 
     @property
     def nan(self):
-        """Returns the number of non-numeric values for a given address. 'nan' stands for 'not a number'"""
+        """
+        Returns:
+            The number of non-numeric values for a given address. 'nan' stands for 'not a number'.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.NAN, self._row_mask, self._measure)
 
     @property
     def an(self):
-        """Returns the number of numeric values for a given address. 'an' stands for 'a number'"""
+        """
+        Returns:
+            The number of numeric values for a given address. 'an' stands for 'a number'.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.AN, self._row_mask, self._measure)
 
     @property
     def zero(self):
-        """Returns the number of zero values for a given address. 'nan' stands for 'not a number'"""
+        """
+        Returns:
+            The number of zero values for a given address. 'nan' stands for 'not a number'.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.ZERO, self._row_mask, self._measure)
 
     @property
     def nzero(self):
-        """Returns the number of non-zero values for a given address. 'an' stands for 'a number'"""
+        """
+        Returns:
+            The number of non-zero values for a given address. 'an' stands for 'a number'.
+        """
         return CubeAggregationFunction(self._cube, CubeAggregationFunctionType.NZERO, self._row_mask, self._measure)
     # endregion
