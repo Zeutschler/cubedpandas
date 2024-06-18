@@ -40,3 +40,34 @@ class TestCube(TestCase):
         self.assertEqual(list(cdf.Online.mask_inverse), [3, 4, 5])
         self.assertEqual(list(cdf.A.Online.mask_inverse), [1, 2, 3, 4, 5])
         self.assertEqual(list(cdf.Retail.mask_inverse), [0, 1, 2])
+
+    def test_boolean_operations(self):
+        cdf = cubed(self.df, schema=self.schema)
+
+        # Test AND
+        result = list((cdf.A & cdf.Online).mask)
+        self.assertEqual(result, [0])
+        result = list((cdf.A and cdf.Online).mask)
+        self.assertEqual(result, [0])
+
+        result = list((cdf.A & cdf.B).mask)
+        self.assertEqual(result, [])
+        result = list((cdf.A and cdf.B).mask)
+        self.assertEqual(result, [])
+
+        # Test OR
+        result = list((cdf.A | cdf.Online).mask)
+        self.assertEqual(result, [0,1,2,3])
+        result = list((cdf.A or cdf.Online).mask)
+        self.assertEqual(result, [0,1,2,3])
+
+        result = list((cdf.A | cdf.C).mask)
+        self.assertEqual(result, [0, 2, 3, 5])
+        result = list((cdf.A or cdf.C).mask)
+        self.assertEqual(result, [0, 2, 3, 5])
+
+        # Test NOT
+        result = list((~cdf.A).mask)
+        self.assertEqual(result, [1, 2, 4, 5])
+        result = list((not cdf.A).mask)
+        self.assertEqual(result, [1, 2, 4, 5])

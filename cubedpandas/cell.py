@@ -8,8 +8,10 @@ import pandas as pd
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
     from cubedpandas.cube import Cube, CubeAggregationFunction
+    from cubedpandas.slice import Slice
 
-from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, CubeAllocationFunctionType
+from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, \
+    CubeAllocationFunctionType
 from cubedpandas.measure import Measure
 
 
@@ -31,8 +33,9 @@ class Cell(SupportsFloat):
     __slots__ = "_cube", "_address", "_row_mask", "_measure", "_state", "_dynamic_call", "_parent"
 
     # region Initialization
-    def __init__(self, cube: Cube, address: Any, parent:Cell | None = None, row_mask:np.ndarray | None = None, measure:str | None = None,
-                 dynamic_access:bool = False):
+    def __init__(self, cube: Cube, address: Any, parent: Cell | None = None, row_mask: np.ndarray | None = None,
+                 measure: str | None = None,
+                 dynamic_access: bool = False):
         """
         Initializes a new Cell object. Not indented for direct use, but for internal use only.
         Args:
@@ -57,19 +60,20 @@ class Cell(SupportsFloat):
                 If the address is invalid and does not refer to a
                 dimension, member or measure of the cube.
         """
-        self._dynamic_call:bool = dynamic_access
-        self._cube:Cube = cube
-        self._parent:Cell = parent
+        self._dynamic_call: bool = dynamic_access
+        self._cube: Cube = cube
+        self._parent: Cell = parent
         self._address = address
         if row_mask is None and measure is None:
             row_mask, measure = cube._resolve_address(address)
         else:
             row_mask, measure = self._cube._resolve_address_modifier(address, row_mask, measure, dynamic_access)
         self._row_mask: np.ndarray | None = row_mask
-        self._measure:Measure = measure
+        self._measure: Measure = measure
 
     def __new__(cls, *args, **kwargs):
         return SupportsFloat.__new__(cls)
+
     # endregion
 
     # region Public Properties
@@ -125,9 +129,17 @@ class Cell(SupportsFloat):
     @property
     def df(self) -> pd.DataFrame:
         """Returns:
-        The underlying Pandas dataframe of the Cube.
+        A new Pandas dataframe with all column, as the underlying dataframe
+        of the Cube, but only with the rows that are represented by the cell.
+
+        The returned dataframe is always a copy of the original dataframe, even if
+        the cell is not filtering any rows from the underlying dataframe. The returned
+        dataframe can be used for further processing outside the cube.
+
         """
-        return self._cube.df
+        if self._row_mask is None:
+            return self._cube.df.copy()
+        return self._cube.df[self._row_mask]
 
     @property
     def address(self) -> any:
@@ -158,6 +170,7 @@ class Cell(SupportsFloat):
             that is used to calculate the value of the cell.
         """
         return self._measure
+
     @property
     def mask(self) -> np.ndarray:
         """
@@ -197,7 +210,9 @@ class Cell(SupportsFloat):
             >>> cdf.Online.Apple.cost
             50
         """
-        return Cell(self._cube, address=name, parent=self, row_mask=self._row_mask, measure=self._measure, dynamic_access=True)
+        return Cell(self._cube, address=name, parent=self, row_mask=self._row_mask, measure=self._measure,
+                    dynamic_access=True)
+
     # endregion
 
     # region Cell manipulation via indexing/slicing
@@ -254,7 +269,6 @@ class Cell(SupportsFloat):
         row_mask, measure = self._cube._resolve_address(address, self._row_mask, self._measure)
         self._cube._delete(row_mask, measure)
 
-
     def cell(self, address):
         """
         Returns a cell of the cube for a given address.
@@ -271,9 +285,9 @@ class Cell(SupportsFloat):
             ValueError:
                 If the address is not valid or can not be resolved.
         """
-        return Cell(self._cube, address=address, parent=None, row_mask= self._row_mask, measure=self._measure)
+        return Cell(self._cube, address=address, parent=None, row_mask=self._row_mask, measure=self._measure)
 
-    def slice(self, rows=None, columns=None, filters=None) -> Slice:
+    def slice(self, rows=None, columns=None, filters=None, config=None) -> Slice:
         """
         Returns a new slice for the cell. A slice represents a table-alike view to data in the cube.
         Typically, a slice has rows, columns and filters, comparable to an Excel PivotTable.
@@ -281,6 +295,24 @@ class Cell(SupportsFloat):
         Slices can be easily 'navigated' by setting and changing rows, columns and filters.
 
         Please refer to the documentation of the Slice class for further details.
+
+        Args:
+            rows:
+                The rows of the slice. Can be one or more dimensions with or without a member definition,
+                or no dimension.
+
+            columns:
+                The columns of the slice. Can be one or more dimensions with or without a member definition,
+                or no dimension.
+
+            filters:
+                The filters of the slice. Can be one or more dimensions with or without a member definition,
+                or no dimension.
+
+            config:
+                (optional) A slice configuration as a dictionary, a json string or a path to an existing
+                file containing the configuration. Slice configurations can be used to define a more
+                complex layout. Please refer to the documentation of the Slice class for further details.
 
         Samples:
             >>> cdf = cubed(df)
@@ -294,10 +326,97 @@ class Cell(SupportsFloat):
             | Apple   |   200 |   100 |   100 |
             | Banana  |   350 |   200 |   150 |
         """
-        raise NotImplementedError("Not implemented yet. Sorry...")
-
+        return Slice(self, rows=rows, columns=columns, filters=filters, config=config)
     # endregion
 
+    # region Boolean operations
+    @property
+    def intersection(self, other: Cell) -> Cell:
+        """
+        Returns:
+            A new cell that represents the intersection of the current cell and another cell.
+
+            The intersection is calculated as the set of records that are represented by the current cell
+            and by the other cell.
+        """
+        return self._boolean_cell_op(other, "AND")
+
+    @property
+    def difference(self, other: Cell) -> Cell:
+        """
+        Returns:
+            A new cell that represents the difference of the current cell and another cell.
+            The difference is calculated as the set of records that are represented by the current cell
+            but not by the other cell.
+
+        """
+        return self._boolean_cell_op(other, "DIF")
+
+    def union(self, other: Cell) -> Cell:
+        """
+        Returns:
+            A new cell that represents the union of the current cell and another cell.
+            The union is calculated as the set of records that are represented by the current cell
+            or by the other cell.
+        """
+        return self._boolean_cell_op(other, "OR")
+
+    def _boolean_op(self, other, operator: str):
+        """
+        Executes a boolean operation on 2 arguments
+        """
+        # Handle generic types
+        if isinstance(other, bool):
+            return bool(self.numeric_value) and other
+        elif isinstance(other, int):
+            return int(self.numeric_value) & other
+        elif not isinstance(other, Cell):
+            raise TypeError(f"Unsupported operand & for type(Cell) and type({type(other)}).")
+        return self._boolean_cell_op(other, operator)
+
+    def _boolean_cell_op(self, other, operator: str) -> Cell:
+        """
+        Executes a boolean operation on 2 cells.
+        """
+        match operator.upper().strip():
+            case "AND":  # A & B
+                raise NotImplementedError("Not implemented yet. Sorry...")
+            case "OR":  # A | B
+                raise NotImplementedError("Not implemented yet. Sorry...")
+            case "XOR":  # A ^ B
+                raise NotImplementedError("Not implemented yet. Sorry...")
+            case "DIF":  # A - B
+                raise NotImplementedError("Not implemented yet. Sorry...")
+            case "IAND":  # A &= B
+                raise NotImplementedError("Not implemented yet. Sorry...")
+            case "IOR":  # A |= B
+                raise NotImplementedError("Not implemented yet. Sorry...")
+            case "XIOR":  # A ^= B
+                raise NotImplementedError("Not implemented yet. Sorry...")
+            case "NAND":  # not (A & B)
+                raise NotImplementedError("Not implemented yet. Sorry...")
+            case "NOR":  # not (A | B)
+                raise NotImplementedError("Not implemented yet. Sorry...")
+            case "XNOR":  # not (A ^ B)
+                raise NotImplementedError("Not implemented yet. Sorry...")
+            case "NOT":  # not A
+                raise NotImplementedError("Not implemented yet. Sorry...")
+            case _:
+                raise ValueError(f"Invalid boolean operator '{operator}'.")
+
+        # if isinstance(other, Cell):
+        #     if self._row_mask is None and other._row_mask is None:
+        #         return Cell(self._cube, f"({self._address} {op} {other._address})", row_mask=None, measure=None)
+        #     elif self._row_mask is None:
+        #         return Cell(self._cube, f"({self._address} {op} {other._address})", row_mask=other._row_mask, measure=None)
+        #     elif other._row_mask is None:
+        #         return Cell(self._cube, f"({self._address} {op} {other._address})", row_mask=self._row_mask, measure=None)
+        #     else:
+        #         return Cell(self._cube, f"({self._address} {op} {other._address})", row_mask=self._row_mask, measure=None)
+        # else:
+        #     return Cell(self._cube, f"({self._address} {op} {other})", row_mask=self._row_mask, measure=None)
+
+    # endregion
 
     # region operator overloading and float behaviour
     def __float__(self) -> float:  # type conversion to float
@@ -396,23 +515,32 @@ class Cell(SupportsFloat):
     def __eq__(self, other):  # == (equal to) operator
         return self.numeric_value == other
 
-    def __and__(self, other):  # and (equal to) operator
-        return self.numeric_value and other
+    def __and__(self, other):  # AND operator (A & B)
+        return self._boolean_op(other, "AND")
 
-    def __iand__(self, other):  # and (equal to) operator
-        return self.numeric_value and other
+    def __iand__(self, other):  # inplace AND operator (a &= b)
+        new_cell = self._boolean_op(other, "AND")
+        if isinstance(new_cell, Cell):
+            self._row_mask = new_cell._row_mask
+        self._measure = new_cell._measure
 
-    def __rand__(self, other):  # and (equal to) operator
+    def __rand__(self, other):  # and operator
         return other and self.numeric_value
 
-    def __or__(self, other):  # or (equal to) operator
+    def __or__(self, other):  # OR operator (A | B)
         return self.numeric_value or other
 
-    def __ior__(self, other):  # or (equal to) operator
+    def __ior__(self, other):  # inplace OR operator (A |= B)
         return self.numeric_value or other
 
-    def __ror__(self, other):  # or (equal to) operator
+    def __ror__(self, other):  # or operator
         return other or self.numeric_value
+
+    def __xor__(self, other):  # xor operator
+        return self._value ^ other
+
+    def __ne__(self, other):  # != (not equal to) operator
+        return self.numeric_value != other
 
     # endregion
 
@@ -450,7 +578,7 @@ class Cell(SupportsFloat):
 
     # endregion
 
-    #region Aggregation functions
+    # region Aggregation functions
     @property
     def sum(self):
         """

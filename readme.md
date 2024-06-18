@@ -29,7 +29,7 @@ CubedPandas is licensed under the [BSD 3-Clause License](LICENSE) and is availab
 [GitHub](https://github.com/Zeutschler/cubedpandas) and [PyPi](https://pypi.org/project/cubedpandas/).
 
 If you have fallen in love with CubedPandas or find it otherwise valuable, please **consider to become 
-CubedPandas sponsor** on [GitHub Sponsors](https://github.com/sponsors/Zeutschler) to support the further 
+a CubedPandas sponsor** on [GitHub Sponsors](https://github.com/sponsors/Zeutschler) to support the further 
 development of CubedPandas. 
 
 
@@ -69,19 +69,21 @@ cube = cubed(df)  # That's it! You now have multi-dimensional access to your dat
 # A full qualified address, including all dimensions and members, is the most explicit way to access a cell:
 print(cube["product:Apple", "channel:Online", "customer:Peter", "revenue"])
 
-# Another way to access the same cell is to use a dictionary-like syntax, very powerful & fast!
+# Another way to access the same cell is to use a dictionary-like syntax, most powerful & fast!
 print(cube[{"channel":"Online", "product":"Apple", "customer":("Peter", "Paul")}, "revenue"])
 
-# If there are no ambiguities across your entire cube (better be sure), you can also use this short form:
+# If there are no ambiguities across the columns of your dataframe (better be sure), then you can also 
+# use this shorthand form:
 print(cube["Online", "Apple", "Peter", "revenue"])
 
-# And if your member names are also compliant with Python variable naming, you can even use this form:
+# And if your member names (string values) are also compliant with Python variable naming, you can even 
+# use this convenient form:
 print(cube.Online.Apple.Peter.revenue)
 
 # 2. Aggregations
-# Cells provide aggregations over all records in the dataframe that match the given dimensions and members.
-# The default and implicit aggregation function is 'sum', but you can also use 'min', 'max', 'avg', 'count', etc.
-# Cells behave like floats, so you can use them in arithmetic operations.
+# Cells provide aggregation over all records in the dataframe that match a given address.
+# The default and implicit aggregation function is 'sum', but you can also use 'min', 'max', 
+# 'avg', 'count', etc. Cells behave like floats, so you can use them in arithmetic operations.
 
 print(cube["Online"])               # 550 = 100 + 150 + 300
 print(cube["product:Banana"])       # 650 = 300 + 350
@@ -94,8 +96,9 @@ print(cube["customer:P*"])          # 750 = 100 + 150 + 300 + 200  -> wildcard s
 print(cube.Peter + cube.Mary)       # 850 = (100 + 150) + (250 + 350)
 
 # Cells can also be reused and chained to access sub-cells.
-# This is especially useful and fast for more complex data structures and repeated access to the cell or sub-cells.
-# As CubedPandas does some (optional) internal caching, this can speed up your processing time by factors.
+# This is especially useful and fast for more complex data structures and repeated access to 
+# the cell or sub-cells. As CubedPandas does some (optional) internal caching, this may speed up 
+# your processing time by factors.
 online = cube["Online"]
 print(online["Apple"])              # 100, the value for "Apple" in "Online" channel
 print(online.Peter)                 # 250 = 100 + 150, the values for "peter" in "Online" channel
@@ -103,7 +106,7 @@ print(online.Peter.cost)            # 140 = 50 + 90, the values for "peter" in "
 
 # 3. Data Manipulation
 # And as you expected, you can also update, delete or insert values in the underlying dataframe if you want to.
-cube["Apple", "Online"] *= 1.5         # increase all revenue value of "Apple" in "Online" channel by 50%
+cube["Apple", "Online"] *= 1.5         # increase all revenue values of "Apple" in "Online" channel by 50%
 del cube["Pear"]                       # delete all data where "product" is "Pear"
 cube["product:Orange", "Online"] = 50  # NOT WORKING YET - add a new record for "Orange" in "Online" channel
 
