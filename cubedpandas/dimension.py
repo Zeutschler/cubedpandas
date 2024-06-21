@@ -1,19 +1,20 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
-
+import random
 import sys
 from fnmatch import fnmatch
 from abc import ABC
-from typing import Iterable, Self
+from typing import Iterable, Self, Literal
 import datetime
 import numpy as np
 import pandas as pd
-
-from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
-from cubedpandas.date_parser import parse_date
-
 from pandas.api.types import (is_string_dtype, is_numeric_dtype, is_bool_dtype,
                               is_datetime64_any_dtype, is_timedelta64_dtype,
                               is_categorical_dtype, is_object_dtype)
+
+from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.date_parser import parse_date
+from cubedpandas.statistics import DimensionStatistics
+from cubedpandas.filter import Filter, FilterOperation, DimensionFilter, MeasureFilter
 
 
 class Dimension(Iterable, ABC):
@@ -37,6 +38,43 @@ class Dimension(Iterable, ABC):
         self._cache_members: list | None = None
         self._counter: int = 0
 
+    def __getattr__(self, name) -> Filter:
+        """
+        Dynamically resolves a Filter based on member names from the dimension. This enables a more natural
+        access to the cube data using the Python dot notation.
+
+        Member names need to be valid Python identifier/variable name. CubedPandas applies the following rules
+        to resolve member names:
+        - If a member name is also a valid Python identifier, it can be used directly. e.g., `Apple`
+        - Member name resolving is case-insensitive, e.g., `apple` will resolve `Apple`.
+        - White spaces in member names are replaced by underscores, e.g., `best_offer` will resolve `best offer`.
+        - Leading numbers in a member name are replaced by underscores, e.g., `_2_cute` will resolve `2 cute`.
+        - Leading and trailing underscores are ignored/removed, e.g., `hello` will resolve `    hello `.
+        - All other special characters are removed, e.g., `12/4 cars` is the same as `124_cars`.
+
+        - If the name is not a valid Python identifier (e.g. contains special characters), the `slicer`
+        method needs to be used to resolve the member name. e.g., `12/4 cars` is a valid name for a value
+
+        If the name is not a valid Python identifier (e.g. contains special characters), the `slicer`
+        method needs to be used to resolve the member name. e.g., `12/4 cars` is a valid name for a value
+        in a Pandas dataframe column, but not a valid Python identifier/variable name, hence `dimension["12/4 cars"]`
+        needs to be used to return the member.
+
+
+        Args:
+            name: Name of a member or measure in the cube.
+
+        Returns:
+            A Cell object that represents the cube data related to the address.
+
+        Samples:
+            >>> cdf = cubed(df)
+            >>> cdf.Online.Apple.cost
+            50
+        """
+        return DimensionFilter(parent=self, expression=name)  #, dynamic_access=True)
+
+
     def _load_members(self):
         if self._members is None:  # lazy loading
             self._member_list = self._df[self._column].unique().tolist()
@@ -51,6 +89,7 @@ class Dimension(Iterable, ABC):
             caching_threshold = sys.maxsize
 
         self._load_members()
+
         if (((self._caching == CachingStrategy.EAGER) and (len(self._members) <= caching_threshold)) or
             (self._caching == CachingStrategy.FULL)) or (not self._cache_members is None):
 
@@ -69,6 +108,9 @@ class Dimension(Iterable, ABC):
     def clear_cache(self):
         """Clears the cache of the Dimension."""
         self._cache = {}
+        self._cached = False
+        self._members = None
+        self._member_list = None
 
     def contains(self, member):
         self._load_members()
@@ -81,20 +123,40 @@ class Dimension(Iterable, ABC):
         else:
             return member in self._members
 
+    def filter(self, filter_definition):
+        return Filter(self,filter_definition)
+
+    @property
+    def df(self) -> pd.DataFrame:
+        return self._df
+
     @property
     def members(self) -> list:
+        """
+        Returns the list of members of the dimension.
+        """
         self._load_members()
         return self._member_list
 
     @property
     def column(self):
+        """
+        Returns the column name in underlying Pandas dataframe the dimension refers to.
+        """
+
         return self._column
 
     def count(self, member):
+        """
+        Returns the number of rows in the underlying dataframe where the dimension column contains the given member.
+        """
         return np.count_nonzero(self._resolve(member))
 
     @property
     def dtype(self):
+        """
+        Returns the Pandas data type of the dimension column.
+        """
         return self._dtype
 
     def __len__(self):
@@ -125,6 +187,9 @@ class Dimension(Iterable, ABC):
             return matched_members
 
     def _resolve(self, member, row_mask=None) -> np.array:
+        if isinstance(member, Filter):
+            return member.mask
+
         if isinstance(member, list):
             member = tuple(member)
         if not isinstance(member, tuple):
@@ -198,37 +263,6 @@ class Dimension(Iterable, ABC):
 
         return mask
 
-    def _resolve_old(self, member, row_mask=None) -> np.array:
-        if isinstance(member, list):
-            member = tuple(member)
-        elif not isinstance(member, tuple):
-            member = (member,)
-
-        if row_mask is not None:
-            if self._caching > CachingStrategy.NONE:
-                if member in self._cache:
-                    mask = np.intersect1d(row_mask, self._cache[member])
-                else:
-                    mask = self._df.loc[:, self._column].isin(member)
-                    mask = mask[mask == True].index.to_numpy()
-                    self._cache[member] = mask
-                    mask = np.intersect1d(row_mask, mask)
-            else:
-                mask = self._df.iloc[row_mask, self._column_ordinal].isin(member)
-                mask = mask[mask == True].index.to_numpy()
-        else:
-            if self._caching > CachingStrategy.NONE:
-                if member in self._cache:
-                    mask = self._cache[member]
-                else:
-                    mask = self._df.loc[:, self._column].isin(member)
-                    mask = mask[mask == True].index.to_numpy()
-                    self._cache[member] = mask
-            else:
-                mask = self._df.loc[:, self._column].isin(member)
-                mask = mask[mask == True].index.to_numpy()
-        return mask
-
     def __iter__(self) -> Self:
         self._load_members()
         self._counter = 0
@@ -241,3 +275,46 @@ class Dimension(Iterable, ABC):
         member = self._member_list[self._counter]
         self._counter += 1
         return member
+
+    # region Random and statistics methods
+
+    @property
+    def statistics(self) -> DimensionStatistics:
+        return DimensionStatistics(self)
+
+    def choice(self):
+        """
+        Return a random member from the dimension.
+
+        See https://docs.python.org/3/library/random.html#random.choice for more information.
+
+        Returns:
+            Return a random member from the dimension.
+        """
+        self._load_members()
+        return random.choice(self._member_list)
+
+    def choices(self, k:int=1, weights=None, cum_weights=None):
+        """
+        Return a `k` sized list of members chosen from the dimension (with replacement).
+
+        See https://docs.python.org/3/library/random.html#random.choices for more information.
+
+        Returns:
+            Return a `k` sized list of members chosen from the dimension (with replacement).
+        """
+        self._load_members()
+        return random.choices(self._member_list, weights=weights, cum_weights=cum_weights, k=k)
+
+    def sample(self, k:int=1, counts=None):
+        """
+        Return a `k` sized list of unique members chosen from the dimension (without replacement).
+
+        See https://docs.python.org/3/library/random.html#random.sample for more information.
+
+        Returns:
+            Return a `k` sized list of unique members chosen from the dimension (without replacement).
+        """
+        self._load_members()
+        return random.sample(self._member_list, k=k, counts=counts)
+    # endregion

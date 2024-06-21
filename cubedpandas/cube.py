@@ -20,6 +20,7 @@ from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.measure import Measure
 from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.dimension import Dimension
+from cubedpandas.filter import Filter, FilterOperation
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 from cubedpandas.cell import Cell
 from cubedpandas.slice import Slice
@@ -101,13 +102,14 @@ class Cube:
             >>> cdf["product:B"]
             2
         """
+        self._convert_values_to_python_data_types: bool = True
         self._df: pd.DataFrame = df
         self._infer_schema: bool = infer_schema
         self._enable_write_back: bool = read_only
         self._caching: CachingStrategy = caching
         self._caching_threshold: int = caching_threshold
 
-        # get and prepare the cube schema
+        # get or prepare the cube schema and setup dimensions and measures
         if (schema is None) and infer_schema:
             schema = Schema(df).infer_schema()
         else:
@@ -120,10 +122,7 @@ class Cube:
         if self._caching >= CachingStrategy.EAGER:
             self._warm_up_cache()
 
-        # data type conversion
-        self._convert_values_to_python_data_types: bool = True
-
-        # setup aggregation functions
+        # setup default aggregation functions
         self._sum_op = CubeAggregationFunction(self, CubeAggregationFunctionType.SUM)
         self._avg_op = CubeAggregationFunction(self, CubeAggregationFunctionType.AVG)
         self._median_op = CubeAggregationFunction(self, CubeAggregationFunctionType.MEDIAN)
@@ -214,10 +213,22 @@ class Cube:
     # endregion
 
     # region Data Access Methods
-    def __getattr__(self, name) -> Cell:
+    def __getattr__(self, name) -> Cell | Filter:
         """
-        Dynamically resolves member from the cube. This enables a more natural
+        Dynamically resolves dimensions, measure or member from the cube. This enables a more natural
         access to the cube data using the Python dot notation.
+
+        Dimension or measure names (the columns of the underlying dataframe) are resolved first and
+        need to be valid Python identifier/variable name. If a dimension with the given name
+        is found, a Filter object is returned that can be used to filter the cube data.
+        If a measure or member of a dimension is found, a Cell object is returned that represents
+        the cube data/records related to the address.
+
+        If the name is not a valid Python identifier (e.g. contains special characters), the `slicer`
+        method needs to be used to resolve the name. e.g., `12 data%|` is a valid name for a column
+        in a Pandas dataframe, but not a valid Python identifier/variable name, hence `cube["12 data%|"]`
+        needs to be used to return the dimension, measure or column.
+
         Args:
             name: Name of a member or measure in the cube.
 
@@ -229,6 +240,23 @@ class Cube:
             >>> cdf.Online.Apple.cost
             50
         """
+
+        # check for "as filter" usage of a measure, as indicated by the trailing "_" e.g. cdf.sales_ > 100
+        if isinstance(name, str) and name.endswith("_"):
+            measure_name = str(name)[:-1]
+            if measure_name in self._measures:
+                cell = Cell(self, address=measure_name, dynamic_access=True)
+                from cubedpandas.filter import CellFilter
+                return CellFilter(cell)
+
+        # check if the name refers to a dimension
+        if name in self._dimensions:
+            # special case / convention:
+            #   if a dimension is also a measure,
+            #   the measure will be returned as a Cell.
+            if name not in self._measures:
+                return self._dimensions[name]
+
         return Cell(self, address=name, dynamic_access=True)
 
     def __getitem__(self, address: Any) -> Cell:
@@ -556,8 +584,15 @@ class Cube:
             address = [address,]
         for index, arg in enumerate(address):
 
+            if isinstance(arg, Filter):
+                # Evaluate the filter and return the row mask
+                if row_mask is None:
+                    row_mask = arg.mask
+                else:
+                    row_mask =  np.intersect1d(arg.mask, row_mask)
+
             # Parse and evaluate the argument
-            if isinstance(arg, dict):
+            elif isinstance(arg, dict):
                 # Something like {"product": "A"} or {"product": ["A", "B", "C"]} is expected...
                 for dimension, member in arg.items():
                     # process only those dimensions that have not been resolved yet (to avoid conflicts)

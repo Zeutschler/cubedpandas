@@ -7,6 +7,7 @@ from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.caching_strategy import CachingStrategy
 from cubedpandas.cube import Cube
+from cubedpandas.filter import FilterOperation, Filter
 from cubedpandas.cell import Cell
 from cubedpandas.slice import Slice
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction
@@ -26,6 +27,8 @@ __all__ = [
     "CubeAggregationFunction",
     "cubed",
     "CubedPandasAccessor",
+    "Filter",
+    "FilterOperation",
     "Measure",
     "MeasureCollection",
     "Schema",
