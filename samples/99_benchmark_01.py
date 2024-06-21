@@ -78,6 +78,6 @@ print(f"expected value (from df) := {df_read():,.0f}")
 
 print ("\nMemory footprint:")
 collected = gc.collect()
-print(f"\tdataframe  : {df.size_in_bytes(deep=True).sum():,.0f} bytes")
+print(f"\tdataframe  : {df.memory_usage(index=True).sum():,.0f} bytes")
 print(f"\tcube non-cached: {cube.size_in_bytes:,.0f} bytes")
 print(f"\tcube cached: {cached_cube.size_in_bytes:,.0f} bytes")

@@ -105,7 +105,7 @@ class Cube:
         self._convert_values_to_python_data_types: bool = True
         self._df: pd.DataFrame = df
         self._infer_schema: bool = infer_schema
-        self._enable_write_back: bool = read_only
+        self._read_only: bool = read_only
         self._caching: CachingStrategy = caching
         self._caching_threshold: int = caching_threshold
 

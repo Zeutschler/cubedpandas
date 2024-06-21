@@ -86,7 +86,10 @@ class Cell(SupportsFloat):
         """
         agg_function = CubeAggregationFunctionType.SUM
         if self._row_mask is None:
-            return self._cube[self._address]
+            if self._dynamic_call:
+                return self._cube.df[self._measure.column].sum()
+            else:
+                return self._cube[self._address]
         else:
             return self._cube._evaluate(self._row_mask, self._measure, agg_function)
 
