@@ -1,4 +1,5 @@
-# <picture align="center"><img alt="Pandas Logo" src="https://raw.githubusercontent.com/Zeutschler/cubedpandas/master/pages/assets/icons/cube24.png"></picture> CubedPandas 
+# CubedPandas 
+<picture align="center"><img alt="Pandas Logo" src="https://raw.githubusercontent.com/Zeutschler/cubedpandas/master/pages/assets/cpd_logo.jpg"></picture>
 
 ## Multi-dimensional data analysis for Pandas dataframes.
 
