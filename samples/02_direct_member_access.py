@@ -18,6 +18,3 @@ print(cube.Online.Apple)              # 100
 print(cube.Retail.Peter)              # 0
 print(cube.Online.Apple.Peter)        # 100
 print(cube.Online.Apple.cost)         # 50
-
-cube.Online.measure = "revenue"
-a = cube["*"].measure

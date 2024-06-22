@@ -2,6 +2,12 @@ numpy
 pandas
 pyarrow >= 14.0.1
 python-dateutil
+matplotlib
+scipy
+scikit-learn
+
+# pyparsing  ' not needed for now
+
 
 # for deployment
 build

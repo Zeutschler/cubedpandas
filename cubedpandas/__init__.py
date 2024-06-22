@@ -7,6 +7,7 @@ from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.caching_strategy import CachingStrategy
 from cubedpandas.cube import Cube
+from cubedpandas.filter import FilterOperation, Filter, DimensionFilter, MeasureFilter, CellFilter
 from cubedpandas.cell import Cell
 from cubedpandas.slice import Slice
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction
@@ -18,16 +19,21 @@ VERSION = "0.1.2"
 __all__ = [
     "CachingStrategy",
     "Cell",
-    "Dimension",
-    "DimensionCollection",
-    "EAGER_CACHING_THRESHOLD",
+    "CellFilter",
     "Cube",
     "CubeAggregationFunctionType",
     "CubeAggregationFunction",
     "cubed",
     "CubedPandasAccessor",
+    "Dimension",
+    "DimensionCollection",
+    "DimensionFilter",
+    "EAGER_CACHING_THRESHOLD",
+    "Filter",
+    "FilterOperation",
     "Measure",
     "MeasureCollection",
+    "MeasureFilter",
     "Schema",
     "Slice",
     "VERSION"
