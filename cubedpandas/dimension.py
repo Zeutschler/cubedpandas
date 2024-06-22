@@ -123,11 +123,23 @@ class Dimension(Iterable, ABC):
         else:
             return member in self._members
 
-    def filter(self, filter_definition):
-        return Filter(self,filter_definition)
+    def filter(self, expression) -> DimensionFilter:
+        """
+        Returns a new DimensionFilter object based on the given expression.
+
+        Args:
+            expression: A member name or a valid filter expression.
+
+        Returns:
+            A new DimensionFilter object.
+        """
+        return DimensionFilter(self,expression)
 
     @property
     def df(self) -> pd.DataFrame:
+        """
+        Returns the underlying Pandas dataframe the dimension/column refers to.
+        """
         return self._df
 
     @property
@@ -143,7 +155,6 @@ class Dimension(Iterable, ABC):
         """
         Returns the column name in underlying Pandas dataframe the dimension refers to.
         """
-
         return self._column
 
     def count(self, member):
@@ -187,6 +198,9 @@ class Dimension(Iterable, ABC):
             return matched_members
 
     def _resolve(self, member, row_mask=None) -> np.array:
+        """
+        Resolves a member or a list of members to a mask to filter the underlying dataframe.
+        """
         if isinstance(member, Filter):
             return member.mask
 
@@ -225,7 +239,6 @@ class Dimension(Iterable, ABC):
             return np.intersect1d(row_mask, mask)
 
     def _resolve_member(self, member, row_mask=None) -> np.ndarray:
-
         # let's try to find the exact member
         mask = pd.Series([], dtype=pd.StringDtype())
         if is_string_dtype(self._dtype) and isinstance(member, str):

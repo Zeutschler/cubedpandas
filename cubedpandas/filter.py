@@ -136,6 +136,21 @@ class Filter:
 
         return self._mask
 
+    @property
+    def dimensions(self) -> list[Dimension]:
+        """
+        Returns the dimensions represented by the filter.
+        """
+        from cubedpandas.dimension import Dimension
+        from cubedpandas.measure import Measure
+        dims = []
+        if isinstance(self._parent, Dimension):
+            dims.append(self._parent)
+        elif not isinstance(self._parent, Measure):
+            dims.append(self._parent.dimensions)
+        return dims
+
+
     def __str__(self):
         return self.__repr__()
     def __repr__(self):

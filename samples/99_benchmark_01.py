@@ -25,8 +25,8 @@ else:
 # address = {"make": "BMW"}
 # address = (("BMW", "Toyota"), )
 # address = {"make": ["BMW", "Toyota"]}
-# address = ("make:Lexus", "model:ES 300")
 # address = "make:BMW"
+# address = ("make:Lexus", "model:ES 300")
 address = "make:BMW", "sellingprice"    # use another measure
 measure = "sellingprice"
 
@@ -76,8 +76,9 @@ print(f"\nreturned normal value    := {normal_read():,.0f}")
 print(f"returned cached value    := {cached_read():,.0f}")
 print(f"expected value (from df) := {df_read():,.0f}")
 
+
 print ("\nMemory footprint:")
 collected = gc.collect()
 print(f"\tdataframe  : {df.memory_usage(index=True).sum():,.0f} bytes")
-print(f"\tcube non-cached: {cube.size_in_bytes:,.0f} bytes")
-print(f"\tcube cached: {cached_cube.size_in_bytes:,.0f} bytes")
+print(f"\tcube non-cached: {cube.size_in_bytes:,.0f} bytes = {cube.size_in_bytes / df.memory_usage(index=True).sum():.2%} of dataframe")
+print(f"\tcube cached: {cached_cube.size_in_bytes:,.0f} bytes = {cached_cube.size_in_bytes / df.memory_usage(index=True).sum():.2%} of dataframe")

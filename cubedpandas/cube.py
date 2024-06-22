@@ -1,6 +1,8 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 
 import sys
+import builtins
+from typing import Type
 from types import ModuleType, FunctionType
 from gc import get_referents
 from typing import Any, List, Tuple
@@ -39,7 +41,8 @@ class Cube:
                  infer_schema: bool = True,
                  caching: CachingStrategy = CachingStrategy.LAZY,
                  caching_threshold: int = EAGER_CACHING_THRESHOLD,
-                 read_only: bool = True):
+                 read_only: bool = True,
+                 ignore_key_errors: bool = True):
         """
         Wraps a Pandas dataframes into a cube to provide convenient multi-dimensional access
         to the underlying dataframe for easy aggregation, filtering, slicing, reporting and
@@ -85,6 +88,12 @@ class Cube:
                 to the underlying dataframe.
                 Default value is `True`.
 
+            ignore_key_errors:
+                (optional) If set to `True`, key errors for members of dimensions will be ignored and
+                cell values will return 0.0 or `None` if no matching record exists. If set to `False`,
+                key errors will be raised as exceptions when accessing cell values for non-existing members.
+                Default value is `True`.
+
         Returns:
             A new Cube object that wraps the dataframe.
 
@@ -108,6 +117,7 @@ class Cube:
         self._read_only: bool = read_only
         self._caching: CachingStrategy = caching
         self._caching_threshold: int = caching_threshold
+        self._ignore_key_errors: bool = ignore_key_errors
 
         # get or prepare the cube schema and setup dimensions and measures
         if (schema is None) and infer_schema:
@@ -559,20 +569,45 @@ class Cube:
         # not yet required:  self._df.reset_index(drop=True, inplace=True)
         pass
 
-    def _resolve_address(self, address, row_mask: np.ndarray | None = None,
+
+    def _address_to_args(self, address) -> list:
+        """Converts an address into a list of dicts of typed arguments."""
+        args = []
+        if not self._islist(address):
+            address = [address,]
+        for index, argument in enumerate(address):
+            if isinstance(argument, dict):
+                for key, value in argument.items():
+                    args.append({"column": key, "arg": value})
+
+            elif isinstance(argument, str):
+                    parts = argument.split(":")
+                    if len(parts) == 2:
+                        args.append({"column": parts[0].strip(), "arg":  parts[1]})
+                    else:
+                        args.append({"column": "?", "arg":  argument})
+
+            elif isinstance(argument, Filter):
+                args.append({"column":argument.column, "arg":  argument})
+
+            else:
+                args.append({"column":"?", "arg":  argument})
+        return args
+
+    def _resolve_address_new(self, address, row_mask: np.ndarray | None = None,
                          measure: Measure | str |None = None, dynamic_access:bool = False) -> (np.ndarray, Any):
-        """Resolves an address to a row mask and a measure.
+        """
+        Resolves an address to a row mask and a measure.
+        Likely, the most important method of the Cube class.
+
         :param address: The address to be resolved.
         :param measure: The measure to be used for the aggregation.
         :param row_mask: A row mask to be used for subsequent address resolution.
         :param dynamic_access: If True, the address is resolved for a dynamic call, e.g. cube.Online.Apple.cost
         :return: The row mask and the measure to be used for the aggregation.
         """
-        # 1. Process all arguments of the address
-        unresolved_parts = []   # parts of the address that could not be resolved from dimensions or measures
-        resolved_dims: set[Dimension] = set()  # dimensions that have been resolved
-
-        if address == "*":  # special case "*" return all values of the cube or current context
+        # special case: "*" as address, return all values of the cube or current context
+        if address == "*":
             if measure is None:  # Use the first measure as default if no measure is specified.
                 if len(self._measures) > 0:
                     measure = self._measures[0]
@@ -580,10 +615,202 @@ class Cube:
                 row_mask = self._df.index.to_numpy()
             return row_mask, measure
 
+        unresolved_arguments: list[dict] = []   # arguments of the address that could not be resolved in the first run
+        resolved_dims: set[Dimension] = set()   # dimensions that have been resolved
+        measure = None
+
+        # 1. run: resolve all arguments that can be resolved directly
+        arguments = self._address_to_args(address)
+        for argument in arguments:
+            column = argument["column"]
+            arg = argument["arg"]
+
+            # 1.1 evaluate Filter arguments
+            if isinstance(arg, Filter):
+                if row_mask is None:
+                    row_mask = arg.mask
+                else:
+                    row_mask =  np.intersect1d(arg.mask, row_mask)
+                resolved_dims.update(arg.dimensions)
+
+            # 1.2 evaluate string arguments
+            elif isinstance(arg, str):
+                # 1.2.1 Check for measure names first, they have the highest priority for address resolution
+                if arg in self._measures:
+                    if measure and ( not dynamic_access):
+                        raise ValueError(f"Too many measures in address. "
+                                         f"At least 2 measures found in address ({measure}, {arg}), "
+                                         f"but just 1 measure is allowed in an address.")
+                    measure = self._measures[arg]
+                    continue
+
+                # 1.2.2 Try to process an unspecific address without a dimension, e.g. "A" or "42"
+                if column == "?":
+                    # dimension not specified, try to resolve the member in all dimensions
+                    resolved = False
+                    for dimension in (self._dimensions.as_set - resolved_dims):
+                        resolved = dimension.contains(arg)
+                        if resolved:
+                            row_mask = dimension._resolve(arg, row_mask)
+                            resolved_dims.add(dimension)
+                            break
+
+                    if resolved:
+                        continue
+                    else:
+                        unresolved_arguments.append(argument)
+
+                # 1.2.3 Try to process a specific address with a dimension, e.g. "product:A"
+                else:
+                    # dimension specified, try to resolve the dimension and the member
+                    if not column in self._dimensions:
+                        raise ValueError(f"Failed to resolve address '{address}'. "
+                                         f"A dimension named '{column}' as defined in argument '{column}:{arg}' "
+                                         f"is not contained in the cube schema.")
+
+                    dimension = self._dimensions[column]
+                    resolved = dimension.contains(arg)
+                    if resolved:
+                        row_mask = dimension._resolve(arg, row_mask)
+                        resolved_dims.add(dimension)
+                        continue
+
+                    # check for wildcard members
+                    if "*" in arg or "?" in arg:
+                        members = dimension._resolve_wildcard_members(arg)
+                        if len(members) > 0:
+                            row_mask = dimension._resolve(members, row_mask)
+                        resolved_dims.add(dimension)
+                    else:
+                        unresolved_arguments.append(argument)
+
+            # 1.3 evaluate date arguments
+            elif isinstance(arg, (datetime, np.datetime64)):
+                if column == "?":
+                    resolved = False
+                    for dimension in (self._dimensions.as_set - resolved_dims):
+                        if is_datetime(dimension.dtype):
+                            row_mask = dimension._resolve(arg, row_mask)
+                            resolved_dims.add(dimension)
+                            resolved = True
+                            continue
+                    if not resolved:
+                        raise ValueError(f"Failed to resolve address '{address}'. "
+                                         f"Datetime member '{arg}' does not seem to match any dimension.")
+
+                else:
+                    if not column in self._dimensions:
+                        raise ValueError(f"Failed to resolve address '{address}'. "
+                                         f"A dimension named '{column}' as defined in argument '{column}:{arg}' "
+                                         f"is not contained in the cube schema.")
+                    dimension = self._dimensions[column]
+                    if is_datetime(dimension.dtype):
+                        row_mask = dimension._resolve(arg, row_mask)
+                        resolved_dims.add(dimension)
+                        continue
+                    else:
+                        raise ValueError(f"Failed to resolve address '{address}'. "
+                                         f"Dimension '{column}' is of type 'datetime', "
+                                         f"but argument '{column}:{arg}' is of type '{type(arg).__name__}'.")
+
+            else:
+                # All other data types are considered as members of dimensions!
+                # ...first with check common Python datatypes (int, bool, float) against
+                #    dimensions with same/corresponding dtype.
+                if column == "?":
+                    for dimension in (self._dimensions.as_set - resolved_dims):
+                        # ensure to check dimensions with a suitable data type
+                        if ((isinstance(arg, int) and is_integer_dtype(dimension.dtype)) or
+                                (isinstance(arg, bool) and is_bool_dtype(dimension.dtype)) or
+                                (isinstance(arg, float) and is_float_dtype(dimension.dtype))):
+                            row_mask = dimension._resolve(arg, row_mask)
+                            # Note: if the member could be found in multiple dimensions, the first one is used.
+                            #       this may lead to unexpected results, and can only be resolved by
+                            #       providing the dimension name in the address,
+                            #       e.g. {"dim_name": 1"}, {"dim_name": True"} etc.
+                            if len(row_mask) > 0:
+                                resolved_dims.add(dimension)
+                                continue
+
+                    # ...second we just use the first dimension that responds to the member
+                    for dimension in (self._dimensions.as_set - resolved_dims):
+                        row_mask = dimension._resolve(arg, row_mask)
+                        if len(row_mask) > 0:
+                            resolved_dims.add(dimension)
+                            continue
+                else:
+                    if not column in self._dimensions:
+                        raise ValueError(f"Failed to resolve address '{address}'. "
+                                         f"A dimension named '{column}' as defined in argument '{column}:{arg}' "
+                                         f"is not contained in the cube schema.")
+
+                    dimension = self._dimensions[column]
+                    if ((isinstance(arg, int) and is_integer_dtype(dimension.dtype)) or
+                            (isinstance(arg, bool) and is_bool_dtype(dimension.dtype)) or
+                            (isinstance(arg, float) and is_float_dtype(dimension.dtype))):
+                        row_mask = dimension._resolve(arg, row_mask)
+                        # Note: if the member could be found in multiple dimensions, the first one is used.
+                        #       this may lead to unexpected results, and can only be resolved by
+                        #       providing the dimension name in the address,
+                        #       e.g. {"dim_name": 1"}, {"dim_name": True"} etc.
+                        if len(row_mask) > 0:
+                            resolved_dims.add(dimension)
+                            continue
+
+                    # ...second we just use the first dimension that responds to the member
+                    row_mask = dimension._resolve(arg, row_mask)
+                    if len(row_mask) > 0:
+                        resolved = True
+                        continue
+
+                # we failed to resolve the member in any dimension
+                unresolved_arguments.append(arg)
+
+        # 2. run: resolve all arguments that could not be resolved in the first run
+        if len(unresolved_arguments) > 0:
+            if len(self._dimensions) == 0:
+                # special case: No dimensions defined in the cube schema
+                raise ValueError(f"Failed to resolve address '{address}'. "
+                                 f"No dimensions are available in the cube or schema.")
+            else:
+                raise ValueError(f"Failed to resolve address '{address}'. {len(unresolved_arguments)}x unresolved "
+                                 f"member{'s' if len(unresolved_arguments) > 1 else ''}: {unresolved_arguments}. "
+                                 f"No dimension contains this member{'s' if len(unresolved_arguments) > 1 else ''}.")
+
+        if measure is None:  # Use the first measure as default if no measure is specified.
+            if len(self._measures) > 0:
+                measure = self._measures[0]
+
+        return row_mask, measure
+
+
+    def _resolve_address(self, address, row_mask: np.ndarray | None = None,
+                         measure: Measure | str | None = None, dynamic_access: bool = False) -> (np.ndarray, Any):
+
+        # **** Old implementation of address resolution ****
+        resolved_dims: set[Dimension] = set()   # dimensions that have been resolved
+        measure = None
+        unresolved_parts = []   # parts of the address that could not be resolved from dimensions or measures
+
+        # 0. process special cases first
+        # **********************************************************************
+        # 0.1 special case "*": return all values of the cube or current context
+        if address == "*":
+            if measure is None:  # Use the first measure as default if no measure is specified.
+                if len(self._measures) > 0:
+                    measure = self._measures[0]
+            if row_mask is None:
+                row_mask = self._df.index.to_numpy()
+            return row_mask, measure
+
+
+        # 1. Process all available arguments of the address
+        # *************************************************
         if not self._islist(address):
             address = [address,]
         for index, arg in enumerate(address):
 
+            # 1.1 Filter object: we can evaluate it and instantly return the row mask
             if isinstance(arg, Filter):
                 # Evaluate the filter and return the row mask
                 if row_mask is None:
@@ -591,9 +818,10 @@ class Cube:
                 else:
                     row_mask =  np.intersect1d(arg.mask, row_mask)
 
-            # Parse and evaluate the argument
+            # 1.2 Dict: we can resolve the members of the dimensions
+            #     e.g.: {"product": "A"} or {"product": ["A", "B", "C"]} is expected...
             elif isinstance(arg, dict):
-                # Something like {"product": "A"} or {"product": ["A", "B", "C"]} is expected...
+                # todo: requires rework
                 for dimension, member in arg.items():
                     # process only those dimensions that have not been resolved yet (to avoid conflicts)
                     if dimension in self._dimensions:
@@ -605,8 +833,11 @@ class Cube:
                                          f"A dimension named '{dimension}' as defined in argument '{arg}'"
                                          f" is not defined in cube schema.")
 
+
+            # 1.3 A list of members from a single dimension is expected,
+            #     e.g. ("A", "B", "C") from dimension xyz
             elif self._islist(arg):
-                # A list of members from a single dimension is expected, e.g. ("A", "B", "C")
+                # todo: requires rework
 
                 # Note: an empty tuple is allowed and means all members of whatever measure,
                 # e.g. cube[()] returns the sum of all values in the cube. As this operation has no
@@ -626,14 +857,17 @@ class Cube:
                                          f"or can not be found in any dimension.")
                     row_mask = dimension._resolve(arg, row_mask)
 
-            else: # a single value from a single measure, e.g. "A" or 42 or a measure name
+            # 1.4 Anything else, likely a single value from a single measure,
+            #     e.g. "A" or 42 or a measure name
+            else:
                 resolved = False
-
                 if isinstance(arg, str):
                     # Check for measure names first
                     if arg in self._measures:
                         if measure and ( not dynamic_access):
-                            raise ValueError("Multiple measures found in address, but only one measure is allowed.")
+                            raise ValueError(f"Too many measures. "
+                                             f"At least 2 measures found in address ({measure}, {arg}), "
+                                             f"but just 1 measure is allowed in an address.")
                         measure = self._measures[arg]
                         resolved = True
                     else:

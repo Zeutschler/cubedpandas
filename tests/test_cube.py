@@ -351,3 +351,16 @@ class TestCube(TestCase):
 
         self.assertEqual(cube["channel:O*"], 100 + 150 + 300)
         self.assertEqual(cube["channel:*l*"], 100 + 150 + 300 + 200 + 250 + 350)
+
+    def test_cube_address_to_args(self):
+        cube = Cube(self.df, schema=self.schema)
+
+        value = cube[cube.channel.Online, "A", "sales"].sum
+        print(value)
+
+        value = cube["A", "Online"]
+        print(value)
+
+        value = cube["A", "Online", "sales"]
+        print(value)
+
