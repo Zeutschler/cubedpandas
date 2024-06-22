@@ -63,9 +63,9 @@ are called **members**.
 
 But you can also define your own schema. Schemas are quite powerful and flexible, as they will allow 
 you to define not only your dimensions and measures, but also custom aggregations, some business logic, 
-sorting, number formating etc. ***Note: This feature not yet available, planned for release 0.2.0***.
+sorting, number formating etc. ***Note: This feature is not yet available, planned for release 0.2.0***.
 
-### Multi-Dimensional Cells - Numbers Please...
+### Cells - Your Numbers Please...
 One key feature of CubePandas is its easy & intuitive access to individual data cells in the cube.
 You define a multi-dimensional address and CubedPandas will evaluate and return the corresponding value.
 
@@ -82,15 +82,15 @@ b = cdf["Online", "Apple", "Peter", "revenue"]
 # And if member values are compliant with Python naming conventions, you can use
 c = cdf.Online.Apple.Peter.revenue
 
-assert a == b == c  == 100
+assert a == b == c == 100
 ```
 
-### It's All About Slicing & Aggregating
+### Slice The Dice
 
-CubedPandas allows you to slice & dice your data. You can filter by dimensions, aggregate by 
-measures in a very convenient way. The first measure in the dataframe (left to right) is used 
-as the default measure, here `revenue`. So, if no measure is specified, the default measure is used,
-hence `cdf["Apple", "Online"]` is equivalent to `cdf["Apple", "Online", "revenue"]`.
+CubedPandas allows you to slice & aggregate your data in a very convenient way. The first measure in 
+the dataframe (left to right) is used as the default measure, here `revenue`. So, if no measure is 
+specified, the default measure is used, hence `cdf["Apple", "Online"]` is equivalent to 
+`cdf["Apple", "Online", "revenue"]`.
 
 ```python
 a = cdf["Online"]              # 550 = 100 + 150 + 300
@@ -98,15 +98,15 @@ b = cdf["product:Banana"]      # 650 = 300 + 350
 c = cdf["Apple", "cost"]       # 100 = 100 -> explicit sum
 d = cdf["Apple", "cost"].avg   # 75 = (50 + 100) / 2
 e = cdf["*"]                   # 1350 -> '*' means 'all' 
-f = cdf.count                  # 6 -> number of affected records
+f = cdf.count                  # 6 -> returns the number of records in the cube
 g = cdf["customer:P*"]         # 750 = 100 + 150 + 300 + 200  -> wildcard search
 h = cdf.Peter + cdf.Mary       # 850 = (100 + 150) + (250 + 350)
 i = cdf.cost                   # 715 -> sum of all records for the measure 'cost'
 ```
 
-### Seeing Is Believing
+### Slices - Seeing Is Believing
 
-***Note: This feature not yet available, planned for release 0.2.0***
+***Note: This feature is not yet available, planned for release 0.2.0***
 
 Pandas printing capabilities are tied to the tabular structure of a dataframe. CubedPandas 
 unlocks the full potential of dataframes by providing multi-dimensional views. 
@@ -119,7 +119,7 @@ The following code will **show a slice** with `product` and `customer` nested on
 cdf.slice(("product", "customer"), "channel", "mailing").show()
 ```
 
-### Your feedback is very welcome!
+### Your feedback & ideas are very welcome!
 Please help improve and extend CubedPandas with **your feedback & ideas** and use the 
 [CubedPandas GitHub Issues](https://github.com/Zeutschler/cubedpandas/issues) to request new features and report bugs. 
 For general questions, discussions and feedback, please use the 
