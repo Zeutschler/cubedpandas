@@ -1,5 +1,3 @@
-
-
 # <picture align="center"><img alt="Pandas Logo" src="https://raw.githubusercontent.com/Zeutschler/cubedpandas/master/pages/assets/icons/cube24.png"></picture> CubedPandas 
 
 ## Multi-dimensional data analysis for Pandas dataframes.
