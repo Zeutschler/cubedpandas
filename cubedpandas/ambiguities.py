@@ -20,7 +20,19 @@ class Ambiguities:
 
     def __init__(self, df: pd.DataFrame, dimensions: DimensionCollection, measures: MeasureCollection):
         self._ambiguities: list = []
+        self._members: set | None = None
         self._find_ambiguities(df, dimensions, measures)
+
+    @property
+    def members(self):
+        """
+        Returns a set of all ambiguous members found in the cube. If no ambiguities are found, `None` is returned.
+        """
+        if self._members is None:
+            self._members = set()
+            for amb in self._ambiguities:
+                self._members.update(amb['members'])
+        return self._members
 
     def _find_ambiguities(self, df: pd.DataFrame, dimensions: DimensionCollection, measures: MeasureCollection):
         dims = dimensions.to_list()
