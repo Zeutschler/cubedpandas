@@ -22,6 +22,7 @@ from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.measure import Measure
 from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.dimension import Dimension
+from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.filter import Filter, FilterOperation
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 from cubedpandas.cell import Cell
@@ -127,6 +128,7 @@ class Cube:
         self._schema: Schema = schema
         self._dimensions: DimensionCollection = schema.dimensions
         self._measures: MeasureCollection = schema.measures
+        self._ambiguities: Ambiguities | None = None
 
         # warm up cache, if required
         if self._caching >= CachingStrategy.EAGER:
@@ -148,6 +150,16 @@ class Cube:
         self._nzero_op = CubeAggregationFunction(self, CubeAggregationFunctionType.NZERO)
 
     # region Properties
+    @property
+    def ambiguities(self) -> Ambiguities:
+        """
+        Returns:
+            An Ambiguities object that provides information about ambiguous data types in the underlying dataframe.
+        """
+        if self._ambiguities is None:
+            self._ambiguities = Ambiguities(self._df, self._dimensions, self._measures)
+        return self._ambiguities
+
     @property
     def schema(self) -> Schema:
         """
@@ -648,7 +660,7 @@ class Cube:
                 if column == "?":
                     # dimension not specified, try to resolve the member in all dimensions
                     resolved = False
-                    for dimension in (self._dimensions.as_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set - resolved_dims):
                         resolved = dimension.contains(arg)
                         if resolved:
                             row_mask = dimension._resolve(arg, row_mask)
@@ -688,7 +700,7 @@ class Cube:
             elif isinstance(arg, (datetime, np.datetime64)):
                 if column == "?":
                     resolved = False
-                    for dimension in (self._dimensions.as_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set - resolved_dims):
                         if is_datetime(dimension.dtype):
                             row_mask = dimension._resolve(arg, row_mask)
                             resolved_dims.add(dimension)
@@ -718,7 +730,7 @@ class Cube:
                 # ...first with check common Python datatypes (int, bool, float) against
                 #    dimensions with same/corresponding dtype.
                 if column == "?":
-                    for dimension in (self._dimensions.as_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set - resolved_dims):
                         # ensure to check dimensions with a suitable data type
                         if ((isinstance(arg, int) and is_integer_dtype(dimension.dtype)) or
                                 (isinstance(arg, bool) and is_bool_dtype(dimension.dtype)) or
@@ -733,7 +745,7 @@ class Cube:
                                 continue
 
                     # ...second we just use the first dimension that responds to the member
-                    for dimension in (self._dimensions.as_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set - resolved_dims):
                         row_mask = dimension._resolve(arg, row_mask)
                         if len(row_mask) > 0:
                             resolved_dims.add(dimension)
@@ -845,7 +857,7 @@ class Cube:
                 if len(arg) > 0:
                     dimension = None
                     resolved = False
-                    for dimension in (self._dimensions.as_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set - resolved_dims):
                         resolved = dimension.contains(arg)
                         if resolved:
                             resolved_dims.add(dimension)
@@ -890,7 +902,7 @@ class Cube:
                             # No measure specified, try to resolve the member in all dimensions.
                             # This can be a very exhaustive operation, but it is necessary to support
                             # addresses like ("A", "B", "C") where the members are from different dimensions
-                            for dimension in (self._dimensions.as_set - resolved_dims):
+                            for dimension in (self._dimensions.to_set - resolved_dims):
                                 resolved = dimension.contains(arg)
                                 if resolved:
                                     row_mask = self._dimensions[dimension]._resolve(arg, row_mask)
@@ -900,7 +912,7 @@ class Cube:
                         unresolved_parts.append(arg)
 
                 elif isinstance(arg, (datetime, np.datetime64)):
-                    for dimension in (self._dimensions.as_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set - resolved_dims):
                         if is_datetime(dimension.dtype):
                             row_mask = dimension._resolve(arg, row_mask)
                             resolved_dims.add(dimension)
@@ -912,7 +924,7 @@ class Cube:
                     # All other data types are considered as members of dimensions!
                     # ...first with check common Python datatypes (int, bool, float) against
                     #    dimensions with same/corresponding dtype.
-                    for dimension in (self._dimensions.as_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set - resolved_dims):
                         # ensure to check dimensions with a suitable data type
                         if ((isinstance(arg, int) and is_integer_dtype(dimension.dtype)) or
                                 (isinstance(arg, bool) and is_bool_dtype(dimension.dtype)) or
@@ -928,7 +940,7 @@ class Cube:
                                 break
                     if not resolved:
                         # ...second we just use the first dimension that responds to the member
-                        for dimension in (self._dimensions.as_set - resolved_dims):
+                        for dimension in (self._dimensions.to_set - resolved_dims):
                             row_mask = dimension._resolve(arg, row_mask)
                             if len(row_mask) > 0:
                                 resolved = True

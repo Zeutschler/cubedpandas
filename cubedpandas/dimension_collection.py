@@ -35,6 +35,7 @@ class DimensionCollection(Iterable[Dimension]):
     def add(self, dimension: Dimension):
         self._dims[dimension.column] = dimension
 
-    @property
-    def as_set(self):
+    def to_set(self):
         return set(self._dims.values())
+    def to_list(self):
+        return list(self._dims.values())

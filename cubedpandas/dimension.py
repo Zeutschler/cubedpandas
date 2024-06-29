@@ -151,9 +151,24 @@ class Dimension(Iterable, ABC):
         return self._member_list
 
     @property
+    def member_set(self) -> set:
+        """
+        Returns the set of members of the dimension.
+        """
+        self._load_members()
+        return self._members
+
+    @property
     def column(self):
         """
-        Returns the column name in underlying Pandas dataframe the dimension refers to.
+        Returns the column name in the underlying Pandas dataframe the dimension refers to.
+        """
+        return self._column
+
+    @property
+    def name(self):
+        """
+        Returns the name (column name in the underlying Pandas dataframe) of the dimension.
         """
         return self._column
 
