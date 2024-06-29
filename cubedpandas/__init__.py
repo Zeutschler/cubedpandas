@@ -12,11 +12,13 @@ from cubedpandas.cell import Cell
 from cubedpandas.slice import Slice
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction
 from cubedpandas.pandas_extension import CubedPandasAccessor, EAGER_CACHING_THRESHOLD
+from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.common import cubed
 
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 
 __all__ = [
+    "Ambiguities",
     "CachingStrategy",
     "Cell",
     "CellFilter",

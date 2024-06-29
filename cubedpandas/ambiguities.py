@@ -1,3 +1,4 @@
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 import pandas as pd
 from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.measure_collection import MeasureCollection
@@ -12,8 +13,8 @@ class Ambiguities:
     one column. To check ambiguities, use the `Ambiguities` property of a `Cube` object as follows:
 
     ```python
-    cube = cubed(df)
-    if cube.Ambiguities:
+    cdf = cubed(df)
+    if cdf.Ambiguities:
         print("Better be cautious, there are ambiguities in the cube.")
     ```
     """
@@ -24,7 +25,7 @@ class Ambiguities:
         self._find_ambiguities(df, dimensions, measures)
 
     @property
-    def members(self):
+    def members(self)-> set | None:
         """
         Returns a set of all ambiguous members found in the cube. If no ambiguities are found, `None` is returned.
         """
@@ -34,7 +35,23 @@ class Ambiguities:
                 self._members.update(amb['members'])
         return self._members
 
+    def to_list(self) -> list[dict]:
+        """
+        Returns a list of all ambiguities found in the cube.
+        """
+        return self._ambiguities
+
+    @property
+    def any(self) -> bool:
+        """
+        Returns `True` if any ambiguities are found in the cube, otherwise `False`.
+        """
+        return len(self._ambiguities) > 0
+
     def _find_ambiguities(self, df: pd.DataFrame, dimensions: DimensionCollection, measures: MeasureCollection):
+        """
+        Finds ambiguities between dimensions and measures of the cube.
+        """
         dims = dimensions.to_list()
         # find and collect all ambiguities between each 2 dimensions
         for i, dim in enumerate(dims[:-1]):
@@ -44,19 +61,20 @@ class Ambiguities:
                     ambiguous_members = dim.member_set & other.member_set  # intersection of 2 sets
                     if ambiguous_members:
                         members = list(ambiguous_members)
-                        ambiguity = {"message": f"{len(members)} ambiguit{'y' if len(members)== 1 else 'ies'} between dimensions '{dim.name}' and '{other.name}' found "
-                                                f"on member{'' if len(members) == 1 else 's'}: {', '.join(members[:3])}{'' if len(members) <= 3 else ' ...'}",
-                                     "dim1": dim.name,
-                                     "dim2": other.name,
-                                     "count": len(members),
-                                     "members": members}
+                        ambiguity = {
+                            "message": f"{len(members)} ambiguit{'y' if len(members) == 1 else 'ies'} between dimensions '{dim.name}' and '{other.name}' found "
+                                       f"on member{'' if len(members) == 1 else 's'}: {', '.join(members[:3])}{'' if len(members) <= 3 else ' ...'}",
+                            "dim1": dim.name,
+                            "dim2": other.name,
+                            "count": len(members),
+                            "members": members}
                         self._ambiguities.append(ambiguity)
 
     # region Overloads
     def __len__(self):
         # todo: decide what to return here, number of ambiguities between dimensions or number of ambiguous members?
         return len(self._ambiguities)
-        return sum([a['count'] for a in self._ambiguities])
+        # return sum([a['count'] for a in self._ambiguities])
 
     def __getitem__(self, item):
         return self._ambiguities[item]
