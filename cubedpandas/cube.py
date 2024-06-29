@@ -1,8 +1,6 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 
 import sys
-import builtins
-from typing import Type
 from types import ModuleType, FunctionType
 from gc import get_referents
 from typing import Any, List, Tuple
@@ -15,8 +13,8 @@ from pandas.api.types import (is_numeric_dtype, is_string_dtype, is_bool_dtype,
                               is_period_dtype, is_interval_dtype, is_complex_dtype,
                               is_integer_dtype, is_float_dtype)
 
-
-from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, CubeAllocationFunctionType
+from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, \
+    CubeAllocationFunctionType
 from cubedpandas.schema import Schema
 from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.measure import Measure
@@ -27,6 +25,9 @@ from cubedpandas.filter import Filter, FilterOperation
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 from cubedpandas.cell import Cell
 from cubedpandas.slice import Slice
+
+from cubedpandas.resolvers.resolvers import Resolvers
+from cubedpandas.resolvers.resolver import Resolver
 
 
 class Cube:
@@ -40,10 +41,12 @@ class Cube:
 
     def __init__(self, df: pd.DataFrame, schema=None,
                  infer_schema: bool = True,
+                 read_only: bool = True,
+                 ignore_case: bool = True,
+                 ignore_key_errors: bool = True,
                  caching: CachingStrategy = CachingStrategy.LAZY,
                  caching_threshold: int = EAGER_CACHING_THRESHOLD,
-                 read_only: bool = True,
-                 ignore_key_errors: bool = True):
+                 ):
         """
         Wraps a Pandas dataframes into a cube to provide convenient multi-dimensional access
         to the underlying dataframe for easy aggregation, filtering, slicing, reporting and
@@ -66,6 +69,25 @@ class Cube:
                 desired, a schema must be provided.
                 Default value is `True`.
 
+            read_only:
+                (optional) Defines if write backs to the underlying dataframe are permitted.
+                If read_only is set to `True`, write back attempts will raise an `PermissionError`.
+                If read_only is set to `False`, write backs are permitted and will be pushed back
+                to the underlying dataframe.
+                Default value is `True`.
+
+            ignore_case:
+                (optional) If set to `True`, the case of member names will be ignored, 'Apple' and 'apple'
+                will be treated as the same member. If set to `False`, member names are case-sensitive,
+                'Apple' and 'apple' will be treated as different members.
+                Default value is `True`.
+
+            ignore_key_errors:
+                (optional) If set to `True`, key errors for members of dimensions will be ignored and
+                cell values will return 0.0 or `None` if no matching record exists. If set to `False`,
+                key errors will be raised as exceptions when accessing cell values for non-existing members.
+                Default value is `True`.
+
             caching:
                 (optional) A caching strategy to be applied for accessing the cube. recommended
                 value for almost all use cases is `CachingStrategy.LAZY`, which caches
@@ -82,18 +104,6 @@ class Cube:
                 threshold, the dimension will be cached lazily.
                 Default value is `EAGER_CACHING_THRESHOLD`, equivalent to 256 unique members per dimension.
 
-            read_only:
-                (optional) Defines if write backs to the underlying dataframe are permitted.
-                If read_only is set to `True`, write back attempts will raise an `PermissionError`.
-                If read_only is set to `False`, write backs are permitted and will be pushed back
-                to the underlying dataframe.
-                Default value is `True`.
-
-            ignore_key_errors:
-                (optional) If set to `True`, key errors for members of dimensions will be ignored and
-                cell values will return 0.0 or `None` if no matching record exists. If set to `False`,
-                key errors will be raised as exceptions when accessing cell values for non-existing members.
-                Default value is `True`.
 
         Returns:
             A new Cube object that wraps the dataframe.
@@ -118,6 +128,8 @@ class Cube:
         self._read_only: bool = read_only
         self._caching: CachingStrategy = caching
         self._caching_threshold: int = caching_threshold
+        self._member_cache: dict = {}
+        self._ignore_case: bool = ignore_case
         self._ignore_key_errors: bool = ignore_key_errors
 
         # get or prepare the cube schema and setup dimensions and measures
@@ -159,6 +171,54 @@ class Cube:
         if self._ambiguities is None:
             self._ambiguities = Ambiguities(self._df, self._dimensions, self._measures)
         return self._ambiguities
+
+    @property
+    def read_only(self) -> bool:
+        """
+        Returns:
+            True if the Cube is read-only, otherwise False.
+        """
+        return self._read_only
+
+    @read_only.setter
+    def read_only(self, value: bool):
+        """
+        Sets the read-only status of the Cube.
+        """
+        raise NotImplementedError("Not implemented yet")
+        self._read_only = value
+
+    @property
+    def ignore_case(self) -> bool:
+        """
+        Returns:
+            True if the Cube is ignoring case, otherwise False.
+        """
+        return self._ignore_case
+
+    @ignore_case.setter
+    def ignore_case(self, value: bool):
+        """
+        Sets the case sensitivity of the Cube.
+        """
+        raise NotImplementedError("Not implemented yet")
+        self._ignore_case = value
+
+    @property
+    def ignore_key_errors(self) -> bool:
+        """
+        Returns:
+            True if the Cube is ignoring key errors, otherwise False.
+        """
+        return self._ignore_key_errors
+
+    @ignore_key_errors.setter
+    def ignore_key_errors(self, value: bool):
+        """
+        Sets the key error handling of the Cube.
+        """
+        raise NotImplementedError("Not implemented yet")
+        self._ignore_key_errors = value
 
     @property
     def schema(self) -> Schema:
@@ -230,8 +290,10 @@ class Cube:
         """
         Clears the cache of the Cube for all dimensions.
         """
+        self._member_cache = {}
         for dimension in self._dimensions:
             dimension.clear_cache()
+
     # endregion
 
     # region Data Access Methods
@@ -313,7 +375,7 @@ class Cube:
         """
         if self._read_only:
             raise PermissionError("Write back is not permitted on a read-only cube.")
-        dest_slice:Cell = Cell(cube=self, adress=address)
+        dest_slice: Cell = Cell(cube=self, adress=address)
         dest_slice.value = value
 
     def __delitem__(self, address):
@@ -476,6 +538,7 @@ class Cube:
             The number of non-zero values for a given address.
         """
         return self._nzero_op
+
     # endregion
 
     # region Internal methods for data preparation and querying
@@ -496,7 +559,7 @@ class Cube:
         # Note: The next statement does not generate some copy of the data, but returns a reference
         #       to internal Numpy ndarray of the Pandas dataframe. So, its memory efficient and fast.
 
-        if measure is None :
+        if measure is None:
             # special cases: if no measure is defined, always return the number of records.
             return len(row_mask)
         elif row_mask is None:
@@ -536,15 +599,18 @@ class Cube:
             case CubeAggregationFunctionType.NZERO:
                 value = np.count_nonzero(values)
             case _:
-                value = np.nansum(values) # default operation is SUM
+                value = np.nansum(values)  # default operation is SUM
 
         if self._convert_values_to_python_data_types:
             value = self._convert_to_python_type(value)
         return value
 
     def _allocate(self, row_mask: np.ndarray | None = None, measure: Any = None, value: Any = None,
-                    operation: CubeAllocationFunctionType = CubeAllocationFunctionType.DISTRIBUTE):
+                  operation: CubeAllocationFunctionType = CubeAllocationFunctionType.DISTRIBUTE):
         """Allocates a value for a given address in the cube."""
+
+        if self._read_only:
+            raise PermissionError("Write back is not permitted on a read-only cube.")
 
         # Get values to updates or delete
         value_series = self._df[measure.column].to_numpy()
@@ -581,33 +647,34 @@ class Cube:
         # not yet required:  self._df.reset_index(drop=True, inplace=True)
         pass
 
-
     def _address_to_args(self, address) -> list:
         """Converts an address into a list of dicts of typed arguments."""
         args = []
         if not self._islist(address):
-            address = [address,]
+            address = [address, ]
         for index, argument in enumerate(address):
             if isinstance(argument, dict):
                 for key, value in argument.items():
                     args.append({"column": key, "arg": value})
 
             elif isinstance(argument, str):
-                    parts = argument.split(":")
-                    if len(parts) == 2:
-                        args.append({"column": parts[0].strip(), "arg":  parts[1]})
-                    else:
-                        args.append({"column": "?", "arg":  argument})
+                parts = argument.split(":")
+                if len(parts) == 2:
+                    args.append({"column": parts[0].strip(), "arg": parts[1]})
+                else:
+                    args.append({"column": None, "arg": argument})
 
             elif isinstance(argument, Filter):
-                args.append({"column":argument.column, "arg":  argument})
+                args.append({"column": argument.column, "arg": argument})
 
             else:
-                args.append({"column":"?", "arg":  argument})
+                args.append({"column": None, "arg": argument})
         return args
 
-    def _resolve_address_new(self, address, row_mask: np.ndarray | None = None,
-                         measure: Measure | str |None = None, dynamic_access:bool = False) -> (np.ndarray, Any):
+    def _resolve_address_new(self, address,
+                             row_mask: np.ndarray | None = None,
+                             measure: Measure | str | None = None,
+                             dynamic_access: bool = False) -> (np.ndarray, Any):
         """
         Resolves an address to a row mask and a measure.
         Likely, the most important method of the Cube class.
@@ -615,7 +682,7 @@ class Cube:
         :param address: The address to be resolved.
         :param measure: The measure to be used for the aggregation.
         :param row_mask: A row mask to be used for subsequent address resolution.
-        :param dynamic_access: If True, the address is resolved for a dynamic call, e.g. cube.Online.Apple.cost
+        :param dynamic_access: If True, the address needs to be resolved for a dynamic call, e.g. cube.Online.Apple.cost
         :return: The row mask and the measure to be used for the aggregation.
         """
         # special case: "*" as address, return all values of the cube or current context
@@ -623,12 +690,17 @@ class Cube:
             if measure is None:  # Use the first measure as default if no measure is specified.
                 if len(self._measures) > 0:
                     measure = self._measures[0]
+            elif isinstance(measure, str):
+                measure = self._measures[measure]
             if row_mask is None:
                 row_mask = self._df.index.to_numpy()
             return row_mask, measure
 
-        unresolved_arguments: list[dict] = []   # arguments of the address that could not be resolved in the first run
-        resolved_dims: set[Dimension] = set()   # dimensions that have been resolved
+        # todo: add/ use resolvers here
+
+
+        unresolved_arguments: list[dict] = []  # arguments of the address that could not be resolved in the first run
+        resolved_dims: set[Dimension] = set()  # dimensions that have been resolved
         measure = None
 
         # 1. run: resolve all arguments that can be resolved directly
@@ -642,14 +714,14 @@ class Cube:
                 if row_mask is None:
                     row_mask = arg.mask
                 else:
-                    row_mask =  np.intersect1d(arg.mask, row_mask)
+                    row_mask = np.intersect1d(arg.mask, row_mask)
                 resolved_dims.update(arg.dimensions)
 
             # 1.2 evaluate string arguments
             elif isinstance(arg, str):
                 # 1.2.1 Check for measure names first, they have the highest priority for address resolution
                 if arg in self._measures:
-                    if measure and ( not dynamic_access):
+                    if measure and (not dynamic_access):
                         raise ValueError(f"Too many measures in address. "
                                          f"At least 2 measures found in address ({measure}, {arg}), "
                                          f"but just 1 measure is allowed in an address.")
@@ -660,7 +732,7 @@ class Cube:
                 if column == "?":
                     # dimension not specified, try to resolve the member in all dimensions
                     resolved = False
-                    for dimension in (self._dimensions.to_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set() - resolved_dims):
                         resolved = dimension.contains(arg)
                         if resolved:
                             row_mask = dimension._resolve(arg, row_mask)
@@ -700,7 +772,7 @@ class Cube:
             elif isinstance(arg, (datetime, np.datetime64)):
                 if column == "?":
                     resolved = False
-                    for dimension in (self._dimensions.to_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set() - resolved_dims):
                         if is_datetime(dimension.dtype):
                             row_mask = dimension._resolve(arg, row_mask)
                             resolved_dims.add(dimension)
@@ -730,7 +802,7 @@ class Cube:
                 # ...first with check common Python datatypes (int, bool, float) against
                 #    dimensions with same/corresponding dtype.
                 if column == "?":
-                    for dimension in (self._dimensions.to_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set() - resolved_dims):
                         # ensure to check dimensions with a suitable data type
                         if ((isinstance(arg, int) and is_integer_dtype(dimension.dtype)) or
                                 (isinstance(arg, bool) and is_bool_dtype(dimension.dtype)) or
@@ -745,7 +817,7 @@ class Cube:
                                 continue
 
                     # ...second we just use the first dimension that responds to the member
-                    for dimension in (self._dimensions.to_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set() - resolved_dims):
                         row_mask = dimension._resolve(arg, row_mask)
                         if len(row_mask) > 0:
                             resolved_dims.add(dimension)
@@ -795,14 +867,13 @@ class Cube:
 
         return row_mask, measure
 
-
     def _resolve_address(self, address, row_mask: np.ndarray | None = None,
                          measure: Measure | str | None = None, dynamic_access: bool = False) -> (np.ndarray, Any):
 
         # **** Old implementation of address resolution ****
-        resolved_dims: set[Dimension] = set()   # dimensions that have been resolved
-        measure = None
-        unresolved_parts = []   # parts of the address that could not be resolved from dimensions or measures
+        resolved_dims: set[Dimension] = set()  # dimensions that have been resolved
+        # measure = None
+        unresolved_parts = []  # parts of the address that could not be resolved from dimensions or measures
 
         # 0. process special cases first
         # **********************************************************************
@@ -815,11 +886,10 @@ class Cube:
                 row_mask = self._df.index.to_numpy()
             return row_mask, measure
 
-
         # 1. Process all available arguments of the address
         # *************************************************
         if not self._islist(address):
-            address = [address,]
+            address = [address, ]
         for index, arg in enumerate(address):
 
             # 1.1 Filter object: we can evaluate it and instantly return the row mask
@@ -828,7 +898,7 @@ class Cube:
                 if row_mask is None:
                     row_mask = arg.mask
                 else:
-                    row_mask =  np.intersect1d(arg.mask, row_mask)
+                    row_mask = np.intersect1d(arg.mask, row_mask)
 
             # 1.2 Dict: we can resolve the members of the dimensions
             #     e.g.: {"product": "A"} or {"product": ["A", "B", "C"]} is expected...
@@ -857,7 +927,7 @@ class Cube:
                 if len(arg) > 0:
                     dimension = None
                     resolved = False
-                    for dimension in (self._dimensions.to_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set() - resolved_dims):
                         resolved = dimension.contains(arg)
                         if resolved:
                             resolved_dims.add(dimension)
@@ -876,7 +946,7 @@ class Cube:
                 if isinstance(arg, str):
                     # Check for measure names first
                     if arg in self._measures:
-                        if measure and ( not dynamic_access):
+                        if measure and (not dynamic_access):
                             raise ValueError(f"Too many measures. "
                                              f"At least 2 measures found in address ({measure}, {arg}), "
                                              f"but just 1 measure is allowed in an address.")
@@ -902,7 +972,7 @@ class Cube:
                             # No measure specified, try to resolve the member in all dimensions.
                             # This can be a very exhaustive operation, but it is necessary to support
                             # addresses like ("A", "B", "C") where the members are from different dimensions
-                            for dimension in (self._dimensions.to_set - resolved_dims):
+                            for dimension in (self._dimensions.to_set() - resolved_dims):
                                 resolved = dimension.contains(arg)
                                 if resolved:
                                     row_mask = self._dimensions[dimension]._resolve(arg, row_mask)
@@ -912,7 +982,7 @@ class Cube:
                         unresolved_parts.append(arg)
 
                 elif isinstance(arg, (datetime, np.datetime64)):
-                    for dimension in (self._dimensions.to_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set() - resolved_dims):
                         if is_datetime(dimension.dtype):
                             row_mask = dimension._resolve(arg, row_mask)
                             resolved_dims.add(dimension)
@@ -924,7 +994,7 @@ class Cube:
                     # All other data types are considered as members of dimensions!
                     # ...first with check common Python datatypes (int, bool, float) against
                     #    dimensions with same/corresponding dtype.
-                    for dimension in (self._dimensions.to_set - resolved_dims):
+                    for dimension in (self._dimensions.to_set() - resolved_dims):
                         # ensure to check dimensions with a suitable data type
                         if ((isinstance(arg, int) and is_integer_dtype(dimension.dtype)) or
                                 (isinstance(arg, bool) and is_bool_dtype(dimension.dtype)) or
@@ -940,7 +1010,7 @@ class Cube:
                                 break
                     if not resolved:
                         # ...second we just use the first dimension that responds to the member
-                        for dimension in (self._dimensions.to_set - resolved_dims):
+                        for dimension in (self._dimensions.to_set() - resolved_dims):
                             row_mask = dimension._resolve(arg, row_mask)
                             if len(row_mask) > 0:
                                 resolved = True
@@ -948,7 +1018,6 @@ class Cube:
 
                 if not resolved:
                     unresolved_parts.append(arg)
-
 
         if len(unresolved_parts) > 0:
             if len(self._dimensions) == 0:
@@ -967,11 +1036,10 @@ class Cube:
         return row_mask, measure
 
     def _resolve_address_modifier(self, address, row_mask: np.ndarray | None = None,
-                                  measure: Measure | str |None = None, dynamic_access:bool = False):
+                                  measure: Measure | str | None = None, dynamic_access: bool = False):
         """Modifies an address for a given operation."""
         row_mask, measure = self._resolve_address(address, row_mask, measure, dynamic_access)
         return row_mask, measure
-
 
     @staticmethod
     def _convert_to_python_type(value):
@@ -991,6 +1059,3 @@ class Cube:
             return value
 
     # endregion
-
-
-

@@ -71,3 +71,27 @@ def cubed(df: pd.DataFrame, schema=None,
         2
     """
     return Cube(df, schema, infer_schema, caching, caching_threshold, read_only)
+
+
+def pythonize(name: str, lowered: bool = False) -> str:
+    """
+    Converts a string into a valid Python variable name by replacing all invalid characters with underscores.
+    The first character must be a letter or an underscore, all following characters can be letters, digits or underscores.
+
+    Args:
+        name:
+            The string to be converted into a valid Python variable name.
+        lowered:
+            If True, the resulting variable name will be lowercased. Default is False.
+
+    Returns:
+        A valid Python variable name.
+
+    Examples:
+        >>> pythonize("Hello World")
+        'Hello_World'
+    """
+    if not name:
+        return "_"
+
+    return "".join([c if c.isalnum() or c == "_" else "_" for c in name])

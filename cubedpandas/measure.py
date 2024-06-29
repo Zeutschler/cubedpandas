@@ -1,9 +1,9 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 from __future__ import annotations
-from typing import Self
 import numpy as np
 import pandas as pd
 from cubedpandas.filter import Filter, FilterOperation, DimensionFilter, MeasureFilter
+
 
 class Measure:
     """
@@ -43,21 +43,24 @@ class Measure:
     def __eq__(self, other):
         if isinstance(other, str):
             return self._column == other
-        return  self._column == other._column and self._df.equals(other._df)
-
+        return self._column == other._column and self._df.equals(other._df)
 
     def __gt__(self, other):
         filter = MeasureFilter(parent=self, expression=other, operation=FilterOperation.GT)
         return filter
+
     def __ge__(self, other):
         filter = MeasureFilter(parent=self, expression=other, operation=FilterOperation.GE)
         return filter
+
     def __lt__(self, other):
         filter = MeasureFilter(parent=self, expression=other, operation=FilterOperation.LT)
         return filter
+
     def __le__(self, other):
         filter = MeasureFilter(parent=self, expression=other, operation=FilterOperation.LE)
         return filter
+
     def __ne__(self, other):
         filter = MeasureFilter(parent=self, expression=other, operation=FilterOperation.NE)
         return filter

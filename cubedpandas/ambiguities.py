@@ -41,6 +41,12 @@ class Ambiguities:
         """
         return self._ambiguities
 
+    def is_ambiguous(self, member) -> bool:
+        """
+        Checks if a member is ambiguous in the cube.
+        """
+        return member in self.members
+
     @property
     def any(self) -> bool:
         """

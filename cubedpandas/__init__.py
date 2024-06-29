@@ -15,6 +15,9 @@ from cubedpandas.pandas_extension import CubedPandasAccessor, EAGER_CACHING_THRE
 from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.common import cubed
 
+from cubedpandas.resolvers.resolvers import Resolvers
+from cubedpandas.resolvers.resolver import Resolver
+
 VERSION = "0.1.3"
 
 __all__ = [
@@ -36,6 +39,8 @@ __all__ = [
     "Measure",
     "MeasureCollection",
     "MeasureFilter",
+    "Resolver",
+    "Resolvers",
     "Schema",
     "Slice",
     "VERSION"
