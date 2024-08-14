@@ -112,14 +112,7 @@ class Context(SupportsFloat):
         Returns:
              The numerical value of the current context from the underlying cube.
         """
-        if self._row_mask is None:
-            if self._measure is None:
-                value = self._cube[self._address]
-            else:
-                value = self._cube._evaluate(self.mask, self.measure)
-        else:
-            value = self._cube._evaluate(self.mask, self.measure)
-
+        value = self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.SUM)
         if isinstance(value, (int, float, np.integer, np.floating, bool)):
             return float(value)
         else:
@@ -440,7 +433,7 @@ class Context(SupportsFloat):
         elif isinstance(value, (np.ndarray, pd.Series, list, tuple)):
             if isinstance(value, np.ndarray):
                 value = value.tolist()
-            return [Cube._convert_to_python_type(v) for v in value]
+            return [Context._convert_to_python_type(v) for v in value]
         else:
             return value
 
@@ -709,6 +702,25 @@ class Context(SupportsFloat):
             The number of non-zero values for a given address. 'an' stands for 'a number'.
         """
         return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.NZERO)
+    # endregion
+
+    # region Utilitiy functions
+    @staticmethod
+    def _convert_to_python_type(value):
+        if isinstance(value, (np.integer, int)):
+            return int(value)
+        elif isinstance(value, (np.floating, float)):
+            return float(value)
+        elif isinstance(value, (np.datetime64, pd.Timestamp)):
+            return pd.Timestamp(value).to_pydatetime()
+        elif isinstance(value, (np.bool_, bool)):
+            return bool(value)
+        elif isinstance(value, (np.ndarray, pd.Series, list, tuple)):
+            if isinstance(value, np.ndarray):
+                value = value.tolist()
+            return [Context._convert_to_python_type(v) for v in value]
+        else:
+            return value
     # endregion
 
 

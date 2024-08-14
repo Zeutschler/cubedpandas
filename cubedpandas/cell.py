@@ -1,3 +1,4 @@
+# todo: DEPRECATED CODE - TO BE REMOVED ON CLEANUP
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 
 from __future__ import annotations
