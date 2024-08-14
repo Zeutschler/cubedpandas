@@ -17,6 +17,10 @@
       e.g. `Cube.settings`, `Cube.properties`, `Cube.methods` etc.  
 - [ ] Implement `Context.full_address` property returning a dictionary. 
 
+#### ... as related to `Slices`
+- [ ] Implement basic slicing functionality.
+
+
 ## Future Releases
 
 Just ideas, not yet decided, scheduled and prioritized.
