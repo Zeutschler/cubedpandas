@@ -9,19 +9,22 @@
 - [ ] Cleanup/rewrite all tests based on new syntax
 - [ ] Rewrite documentation based on new syntax
 - [ ] Boolean logic for `Contex` objects for advanced filtering
-- [ ] Extend Expression Parser to support basic filtering and mathematical operations on `Context` objects.  
+- [ ] Extend Expression Parser to support basic filtering and mathematical operations on `Context` objects.
+ 
+#### ... as related to clean up and feature consolidation
+- [ ] Further Cleanup for Cube object.
+      Move all none essential methods, properties and settings to respective properties,
+      e.g. `Cube.settings`, `Cube.properties`, `Cube.methods` etc.  
+- [ ] Implement `Context.full_address` property returning a dictionary. 
 
+## Future Releases
 
+Just ideas, not yet decided, scheduled and prioritized.
 
-## Release 0.3.0
 ### New Features:
-
-- [ ] **Custom Schemas**: Allow users to define their own schema, including custom aggregations, business logic, sorting, number formatting etc.
-- [ ] **Custom Aggregations**: Allow users to define custom aggregations, e.g. weighted averages, median, etc.
-- [ ] **Custom Sorting**: Allow users to define custom sorting for dimensions.
-- [ ] **Custom Number Formatting**: Allow users to define custom number formatting for measures.
+- [ ] Support for **Linked Cubes** to mimic DWH-style star-schemas.
 - [ ] **Custom Business Logic**: Allow users to define custom business logic for measures.
 - [ ] **Custom Measures**: Allow users to define custom measures.
-- [ ] **Custom Dimensions**: Allow users to define custom dimensions.
-- [ ] **Custom Members**: Allow users to define custom members.
+- [ ] **Custom Dimensions**: Allow users to define custom *calculated* dimensions.
+- [ ] **Custom Members**: Allow users to define custom *calculated* members.
 
