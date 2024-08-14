@@ -42,3 +42,11 @@ class MeasureCollection(Iterable[Measure]):
         self._measures[measure.column] = measure
         self._measure_list = list(self._measures.values())
 
+    @property
+    def default_measure(self) -> Measure:
+        """
+        Returns:
+            The default measure of the Cube. If not defined otherwise, e.g. by a cube schema, the default measure
+            refers to the first numeric column (int or float) in the cube, evaluated from left to right.
+        """
+        return self[0]

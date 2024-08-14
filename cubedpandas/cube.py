@@ -1,5 +1,5 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
-
+from __future__ import annotations
 import sys
 from types import ModuleType, FunctionType
 from gc import get_referents
@@ -20,14 +20,45 @@ from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.measure import Measure
 from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.dimension import Dimension
+from cubedpandas.member import Member
 from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.filter import Filter, FilterOperation
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 from cubedpandas.cell import Cell
+from cubedpandas.context import Context, CubeContext
 from cubedpandas.slice import Slice
 
 from cubedpandas.resolvers.resolvers import Resolvers
 from cubedpandas.resolvers.resolver import Resolver
+
+
+class CubeLinks:
+    def __init__(self, parent: Cube):
+        self._parent: Cube = parent
+        self._links: list[Cube] = []
+
+    def __len__(self):
+        return len(self._links)
+    def __getitem__(self, index):
+        return self._links[index]
+
+    def add(self, cube: Cube):
+        if not cube in self._links:
+            self._links.append(cube)
+
+    @property
+    def parent(self) -> Cube:
+        return self._parent
+
+    @property
+    def links(self) -> list[Cube]:
+        return self._links
+
+    @property
+    def count(self) -> int:
+        return len(self._links)
+
+
 
 
 class Cube:
@@ -46,6 +77,7 @@ class Cube:
                  ignore_key_errors: bool = True,
                  caching: CachingStrategy = CachingStrategy.LAZY,
                  caching_threshold: int = EAGER_CACHING_THRESHOLD,
+                 eager_evaluation: bool = True,
                  ):
         """
         Wraps a Pandas dataframes into a cube to provide convenient multi-dimensional access
@@ -104,6 +136,11 @@ class Cube:
                 threshold, the dimension will be cached lazily.
                 Default value is `EAGER_CACHING_THRESHOLD`, equivalent to 256 unique members per dimension.
 
+            eager_evaluation:
+                (optional) If set to `True`, the cube will evaluate the context eagerly, i.e. when the context
+                is created. Eager evaluation is recommended for most use cases, as it simplifies debugging and
+                error handling. If set to `False`, the cube will evaluate the context lazily, i.e. only when
+                the value of a context is accessed/requested.
 
         Returns:
             A new Cube object that wraps the dataframe.
@@ -131,6 +168,8 @@ class Cube:
         self._member_cache: dict = {}
         self._ignore_case: bool = ignore_case
         self._ignore_key_errors: bool = ignore_key_errors
+        self._eager_evaluation: bool = eager_evaluation
+        self._cube_links = CubeLinks(self)
 
         # get or prepare the cube schema and setup dimensions and measures
         if (schema is None) and infer_schema:
@@ -162,6 +201,15 @@ class Cube:
         self._nzero_op = CubeAggregationFunction(self, CubeAggregationFunctionType.NZERO)
 
     # region Properties
+
+    @property
+    def measures(self) -> MeasureCollection:
+        """
+        Returns:
+            The measures available within or defined for the Cube.
+        """
+        return self._measures
+
     @property
     def ambiguities(self) -> Ambiguities:
         """
@@ -171,6 +219,15 @@ class Cube:
         if self._ambiguities is None:
             self._ambiguities = Ambiguities(self._df, self._dimensions, self._measures)
         return self._ambiguities
+
+    @property
+    def linked_cubes(self) -> CubeLinks:
+        """
+        Returns:
+            A list of linked cubes that are linked to this cube.
+        """
+        # todo: implement a proper linked cubes collection object
+        return self._cube_links
 
     @property
     def read_only(self) -> bool:
@@ -219,6 +276,18 @@ class Cube:
         """
         raise NotImplementedError("Not implemented yet")
         self._ignore_key_errors = value
+
+    @property
+    def eager_evaluation(self) -> bool:
+        """
+        Returns:
+            Returns `True` if the cube will evaluate the context eagerly, i.e. when the context is created.
+            Eager evaluation is recommended for most use cases, as it simplifies debugging and error handling.
+            Returns `False` if the cube will evaluate the context lazily, i.e. only when the value of a context
+            is accessed/requested.
+        """
+        return self._eager_evaluation
+
 
     @property
     def schema(self) -> Schema:
@@ -295,6 +364,13 @@ class Cube:
             dimension.clear_cache()
 
     # endregion
+
+    # region NEW context approach
+    @property
+    def context(self) -> Context:
+        return CubeContext(self)
+    # endregion
+
 
     # region Data Access Methods
     def __getattr__(self, name) -> Cell | Filter:
@@ -697,6 +773,14 @@ class Cube:
             return row_mask, measure
 
         # todo: add/ use resolvers here
+        resolvers = Resolvers()
+        arguments = self._address_to_args(address)
+        for argument in arguments:
+            column = argument["column"]
+            arg = argument["arg"]
+
+            row_mask, measure = resolvers.resolve(self._df, arg, column, row_mask, measure)
+
 
 
         unresolved_arguments: list[dict] = []  # arguments of the address that could not be resolved in the first run
@@ -729,7 +813,7 @@ class Cube:
                     continue
 
                 # 1.2.2 Try to process an unspecific address without a dimension, e.g. "A" or "42"
-                if column == "?":
+                if column is None:
                     # dimension not specified, try to resolve the member in all dimensions
                     resolved = False
                     for dimension in (self._dimensions.to_set() - resolved_dims):
@@ -878,7 +962,8 @@ class Cube:
         # 0. process special cases first
         # **********************************************************************
         # 0.1 special case "*": return all values of the cube or current context
-        if address == "*":
+
+        if (address == "*") or (address is None):
             if measure is None:  # Use the first measure as default if no measure is specified.
                 if len(self._measures) > 0:
                     measure = self._measures[0]
@@ -946,7 +1031,7 @@ class Cube:
                 if isinstance(arg, str):
                     # Check for measure names first
                     if arg in self._measures:
-                        if measure and (not dynamic_access):
+                        if measure and (not dynamic_access) and False: # todo: deactivated for now to test new Context approach
                             raise ValueError(f"Too many measures. "
                                              f"At least 2 measures found in address ({measure}, {arg}), "
                                              f"but just 1 measure is allowed in an address.")

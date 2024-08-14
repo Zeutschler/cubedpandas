@@ -9,13 +9,14 @@ class Measure:
     """
     Represents a measure within a Cube. Each measure is mapped to a column in the underlying Pandas dataframe.
     """
-
+    # todo: add support for aliases
     def __init__(self, df: pd.DataFrame, column):
         self._df: pd.DataFrame = df
         self._column = column
         self._column_ordinal = df.columns.get_loc(column)
         self._dtype = df[column].dtype
         self._values: np.ndarray | None = None
+        self._aliases: list[str] = []
 
     @property
     def column(self):

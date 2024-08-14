@@ -32,6 +32,7 @@ class Dimension(Iterable, ABC):
         self._dtype = df[column].dtype
         self._members: set | None = None
         self._member_list: list | None = None
+        self._member_array: np.ndarray | None = None
         self._cached: bool = False
         self._caching: CachingStrategy = caching
         self._cache: dict = {}
@@ -76,9 +77,14 @@ class Dimension(Iterable, ABC):
 
 
     def _load_members(self):
-        if self._members is None:  # lazy loading
-            self._member_list = self._df[self._column].unique().tolist()
+        if self._member_array is None:
+            values, counts = np.unique(self._df[self._column].to_numpy(), return_counts=True)
+            self._member_array = values
+            self._member_list = self._member_array.tolist()
             self._members = set(self._member_list)
+        #if self._members is None:  # lazy loading
+        #    self._member_list = self._df[self._column].unique().tolist()
+        #    self._members = set(self._member_list)
 
     def _cache_warm_up(self, caching_threshold: int = EAGER_CACHING_THRESHOLD):
         """Warms up the cache of the Cube."""
@@ -93,10 +99,10 @@ class Dimension(Iterable, ABC):
         if (((self._caching == CachingStrategy.EAGER) and (len(self._members) <= caching_threshold)) or
             (self._caching == CachingStrategy.FULL)) or (not self._cache_members is None):
 
-            if self._cache_members is not None:
-                cache_members = self._cache_members
-            else:
+            if self._cache_members is None:
                 cache_members = self._members
+            else:
+                cache_members = self._cache_members
 
             for member in cache_members:
                 mask = self._df.loc[:, self._column].isin([member, ])
@@ -220,17 +226,17 @@ class Dimension(Iterable, ABC):
             return member.mask
 
         if isinstance(member, list):
-            member = tuple(member)
+            member = tuple(sorted(member)) # make sure the order is always the same, e.g. A,B == B,A
         if not isinstance(member, tuple):
             member = (member,)
 
         # 1. check if the member definition is already in the cache...
         if self._caching > CachingStrategy.NONE:
             if member in self._cache:
-                # return self._cache[member]
                 if row_mask is None:
                     return self._cache[member]
                 else:
+                    # todo: maybe add faster intersection?
                     return np.intersect1d(row_mask, self._cache[member])
 
         # 2. ...if not, resolve the member(s)
@@ -252,6 +258,41 @@ class Dimension(Iterable, ABC):
             return mask
         else:
             return np.intersect1d(row_mask, mask)
+
+    def _check_exists_and_resolve_member(self, member,
+                                         row_mask:np.ndarray | None = None,
+                                         parent_member_mask:np.ndarray | None = None) \
+            -> tuple[bool, np.ndarray | None, np.ndarray | None]:
+
+        if self._caching > CachingStrategy.NONE:
+            if member in self._cache:
+                member_mask = self._cache[member]
+                if not parent_member_mask is None:
+                    member_mask = np.union1d(parent_member_mask, member_mask)
+
+                if row_mask is None:
+                    return True, member_mask, member_mask
+                else:
+                    return True, np.intersect1d(row_mask, member_mask), member_mask
+
+        self._load_members()
+        if not member in self._members:
+            return False, None, None
+
+        mask = self._df[self._column] == member
+        member_mask = mask[mask == True].index.to_numpy()
+
+        if self._caching > CachingStrategy.NONE:
+            self._cache[member] = member_mask
+
+        if not parent_member_mask is None:
+            member_mask = np.union1d(parent_member_mask, member_mask)
+
+        if row_mask is None:
+            return True, member_mask, member_mask
+        else:
+            return True, np.intersect1d(row_mask, member_mask), member_mask
+
 
     def _resolve_member(self, member, row_mask=None) -> np.ndarray:
         # let's try to find the exact member

@@ -4,6 +4,7 @@ from enum import Enum, IntEnum
 from typing import SupportsFloat, TYPE_CHECKING, Any
 import numpy as np
 import pandas as pd
+import sortednp as snp   # https://sortednp.dev/guide/
 
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
@@ -103,9 +104,15 @@ class Filter:
         match self._operation:
             # boolean operations between 2 filters
             case FilterOperation.AND:
+                mask_new = snp.intersect(parent_mask , self._other.mask, duplicates=snp.IntersectDuplicates.DROP)
                 self._mask = np.intersect1d(parent_mask , self._other.mask)
+                if not np.array_equal(mask_new, self._mask):
+                    raise ValueError(f"Error in mask calculation for {self._operation}.")
             case FilterOperation.OR:
+                mask_new = snp.merge(parent_mask , self._other.mask, duplicates=snp.MergeDuplicates.DROP)
                 self._mask = np.union1d(parent_mask, self._other.mask)
+                if not np.array_equal(mask_new, self._mask):
+                    raise ValueError(f"Error in mask calculation for {self._operation}.")
             case FilterOperation.XOR:
                 self._mask = np.setxor1d(parent_mask, self._other.mask)
             case FilterOperation.NOT:

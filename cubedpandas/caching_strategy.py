@@ -35,3 +35,4 @@ class CachingStrategy(IntEnum):
                 return 'FULL'  # - pre caching of all dimensions. Not recommended for large high cardinality datasets'
             case _:
                 return 'UNKNOWN'
+
