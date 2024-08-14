@@ -119,6 +119,7 @@ class Context(SupportsFloat):
                 value = self._cube._evaluate(self.mask, self.measure)
         else:
             value = self._cube._evaluate(self.mask, self.measure)
+
         if isinstance(value, (int, float, np.integer, np.floating, bool)):
             return float(value)
         else:
@@ -766,7 +767,7 @@ class ContextResolver:
     """A helper class to resolve the address of a context."""
 
     @staticmethod
-    def resolve(parent:Context, address, dynamic_attribute: bool= False) -> Context:
+    def resolve(parent:Context, address, dynamic_attribute: bool= False, target_dimension: Dimension | None = None) -> Context:
 
         # 1. If no address needs to be resolved, we can simply return the current/parent context.
         if address is None:
@@ -806,7 +807,23 @@ class ContextResolver:
             # 3.3. Check for names of members over all dimensions
             #      Let's start with the dimension that was handed in,
             #      if a dimension was handed in from the parent context.
-            dimension_list = cube.dimensions.starting_with_this_dimension(dimension)
+
+            skip_checks = False
+            dimension_list = None
+
+            # Check for dimension hints and leverage them, e.g. "products:apple", "children:1"
+            if target_dimension is not None:
+                dimension_list = [target_dimension]
+            elif ":" in address:
+                dim_name, member_name = address.split(":")
+                if dim_name.strip() in cube.dimensions:
+                    dimension = cube.dimensions[dim_name.strip()]
+                    address = member_name.strip()
+                    dimension_list = [dimension]
+                    skip_checks = True # let's skip the checks as we have a dimension hint
+            if dimension_list is None:
+                dimension_list = cube.dimensions.starting_with_this_dimension(dimension)
+
             for dim in dimension_list:
                 if dim == dimension:
                     # We are still at the dimension that was handed in, therefore we need to check for
@@ -815,7 +832,8 @@ class ContextResolver:
                     # before we filter the rows from a previous context addressing another or no dimension.
                     parent_row_mask = parent.get_row_mask(before_dimension=dimension)
                     exists, new_row_mask, member_mask = (
-                        dimension._check_exists_and_resolve_member(address, parent_row_mask, member_mask))
+                        dimension._check_exists_and_resolve_member(address, parent_row_mask, member_mask,
+                                                                   skip_checks=skip_checks))
                 else:
                     # This indicates a dimension context switch,
                     # e.g. from `None` to dimension `A`, or from dimension `A` to dimension `B`.
@@ -835,13 +853,23 @@ class ContextResolver:
                     #                        row_mask=new_row_mask, member_mask=member_mask,
                     #                        measure=measure, dimension=dim)
 
-            if not dynamic_attribute:
-                # As we are NOT in a dynamic context like `cube.A.online.sales`, where only exact measure,
-                # dimension and member names are supported, and have not yet found a suitable member, we need
-                # to check for complex member set definitions like filter expressions, list, dictionaries etc.
-                is_valid_context, new_context_ref = ContextResolver.resolve_complex(parent, address)
-                if is_valid_context:
-                    return new_context_ref
+        if isinstance(address, Context):
+            # We have a context, so let's return it as is...
+            if parent.cube == address.cube:
+                return address
+            raise ValueError(f"The context handed in as an address argument refers to a different cube/dataframe. "
+                             f"Only contexts from the same cube can be used as address arguments.")
+
+
+        if not dynamic_attribute:
+            # As we are NOT in a dynamic context like `cube.A.online.sales`, where only exact measure,
+            # dimension and member names are supported, and have not yet found a suitable member, we need
+            # to check for complex member set definitions like filter expressions, list, dictionaries etc.
+            is_valid_context, new_context_ref = ContextResolver.resolve_complex(parent, address)
+            if is_valid_context:
+                return new_context_ref
+            else:
+                raise ValueError(new_context_ref.message)
 
         # 4. If we've not yet resolved anything meaningful, then we need to raise an error...
         raise ValueError(f"Invalid member name or address '{address}'. "
@@ -858,23 +886,98 @@ class ContextResolver:
             try:
                 if exp.parse():
                     # We have a syntactically valid expression, so let's try to resolve/evaluate it
-                    exp_resolver = ExpressionContextResolver(context)
-                    new_context: list[Context] | Context = exp.evaluate(exp_resolver)
+                    exp_resolver = ExpressionContextResolver(context, address)
+                    new_context = exp.evaluate(exp_resolver)
+
+                    if new_context is None:
+                        # We have a valid expression, but it did not resolve to a context
+                        context.message = (f"Failed to resolve address or expression '{address}'. "
+                                           f"Maybe it tries to refer to a member name that does not exist "
+                                           f"in any of the dimension of the cube.")
+                        return False, context
+
                     if isinstance(new_context, Iterable):
                         new_context = list(new_context)[-1]
                     return True, new_context
 
                 else:
                     # Expression parsing failed
-                    context.message = f"Failed to evaluate expression '{address}. {exp.message}"
+                    context.message = f"Failed to resolve address or expression '{address}. {exp.message}"
                     return False, context
 
             except ValueError as err:
-                context.message = f"Failed to evaluate expression '{address}. {err}"
+                context.message = f"Failed to resolve address or expression '{address}. {err}"
                 return False, context
 
+
+        elif isinstance(address, dict):
+            # 3. Dictionary based expressions like {"product": "A", "channel": "Online"}
+            #    which are only supported for the CubeContext.
+            if not isinstance(context, CubeContext):
+                context.message = (f"Invalid address "
+                                   f"'{address}'. Dictionary based addressing is not "
+                                   f"supported for contexts representing a dimensions, members or measures.")
+                return False, context
+
+            # process all arguments of the dictionary
+            for dim_name, member in address.items():
+                if dim_name not in context.cube.dimensions:
+                    context.message = (f"Invalid address '{address}'. Dictionary key '{dim_name}' does "
+                                       f"not reference to a dimension (dataframe column name) defined "
+                                       f"for the cube.")
+                    return False, context
+                dim = context.cube.dimensions[dim_name]
+                # first add a dimension context...
+                context = DimensionContext(cube=context.cube, parent=context, address=dim_name,
+                                                    row_mask=context.row_mask,
+                                                    measure=context.measure, dimension=dim, resolve=False)
+                # ...then add the respective member context.
+                # This approach is required 1) to be able to properly rebuild the address and 2) to
+                # be able to apply the list-based member filters easily.
+                context = ContextResolver.resolve(context, member, target_dimension=dim)
+            return True, context
+
+
         elif isinstance(address, Iterable):
-            raise NotImplementedError("Not yet implemented.")
+            # 2. List based expressions like ["A", "B", "C"] or (1, 2, 3)
+            #    Conventions:
+            #    - When applied to CubeContext: elements can be measures, dimensions or members
+            #    - When applied to DimensionContext: elements can only be members of the current dimension
+            #    - When applied to MemberContext: NOT SUPPORTED
+            #    - When applied to MeasureContext: NOT SUPPORTED
+            if isinstance(context, DimensionContext):
+                # For increased performance, no individual upfront member checks will be made.
+                # Instead, we the list as a whole will processed by numpy.
+                member_mask = None
+                parent_row_mask = context.get_row_mask(before_dimension=context.dimension)
+                exists, new_row_mask, member_mask = (
+                    context.dimension._check_exists_and_resolve_member(member=address, row_mask=parent_row_mask,
+                                                                       parent_member_mask=member_mask, skip_checks=True))
+                if not exists:
+                    context.message = (f"Invalid member list '{address}'. "
+                                       f"At least one member seems to be an unsupported unhashable object.")
+                    return False, context
+
+                members = MemberSet(dimension=context.dimension, address=address, row_mask=new_row_mask,
+                                    members=address)
+                resolved_context = MemberContext(cube=context.cube, parent=context, address=address,
+                                                 row_mask=new_row_mask, member_mask=member_mask,
+                                                 measure=context.measure, dimension=context.dimension,
+                                                 members=members, resolve=False)
+                return True, resolved_context
+
+            elif isinstance(context, CubeContext):
+                # ...for CubeContext we need to check for arbitrary measures, dimensions and members.
+                for item in address:
+                    context = ContextResolver.resolve(context, item)
+                return True, context
+
+            else:
+                # ...for MemberContext and MeasureContext
+                context.message = (f"Invalid address '{address}'. List or tuple based addressing is not "
+                                   f"supported for contexts representing members or measures.")
+                return False, context
+
 
         context.message = (f"Invalid member name or address '{address}'. "
                            f"Tip: check for typos and upper/lower case issues.")
@@ -883,14 +986,17 @@ class ContextResolver:
 
 class ExpressionContextResolver:
     """A helper class to provide the current context to Expressions."""
-    def __init__(self,  context: Context):
+    def __init__(self, context: Context, address):
         self._context: Context | None = context
+        self._address = address
 
     @property
     def context(self):
         return self._context
 
-    def resolve(self, name: str) -> Context:
+    def resolve(self, name: str) -> Context | None:
+        if name == self._address:
+            return None
         # Please note that the context is changing/extended every time a new context is resolved.
         self._context = self._context[name]
         return self._context

@@ -33,7 +33,8 @@ measure = "sellingprice"
 # value = df.cubed["make:BMW", "sellingprice"]
 
 def normal_read():
-    value = cube[address].value
+    # value = cube[address].value
+    value = cube.context.make.BMW.sellingprice
     return value
 
 def cached_read():

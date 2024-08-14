@@ -78,7 +78,9 @@ class Dimension(Iterable, ABC):
 
     def _load_members(self):
         if self._member_array is None:
-            values, counts = np.unique(self._df[self._column].to_numpy(), return_counts=True)
+            #values, counts = np.unique(self._df[self._column].to_numpy(), return_counts=True)
+            values = self._df[self._column].to_numpy()
+            values = np.unique(values[values != np.array(None)])
             self._member_array = values
             self._member_list = self._member_array.tolist()
             self._members = set(self._member_list)
@@ -261,33 +263,47 @@ class Dimension(Iterable, ABC):
 
     def _check_exists_and_resolve_member(self, member,
                                          row_mask:np.ndarray | None = None,
-                                         parent_member_mask:np.ndarray | None = None) \
+                                         parent_member_mask:np.ndarray | None = None,
+                                         skip_checks:bool = False) \
             -> tuple[bool, np.ndarray | None, np.ndarray | None]:
 
         if self._caching > CachingStrategy.NONE:
-            if member in self._cache:
-                member_mask = self._cache[member]
-                if not parent_member_mask is None:
-                    member_mask = np.union1d(parent_member_mask, member_mask)
+            if isinstance(member, list):
+                member = tuple(sorted(member))
 
-                if row_mask is None:
-                    return True, member_mask, member_mask
-                else:
-                    return True, np.intersect1d(row_mask, member_mask), member_mask
+            try:
+                if member in self._cache:
+                    member_mask = self._cache[member]
+                    if not parent_member_mask is None:
+                        member_mask = np.union1d(parent_member_mask, member_mask)
 
-        self._load_members()
-        if not member in self._members:
-            return False, None, None
+                    if row_mask is None:
+                        return True, member_mask, member_mask
+                    else:
+                        return True, np.intersect1d(row_mask, member_mask), member_mask
+            except TypeError:
+                return False, None, None
 
-        mask = self._df[self._column] == member
-        member_mask = mask[mask == True].index.to_numpy()
+        if not skip_checks:
+            self._load_members()
+            if not member in self._members:
+                return False, None, None
+
+        # Evaluate the matching records
+        if isinstance(member, tuple) or isinstance(member, list):
+            mask = self._df[self._column].isin(member,)
+        else:
+            mask = self._df[self._column] == member
+        member_mask = mask[mask].index.to_numpy()
 
         if self._caching > CachingStrategy.NONE:
             self._cache[member] = member_mask
 
+        # for consecutive members from the same single dimension, we need to first union the masks
         if not parent_member_mask is None:
             member_mask = np.union1d(parent_member_mask, member_mask)
 
+        # if a row_mask is given, we need to intersect the member_mask with the row_mask
         if row_mask is None:
             return True, member_mask, member_mask
         else:

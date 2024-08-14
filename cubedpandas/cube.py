@@ -200,6 +200,9 @@ class Cube:
         self._zero_op = CubeAggregationFunction(self, CubeAggregationFunctionType.ZERO)
         self._nzero_op = CubeAggregationFunction(self, CubeAggregationFunctionType.NZERO)
 
+        # setup default context for the cube
+        self._context: Context = CubeContext(self)
+
     # region Properties
 
     @property
@@ -365,15 +368,36 @@ class Cube:
 
     # endregion
 
-    # region NEW context approach
-    @property
-    def context(self) -> Context:
-        return CubeContext(self)
-    # endregion
-
 
     # region Data Access Methods
-    def __getattr__(self, name) -> Cell | Filter:
+    @property
+    def context(self) -> Context:
+        return self._context
+
+    def __getattr__(self, name) -> Context:
+        """
+        Dynamically resolves dimensions, measure or member from the cube.
+        This enables a more natural access to the cube data using the Python dot notation.
+
+        If the name is not a valid Python identifier and contains special characters or whitespaces
+        or start with numbers, then the `slicer` method needs to be used to resolve the name,
+        e.g., if `12 data %` is the name of a column or value in a dataframe, then `cube["12 data %"]`
+        needs to be used to return the dimension, measure or column.
+
+        Args:
+            name: Existing Name of a dimension, member or measure in the cube.
+
+        Returns:
+            A Cell object that represents the cube data related to the address.
+
+        Samples:
+            >>> cdf = cubed(df)
+            >>> cdf.Online.Apple.cost
+            50
+        """
+        return self._context[name]
+
+    def __getattr_old__(self, name) -> Cell | Filter:
         """
         Dynamically resolves dimensions, measure or member from the cube. This enables a more natural
         access to the cube data using the Python dot notation.
@@ -419,7 +443,24 @@ class Cube:
 
         return Cell(self, address=name, dynamic_access=True)
 
-    def __getitem__(self, address: Any) -> Cell:
+    def __getitem__(self, address: Any) -> Context:
+        """
+        Returns a cell of the cube for a given address.
+        Args:
+            address:
+                A valid cube address.
+                Please refer the documentation for further details.
+
+        Returns:
+            A Cell object that represents the cube data related to the address.
+
+        Raises:
+            ValueError:
+                If the address is not valid or can not be resolved.
+        """
+        return self._context[address]
+
+    def __getitem_old__(self, address: Any) -> Cell:
         """
         Returns a cell of the cube for a given address.
         Args:
