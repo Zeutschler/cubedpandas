@@ -1,7 +1,7 @@
 # CubedPandas 
 <picture align="center"><img alt="Pandas Logo" src="https://raw.githubusercontent.com/Zeutschler/cubedpandas/master/pages/assets/cpd_logo.jpg"></picture>
 
-## Easy access to Pandas data
+## Multi-dimensional data analysis for Pandas dataframes
 
 [![PyPI version](https://badge.fury.io/py/cubedpandas.svg)](https://badge.fury.io/py/cubedpandas)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?label=PyPI%20downloads)](https://pypi.org/project/cubedpandas)
@@ -10,33 +10,28 @@
 
 -----------------
 
-***Note:*** *CubedPandas is at an early stage of its development. Features are likely subject to change. 
-[Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
+***Remark:*** *CubedPandas is in an early stage of its development. Features are likely subject to change. 
+But it's worth an early try. Your [Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
 [Feedback](https://github.com/Zeutschler/cubedpandas/discussions) are very welcome!*
 
-CubedPandas aims to provide an ***easy, fast & fun*** approach to access data in Pandas dataframes. 
+CubedPandas aims to provide an ***easy, fast & fun*** approach to access and analyse data in Pandas dataframes. 
 CubedPandas wraps almost any dataframe into a virtual multi-dimensional cube, which can be accessed, 
-aggregated, filtered, viewed and used in a highly convenient and natural way. 
+aggregated, filtered, viewed and used in a highly convenient and natural way. A simple example: 
 
 ```python
-# e.g. this...
-value = df.loc[df['make'] == 'Porsche', 'sellingprice'].sum()
-# ...turns into this
-value = cdf.Porsche.sellingprice
+# this...
+value = df.loc[df['make'] == 'Audi', 'price'].sum()
+# ...can turn into this.
+value = cdf.Audi.price
 ```
 
-CubedPandas is ***inspired by multi-dimensional OLAP databases*** (online analytical processing), which are 
-typically used for reporting, business intelligence, data warehousing and financial analysis. 
-Check out the samples below and give it a try.
+CubedPandas is inspired by [multi-dimensional OLAP Cubes](https://en.wikipedia.org/wiki/Online_analytical_processing), 
+which are typically used for business intelligence, data warehousing,reporting, planning and financial analysis.
+Cubed Pandas is also very lightweight, as data is not no unnecessary copied or transformed, but accessed directly 
+from the underlying dataframe. And it can be also quite fast, as it uses efficient filtering and can leverage
+clever caching to boost performance by factors. CubedPandas is available on [GitHub](https://github.com/Zeutschler/cubedpandas) and [PyPi](https://pypi.org/project/cubedpandas/). 
 
-CubedPandas is licensed under the [BSD 3-Clause License](LICENSE) and is available on 
-[GitHub](https://github.com/Zeutschler/cubedpandas) and [PyPi](https://pypi.org/project/cubedpandas/).
-
-If you have fallen in love with CubedPandas or find it otherwise valuable, please **consider 
-to sponsor the project** on [GitHub Sponsors](https://github.com/sponsors/Zeutschler), so many cool ideas/features to come. 
-
-
-## Getting started
+### Installation and Getting Started
 
 After installing CubedPandas...
 
@@ -62,66 +57,77 @@ df = pd.DataFrame({"product":  ["Apple",  "Pear",   "Banana", "Apple",  "Pear", 
 cdf = cubed(df)  # That's it! 'cdf' is now a (C)ubed(D)ata(F)rame
 ```
 
-### Multi-Dimensional Cubes?
-CubedPandas **automatically infers a multi-dimensional schema** from your dataframe. This schema defines 
-a multi-dimensional **Cube** over your Pandas dataframe. By default, numeric columns of the dataframe 
-are considered as **measures** - *the values to analyse & aggregate* - all other columns are 
-considered as the **dimensions** *to filter, navigate and view the data*. The individual values in a 
-dimension are called the **members** of the dimension. In the example above, `channel` is a dimension
-with the 2 members `Online` and `Retail`.
+### Multi-dimensional OLAP Cubes - What the heck is that?
+CubedPandas **automatically infers a multi-dimensional schema** from your Pandas dataframe. This schema 
+then defines a multi-dimensional **Cube** over the dataframe. By default, numeric columns of the dataframe 
+are considered as **measures** - *the numeric values to analyse & aggregate* - all other columns are 
+considered as **dimensions** - *to filter, navigate and view the data*. The individual values in a 
+dimension column are called the **members** of the dimension. In the example above, column `channel` 
+becomes a dimension with the 2 members `Online` and `Retail`.
 
 But you can also define your own schema. Schemas are quite powerful and flexible, as they will allow 
-you to define not only your dimensions and measures, but also custom aggregations, some business logic, 
-sorting, number formating etc. Note: This feature is not yet fully available, planned for release 0.2.0.
+you to define not only your dimensions and measures, but also aliases, custom aggregations, business logic, 
+sorting, number formating etc. Note: As of today, this feature is only partially implemented and planned 
+for an upcoming release.
 
-### Cells - Numbers Please...
-The key feature of CubePandas is an easy & intuitive access to individual **Cells** in 
-the virtual cube. You define a multi-dimensional address and CubedPandas will evaluate and return the 
-corresponding value from the underlying dataframe.
+### Context please...
+The key feature of CubePandas is an easy & intuitive access to individual **Data Cells** in 
+the virtual multi-dimensional data space of a cube. You'll need to define a multi-dimensional **Context** and 
+CubedPandas will evaluate, aggregate and return its corresponding value from the underlying dataframe.
 
-**Cells behave like numbers** (float, int), so you can use them in arithmetic operations. In the 
+**Context objects behave like numbers** (float, int), so you can use them in any arithmetic operations. In the 
 following examples, all addresses will refer to the exactly same data and thereby all return the same 
 value of `100`. 
 
 ```python
-# First, let's use Pandas to set the scene...
-a = df.loc[(df['product'] == 'Apple') & (df['channel'] == 'Online') & (df['customer'] == 'Peter'), 'revenue'].sum()
+# First, let Pandas set the scene...
+a = df.loc[(df["product"] == "Apple") & (df["channel"] == "Online") & (df["customer"] == "Peter"), "revenue"].sum()
 
-# Now with CubedPandas, using a fully qualified and non-ambiguous address, order doesn't matter
-a = cdf["product:Apple", "channel:Online", "customer:Peter", "revenue"]
+# Now, let's do the same thing with CubedPandas and 'cube' your dataframe...
+cdf = cubed(df)
 
-# If there are no ambiguities in your data, you can use a shorthand address
-b = cdf["Online", "Apple", "Peter", "revenue"]
+# The best and recommended way to define a context, is to aim for a non-ambiguous context 
+# that defines the requested dimensions, their members and a measure to be returned.
+b = cdf.product["Apple"].channel["Online"].customer["Peter"].revenue    # optimal way, best readability
+c = cdf["product:Apple", "channel:Online", "customer:Peter", "revenue"] # as a list or tuple
+d = cdf[{"product": "Apple", "channel": "Online", "customer": "Peter", "measure": "revenue"}] # as a dictionary 
+e = cdf.product.Apple.channel.Online.customer.Peter.revenue  # also possible, if member names are Python-compliant
 
-# And if member values are compliant with Python naming conventions, you can use
-c = cdf.Online.Apple.Peter.revenue
+# If there are no ambiguities in your data, you can also use shorthand contexts
+f = cdf["Online", "Apple", "Peter", "revenue"]
+g = cdf.Online.Apple.Peter.revenue
+h = cdf.Online.Apple.Peter # if the measure is the default measure ('revenue' is), it can be omitted
 
-assert a == b == c == 100
+assert a == b == c == d == e == f == g ==  h == 100
 ```
 
-### Slice The Dice
+### Aggregations, slicing, dicing and much more...
 
-CubedPandas allows you to slice & aggregate your data in a very convenient way. If no measure is defined, first measure in 
-the schema or dataframe (columns left to right) is used as the default measure, here `revenue`. So, if no measure is 
-specified, the default measure is used, hence `cdf["Apple", "Online"]` is equivalent to 
-`cdf["Apple", "Online", "revenue"]`.
+CubedPandas allows you to slice & aggregate your data in a very convenient and flexible way. Some examples:
 
 ```python
 a = cdf["Online"]              # 550 = 100 + 150 + 300
 b = cdf["product:Banana"]      # 650 = 300 + 350
 c = cdf["Apple", "cost"]       # 100 = 100 -> explicit sum
 d = cdf["Apple", "cost"].avg   # 75 = (50 + 100) / 2
-e = cdf["*"]                   # 1350 -> '*' means 'all' data 
-f = cdf.count                  # 6 -> returns the number of records in the cube
-g = cdf["customer:P*"]         # 750 = 100 + 150 + 300 + 200  -> wildcard search
+e = cdf.revenue                # 1350 -> all records for the measure 'revenue' 
+f = cdf.revenue.count          # 6 -> returns the number of records in the cube
+g = cdf["customer:P*"]         # 750 = 100 + 150 + 300 + 200  -> wildcard search for Peter and Paul
 h = cdf.Peter + cdf.Mary       # 850 = (100 + 150) + (250 + 350)
 i = cdf.cost                   # 715 -> sum of all records for the measure 'cost'
 ```
 
-### Your feedback & ideas are very welcome!
+For all the features, more information, cool capabilities and use cases as well as valuable tips and tricks, 
+please visit the [CubedPandas Documentation](https://zeutschler.github.io/cubedpandas/).
+
+
+### Your feedback, ideas and support are very welcome!
 Please help improve and extend CubedPandas with **your feedback & ideas** and use the 
 [CubedPandas GitHub Issues](https://github.com/Zeutschler/cubedpandas/issues) to request new features and report bugs. 
 For general questions, discussions and feedback, please use the 
 [CubedPandas GitHub Discussions](https://github.com/Zeutschler/cubedpandas/discussions).
 
-*Enjoy ... and happy cubing!*
+If you have fallen in love with CubedPandas or find it otherwise valuable, 
+please consider to [become a sponsor of the CubedPandas project](https://github.com/sponsors/Zeutschler).
+
+*...happy cubing!*

@@ -38,25 +38,12 @@ class Context(SupportsFloat):
     """
 
     # region Initialization
-    def __init__(self, cube: Cube, address: Any, parent: Context | None = None, row_mask: np.ndarray | None = None,
-                 measure: str | None | Measure = None, dimension: str | None | Dimension = None, resolve: bool = True):
+    def __init__(self, cube: Cube, address: Any, parent: Context | None = None,
+                 row_mask: np.ndarray | None = None, member_mask: np.ndarray | None = None,
+                 measure: str | None | Measure = None, dimension: str | None | Dimension = None,
+                 resolve: bool = True):
         """
-        Initializes a new Context object. Not indented for direct use, but for internal use only.
-        Args:
-            cube:
-                The cube object the context is referring to.
-            address:
-                The address the context is referring to.
-            parent:
-                (optional) A parent Context for chaining
-            row_mask:
-                (optional) A row mask to filter the data for the context.
-            measure:
-                (optional) A measure to calculate the value of the context.
-
-        Returns:
-            A new Context object.
-
+        Initializes a new Context object. For internal use only.
         Raises:
             ValueError:
                 If the address is invalid and does not refer to a
@@ -70,7 +57,7 @@ class Context(SupportsFloat):
         self._parent: Context = parent
         self._df = cube.df
         self._row_mask: np.ndarray | None = row_mask
-        self._member_mask: np.ndarray | None = None
+        self._member_mask: np.ndarray | None = member_mask
         self._measure: Measure | None = measure
         self._dimension: Dimension | None = dimension
         self._convert_values_to_python_data_types: bool = True
@@ -135,13 +122,13 @@ class Context(SupportsFloat):
         return self._dimension
 
     @property
-    def parent(self):
+    def parent(self) -> Context:
         """
         Returns:
              The parent Context of the current Context. If the current Context is the root Context of the cube,
              then the parent Context will be `None`.
         """
-        return self._cube
+        return self._parent
 
     def to_df(self) -> pd.DataFrame:
         """Returns:
@@ -362,7 +349,7 @@ class Context(SupportsFloat):
         """
         if self._measure is None:
             if self._parent is None:
-                self._measure = self._cube.measures.default_measure
+                self._measure = self._cube.measures.default
             else:
                 self._measure = self._parent._resolve_measure()
         return self._measure
@@ -537,24 +524,45 @@ class Context(SupportsFloat):
         return self.numeric_value == other
 
     def __and__(self, other):  # AND operator (A & B)
-        return self._boolean_op(other, "AND")
+        if isinstance(other, Context):
+            # Special case: boolean operation with another Context object
+            # Row masks of the two contexts need to be combined.
+            return BooleanOperationContext(self, other, "AND")
+        return self.numeric_value and other
 
     def __iand__(self, other):  # inplace AND operator (a &= b)
-        new_cell = self._boolean_op(other, "AND")
-        if isinstance(new_cell, Context):
-            self._row_mask = new_cell._row_mask
-        self._measure = new_cell._measure
+        if isinstance(other, Context):
+            # Special case: boolean operation with another Context object
+            # Row masks of the two contexts need to be combined.
+            return BooleanOperationContext(self, other, "AND")
+        return self.numeric_value and other
 
     def __rand__(self, other):  # and operator
-        return other and self.numeric_value
+        if isinstance(other, Context):
+            # Special case: boolean operation with another Context object
+            # Row masks of the two contexts need to be combined.
+            return BooleanOperationContext(self, other, "AND")
+        return self.numeric_value and other
 
     def __or__(self, other):  # OR operator (A | B)
+        if isinstance(other, Context):
+            # Special case: boolean operation with another Context object
+            # Row masks of the two contexts need to be combined.
+            return BooleanOperationContext(self, other, "OR")
         return self.numeric_value or other
 
     def __ior__(self, other):  # inplace OR operator (A |= B)
+        if isinstance(other, Context):
+            # Special case: boolean operation with another Context object
+            # Row masks of the two contexts need to be combined.
+            return BooleanOperationContext(self, other, "OR")
         return self.numeric_value or other
 
     def __ror__(self, other):  # or operator
+        if isinstance(other, Context):
+            # Special case: boolean operation with another Context object
+            # Row masks of the two contexts need to be combined.
+            return BooleanOperationContext(self, other, "OR")
         return other or self.numeric_value
 
     def __xor__(self, other):  # xor operator
@@ -570,13 +578,31 @@ class Context(SupportsFloat):
         return self.numeric_value.__abs__()
 
     def __bool__(self):
-        return self.numeric_value.__bool__()
+         return self.numeric_value.__bool__()
 
     def __str__(self):
         return self.value.__str__()
 
     def __repr__(self):
-        return self.value.__repr__()
+        # return self.value.__str__()
+
+        t = ""
+        if self._dimension is not None:
+            t += f"{self.dimension}:{self.address}"
+        elif self._address is not None:
+            t += f"{self._address}"
+        else:
+            t += f"*"
+        if not self.value is None:
+            t += f" = {self.value.__str__()}"
+        else:
+            t += f" = None"
+
+        if isinstance(self._parent, Context):
+            t += f" <<< {self.parent.__repr__()}"
+        return t
+
+
 
     def __round__(self, n=None):
         return self.numeric_value.__round__(n)
@@ -605,7 +631,7 @@ class Context(SupportsFloat):
         Returns:
             The sum of the values for a given address.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.SUM)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.SUM)
 
     @property
     def avg(self):
@@ -613,7 +639,7 @@ class Context(SupportsFloat):
         Returns:
             The average of the values for a given address.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.AVG)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.AVG)
 
     @property
     def median(self):
@@ -621,7 +647,7 @@ class Context(SupportsFloat):
         Returns:
              The median of the values for a given address.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.MEDIAN)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.MEDIAN)
 
     @property
     def min(self):
@@ -629,7 +655,7 @@ class Context(SupportsFloat):
         Returns:
             The minimum value for a given address.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.MIN)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.MIN)
 
     @property
     def max(self):
@@ -637,7 +663,7 @@ class Context(SupportsFloat):
         Returns:
              The maximum value for a given address.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.MAX)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.MAX)
 
     @property
     def count(self):
@@ -645,7 +671,7 @@ class Context(SupportsFloat):
         Returns:
              The number of the records matching a given address.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.COUNT)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.COUNT)
 
     @property
     def std(self):
@@ -653,7 +679,7 @@ class Context(SupportsFloat):
         Returns:
             The standard deviation of the values for a given address.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.STD)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.STD)
 
     @property
     def var(self):
@@ -661,7 +687,7 @@ class Context(SupportsFloat):
         Returns:
             The variance of the values for a given address.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.VAR)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.VAR)
 
     @property
     def pof(self):
@@ -669,7 +695,7 @@ class Context(SupportsFloat):
         Returns:
             The percentage of the sum of values for a given address related to all values in the data frame.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.POF)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.POF)
 
     @property
     def nan(self):
@@ -677,7 +703,7 @@ class Context(SupportsFloat):
         Returns:
             The number of non-numeric values for a given address. 'nan' stands for 'not a number'.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.NAN)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.NAN)
 
     @property
     def an(self):
@@ -685,7 +711,7 @@ class Context(SupportsFloat):
         Returns:
             The number of numeric values for a given address. 'an' stands for 'a number'.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.AN)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.AN)
 
     @property
     def zero(self):
@@ -693,7 +719,7 @@ class Context(SupportsFloat):
         Returns:
             The number of zero values for a given address. 'nan' stands for 'not a number'.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.ZERO)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.ZERO)
 
     @property
     def nzero(self):
@@ -701,26 +727,11 @@ class Context(SupportsFloat):
         Returns:
             The number of non-zero values for a given address. 'an' stands for 'a number'.
         """
-        return self._evaluate(self.mask, self.measure, CubeAggregationFunctionType.NZERO)
+        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.NZERO)
     # endregion
 
-    # region Utilitiy functions
-    @staticmethod
-    def _convert_to_python_type(value):
-        if isinstance(value, (np.integer, int)):
-            return int(value)
-        elif isinstance(value, (np.floating, float)):
-            return float(value)
-        elif isinstance(value, (np.datetime64, pd.Timestamp)):
-            return pd.Timestamp(value).to_pydatetime()
-        elif isinstance(value, (np.bool_, bool)):
-            return bool(value)
-        elif isinstance(value, (np.ndarray, pd.Series, list, tuple)):
-            if isinstance(value, np.ndarray):
-                value = value.tolist()
-            return [Context._convert_to_python_type(v) for v in value]
-        else:
-            return value
+    # region Utility functions
+
     # endregion
 
 
@@ -731,14 +742,75 @@ class CubeContext(Context):
 
     def __init__(self, cube: Cube):
         super().__init__(cube=cube, address=None, parent=None, row_mask=None, measure=None)
-        self._measure = cube.measures.default_measure
+        self._measure = cube.measures.default
+
+class ContextContext(Context):
+    """
+    A context representing by an existing context
+    """
+    def __init__(self, parent: Context, referenced_context: Context):
+        # merge the row masks of the parent and the referenced context
+        if parent.dimension == referenced_context.dimension:
+            parent_row_mask = parent.get_row_mask(before_dimension=parent.dimension)
+            member_mask = np.union1d(parent.member_mask, referenced_context.member_mask)
+            if parent_row_mask is None:
+                row_mask = member_mask
+            else:
+                row_mask = np.intersect1d(parent_row_mask, member_mask)
+        else:
+            member_mask = referenced_context.member_mask
+            if parent.row_mask is None:
+                row_mask = referenced_context.row_mask
+            else:
+                row_mask = np.intersect1d(parent.row_mask, member_mask)
+
+        super().__init__(cube=parent.cube, address=referenced_context.address, parent=parent,
+                         row_mask=row_mask, member_mask= referenced_context.member_mask,
+                         measure=referenced_context.measure, dimension=referenced_context.dimension,
+                         resolve=False)
+        self._referenced_context = referenced_context
+
+        @property
+        def referenced_context(self):
+            return self._referenced_context
+
+class BooleanOperationContext(Context):
+    """ A context representing a boolean operation between two Context objects."""
+    def __init__(self, left: Context, right: Context, operation: str):
+        self._left = left
+        self._right = right
+        self._operation = operation.upper().strip()
+        match self._operation:
+            case "AND":
+                row_mask = np.intersect1d(left.row_mask, right.row_mask)
+            case "OR":
+                row_mask = np.union1d(left.row_mask, right.row_mask)
+            case "XOR":
+                row_mask = np.setxor1d(left.row_mask, right.row_mask)
+            case _:
+                raise ValueError(f"Invalid boolean operation '{operation}'. Only 'AND', 'OR' and 'XOR' are allowed.")
+
+        super().__init__(cube=right.cube, address=None, parent=left.parent,
+                         row_mask=row_mask, member_mask=None,
+                         measure=right.measure, dimension=right.dimension, resolve=False)
+
+        @property
+        def left(self) -> Context:
+            return self._left
+
+        @property
+        def right(self) -> Context:
+            return self._right
+
+        @property
+        def operation(self) -> str:
+            return self._operation
 
 
 class MeasureContext(Context):
     """
     A context representing a measure of the cube.
     """
-
     def __init__(self, cube: Cube, parent: Context | None, address: Any = None, row_mask: np.ndarray | None = None,
                  measure: Measure | None = None, dimension: Dimension | None = None, resolve: bool = True):
         super().__init__(cube=cube, address=address, parent=parent, row_mask=row_mask,
@@ -792,7 +864,16 @@ class ContextResolver:
         measure = parent.measure
         dimension = parent.dimension
 
-        # 3. Let's resolve the address, we start with string addresses
+
+        # 2. If the address is already a context, then we can simply return it.
+        if isinstance(address, Context):
+            if parent.cube == address.cube:
+                return ContextContext(parent, address)
+            raise ValueError(f"The context handed in as an address argument refers to a different cube/dataframe. "
+                             f"Only contexts from the same cube can be used as address arguments.")
+
+
+        # 3. String addresses are resolved by checking for measures, dimensions and members.
         if isinstance(address, str):
 
             # 3.1. Check for names of measures
@@ -817,60 +898,59 @@ class ContextResolver:
                 #return ref
 
             # 3.3. Check for names of members over all dimensions
-            #      Let's start with the dimension that was handed in,
+            #      Let's try start with a dimension that was handed in,
             #      if a dimension was handed in from the parent context.
+            address_is_list, address = ContextResolver.address_to_list(cube, address)
+            if not address_is_list:
 
-            skip_checks = False
-            dimension_list = None
+                skip_checks = False
+                dimension_list = None
+                dimension_switched = False
 
-            # Check for dimension hints and leverage them, e.g. "products:apple", "children:1"
-            if target_dimension is not None:
-                dimension_list = [target_dimension]
-            elif ":" in address:
-                dim_name, member_name = address.split(":")
-                if dim_name.strip() in cube.dimensions:
-                    dimension = cube.dimensions[dim_name.strip()]
-                    address = member_name.strip()
-                    dimension_list = [dimension]
-                    skip_checks = True # let's skip the checks as we have a dimension hint
-            if dimension_list is None:
-                dimension_list = cube.dimensions.starting_with_this_dimension(dimension)
+                # Check for dimension hints and leverage them, e.g. "products:apple", "children:1"
+                if target_dimension is not None:
+                    dimension_list = [target_dimension]
+                elif ":" in address:
+                    dim_name, member_name = address.split(":")
+                    if dim_name.strip() in cube.dimensions:
+                        new_dimension = cube.dimensions[dim_name.strip()]
+                        dimension_switched = new_dimension != dimension
+                        dimension = new_dimension
 
-            for dim in dimension_list:
-                if dim == dimension:
-                    # We are still at the dimension that was handed in, therefore we need to check for
-                    # subsequent members from one dimension, e.g., if A, B, C are all members from the
-                    # same dimension, then `cube.A.B.C` will require to join the member rows of A, B and C
-                    # before we filter the rows from a previous context addressing another or no dimension.
-                    parent_row_mask = parent.get_row_mask(before_dimension=dimension)
-                    exists, new_row_mask, member_mask = (
-                        dimension._check_exists_and_resolve_member(address, parent_row_mask, member_mask,
-                                                                   skip_checks=skip_checks))
-                else:
-                    # This indicates a dimension context switch,
-                    # e.g. from `None` to dimension `A`, or from dimension `A` to dimension `B`.
-                    exists, new_row_mask, member_mask = dim._check_exists_and_resolve_member(address, row_mask)
+                        address = member_name.strip()  # todo: Datatype conversion required for int, bool, date?
+                        dimension_list = [dimension]
+                        skip_checks = True # let's skip the checks as we have a dimension hint
+                if dimension_list is None:
+                    dimension_list = cube.dimensions.starting_with_this_dimension(dimension)
 
-                if exists:
-                    # We found the member...
-                    member = Member(dim, address)
-                    members = MemberSet(dimension=dim, address=address, row_mask=new_row_mask,
-                                        members=[member])
-                    resolved_context = MemberContext(cube=cube, parent=parent, address=address,
-                                                     row_mask=new_row_mask, member_mask=member_mask,
-                                                     measure=measure, dimension=dim,
-                                                     members=members, resolve=False)
-                    return resolved_context
-                    # return ContextReference(context=resolved_context, address=address,
-                    #                        row_mask=new_row_mask, member_mask=member_mask,
-                    #                        measure=measure, dimension=dim)
+                for dim in dimension_list:
+                    if dim == dimension and not dimension_switched:
+                        # We are still at the dimension that was handed in, therefore we need to check for
+                        # subsequent members from one dimension, e.g., if A, B, C are all members from the
+                        # same dimension, then `cube.A.B.C` will require to join the member rows of A, B and C
+                        # before we filter the rows from a previous context addressing another or no dimension.
+                        parent_row_mask = parent.get_row_mask(before_dimension=dimension)
+                        exists, new_row_mask, member_mask = (
+                            dimension._check_exists_and_resolve_member(address, parent_row_mask, member_mask,
+                                                                       skip_checks=skip_checks))
+                    else:
+                        # This indicates a dimension context switch,
+                        # e.g. from `None` to dimension `A`, or from dimension `A` to dimension `B`.
+                        exists, new_row_mask, member_mask = dim._check_exists_and_resolve_member(address, row_mask)
 
-        if isinstance(address, Context):
-            # We have a context, so let's return it as is...
-            if parent.cube == address.cube:
-                return address
-            raise ValueError(f"The context handed in as an address argument refers to a different cube/dataframe. "
-                             f"Only contexts from the same cube can be used as address arguments.")
+                    if exists:
+                        # We found the member...
+                        member = Member(dim, address)
+                        members = MemberSet(dimension=dim, address=address, row_mask=new_row_mask,
+                                            members=[member])
+                        resolved_context = MemberContext(cube=cube, parent=parent, address=address,
+                                                         row_mask=new_row_mask, member_mask=member_mask,
+                                                         measure=measure, dimension=dim,
+                                                         members=members, resolve=False)
+                        return resolved_context
+                        # return ContextReference(context=resolved_context, address=address,
+                        #                        row_mask=new_row_mask, member_mask=member_mask,
+                        #                        measure=measure, dimension=dim)
 
 
         if not dynamic_attribute:
@@ -985,15 +1065,40 @@ class ContextResolver:
                 return True, context
 
             else:
-                # ...for MemberContext and MeasureContext
+                # ...for MemberContext and MeasureContext and ContextContext we need to raise an error.
                 context.message = (f"Invalid address '{address}'. List or tuple based addressing is not "
-                                   f"supported for contexts representing members or measures.")
+                                   f"supported for contexts representing members, measures or referenced contexts.")
                 return False, context
 
 
         context.message = (f"Invalid member name or address '{address}'. "
                            f"Tip: check for typos and upper/lower case issues.")
         return False, context
+
+    @staticmethod
+    def address_to_list(cube, address:str):
+        delimiter = cube.settings.list_delimiter
+        if not delimiter in address:
+            return False, address
+        address = address.split(delimiter)
+        return True, [a.strip() for a in address]
+
+    @staticmethod
+    def merge_contexts(parent: Context, child: Context) -> Context:
+        """Merges the rows of two contexts."""
+
+        if parent.dimension == child.dimension:
+            parent_row_mask = parent.get_row_mask(before_dimension=parent.dimension)
+            child._member_mask = np.union1d(parent.member_mask, child.member_mask)
+            child._row_mask = np.intersect1d(parent_row_mask, child._member_mask)
+
+        else:
+            child._row_mask = np.intersect1d(parent.row_mask, child._member_mask)
+
+
+        return child
+
+
 
 
 class ExpressionContextResolver:

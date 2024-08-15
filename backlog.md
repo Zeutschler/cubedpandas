@@ -5,6 +5,10 @@
 ### Reimplementation of the core functionality
 
 #### ... as related to new context based addressing
+- [ ] `and` and `or` operators for `Context` objects. `and` as default.
+- [x] Allow to set the default measure 
+- [ ] Filter functions for dimensions: include, exclude, filter, like, regex, etc.
+- [ ] Filter functions for measures: gt, lt, eq, ne, etc.
 - [ ] Data Type Validation for columns
 - [ ] Cleanup/rewrite all tests based on new syntax
 - [ ] Rewrite documentation based on new syntax

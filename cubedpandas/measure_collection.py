@@ -9,10 +9,12 @@ class MeasureCollection(Iterable[Measure]):
     Represents the available/defined Measures of a Cube.
     """
 
-    def __init__(self):
+    def __init__(self, parent=None):
         self._measures: dict = {}
         self._counter: int = 0
         self._measure_list: list = []
+        self._parent = parent
+        self._default_measure = None
         pass
 
     def __iter__(self) -> Self:
@@ -43,10 +45,27 @@ class MeasureCollection(Iterable[Measure]):
         self._measure_list = list(self._measures.values())
 
     @property
-    def default_measure(self) -> Measure:
+    def default(self) -> Measure:
         """
         Returns:
-            The default measure of the Cube. If not defined otherwise, e.g. by a cube schema, the default measure
-            refers to the first numeric column (int or float) in the cube, evaluated from left to right.
+            Returns the default measure of the Cube. If not defined otherwise by a cube schema
+            or manually set by the user, the default measure refers to the first numeric column (int or float)
+            in the cube, evaluated from left to right.
         """
-        return self[0]
+        if self._default_measure is None:
+            return self[0]
+        else:
+            return self._default_measure
+
+    @default.setter
+    def default(self, value: Measure | str):
+        """
+        Sets the default measure of the Cube.
+        Parameters:
+            value:  The name of the measure to be set as default.
+        """
+        if isinstance(value, Measure):
+            value = value.column
+        if value not in self:
+            raise ValueError(f"Measure '{value}' not found in MeasureCollection.")
+        self._default_measure = self[value]

@@ -9,6 +9,7 @@ import pandas as pd
 
 from cubedpandas.cube_aggregation import (CubeAggregationFunctionType,
                                           CubeAggregationFunction, CubeAllocationFunctionType)
+from cubedpandas.cube_settings import CubeSettings
 from cubedpandas.schema import Schema
 from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.measure import Measure
@@ -153,6 +154,7 @@ class Cube:
             >>> cdf["product:B"]
             2
         """
+        self._settings = CubeSettings()
         self._convert_values_to_python_data_types: bool = True
         self._df: pd.DataFrame = df
         self._infer_schema: bool = infer_schema
@@ -195,9 +197,17 @@ class Cube:
         self._nzero_op = CubeAggregationFunction(self, CubeAggregationFunctionType.NZERO)
 
         # setup default context for the cube
-        self._context: Context = CubeContext(self)
+        self._context: Context | None = None
 
     # region Properties
+
+    @property
+    def settings(self) -> CubeSettings:
+        """
+        Returns:
+            The settings of the Cube.
+        """
+        return self._settings
 
     @property
     def measures(self) -> MeasureCollection:
@@ -365,6 +375,8 @@ class Cube:
     # region Data Access Methods
     @property
     def context(self) -> Context:
+        context = CubeContext(self)
+        return context
         return self._context
 
     def __getattr__(self, name) -> Context:
@@ -388,6 +400,8 @@ class Cube:
             >>> cdf.Online.Apple.cost
             50
         """
+        context = CubeContext(self)
+        return context[name]
         return self._context[name]
 
 
@@ -406,6 +420,8 @@ class Cube:
             ValueError:
                 If the address is not valid or can not be resolved.
         """
+        context = CubeContext(self)
+        return context[address]
         return self._context[address]
 
     def __setitem__(self, address, value):

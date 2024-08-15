@@ -102,22 +102,48 @@ class TestCubeContext(TestCase):
     def test_cube_context_with_dim_hints_methods(self):
         c = Cube(self.df, schema=self.schema)
 
+        self.assertEqual(c["product:A, channel:Online"], 100)
+        self.assertEqual(c["product:A, channel:Online, sales"], 100)
+
         self.assertEqual(c["product:A"], 100 + 200)
         self.assertEqual(c["product:A", "Online"], 100)
+        self.assertEqual(c["product:A, Online"], 100)
 
     def test_cube_context_with_context_arguments(self):
         c = Cube(self.df, schema=self.schema)
 
-        # define a context filter
-        filter = c.A
-
-        self.assertEqual(c[filter], 100 + 200)
-        self.assertEqual(c[filter, "Online"], 100)
-        self.assertEqual(c[filter, "B", "Online"], 100 + 150) # filter and 'B' are from the same dimension, so they get joined
-        self.assertEqual(c["B", filter, "Online"], 100) # todo: filter overrides the 'B' dimension, so the result is not the same as above. What to do?
 
         filter = c.A.Online
         self.assertEqual(c[filter, "cost"], 50)
+
+        # define a context filter
+        filter = c.A
+
+        self.assertEqual(c[filter, "B", "Online"], 100 + 150) # filter and 'B' are from the same dimension, so they get joined
+
+        self.assertEqual(c[filter], 100 + 200)
+        self.assertEqual(c[filter, "Online"], 100)
+        self.assertEqual(c["Online", filter], 100)
+
+        self.assertEqual(c["B", filter, "Online"], 250)
+
+    def test_cube_context_operations(self):
+        c = Cube(self.df, schema=self.schema)
+
+
+        left = c.A
+        right = c.B
+        result = left | right
+
+        self.assertEqual(c[left | right], 100 + 150 + 200 + 250)
+        self.assertEqual(c[left & right], 0)
+
+        left = c.A
+        right = c.Online
+        self.assertEqual(c[left | right], (100 + 150 + 300) + 200)
+        self.assertEqual(c[left & right], 100)
+
+
 
     def test_cube_context_dict_methods(self):
         c = Cube(self.df, schema=self.schema)
