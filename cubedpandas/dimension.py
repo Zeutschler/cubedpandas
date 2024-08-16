@@ -15,7 +15,6 @@ from pandas.api.types import (is_string_dtype, is_numeric_dtype, is_bool_dtype,
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 from cubedpandas.date_parser import parse_date
 from cubedpandas.statistics import DimensionStatistics
-from cubedpandas.filter import Filter, FilterOperation, DimensionFilter, MeasureFilter
 
 
 class Dimension(Iterable, ABC):
@@ -40,7 +39,7 @@ class Dimension(Iterable, ABC):
         self._cache_members: list | None = None
         self._counter: int = 0
 
-    def __getattr__(self, name) -> Filter:
+    def __getattr__(self, name):
         """
         Dynamically resolves a Filter based on member names from the dimension. This enables a more natural
         access to the cube data using the Python dot notation.
@@ -74,7 +73,7 @@ class Dimension(Iterable, ABC):
             >>> cdf.Online.Apple.cost
             50
         """
-        return DimensionFilter(parent=self, expression=name)  #, dynamic_access=True)
+        raise NotImplementedError("Not implemented yet")
 
 
     def _load_members(self):

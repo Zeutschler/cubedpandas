@@ -17,7 +17,7 @@ from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.dimension import Dimension
 from cubedpandas.member import Member
 from cubedpandas.ambiguities import Ambiguities
-from cubedpandas.filter import Filter, FilterOperation
+#from cubedpandas.filter import Filter, FilterOperation
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 # from cubedpandas.cell import Cell
 from cubedpandas.context import Context, CubeContext, FilterContext

@@ -7,8 +7,7 @@ from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.caching_strategy import CachingStrategy
 from cubedpandas.cube import Cube
-from cubedpandas.filter import FilterOperation, Filter, DimensionFilter, MeasureFilter, CellFilter
-# from cubedpandas.cell import Cell
+from cubedpandas.context import Context
 from cubedpandas.slice import Slice
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction
 from cubedpandas.pandas_extension import CubedPandasAccessor, EAGER_CACHING_THRESHOLD
@@ -23,8 +22,7 @@ VERSION = "0.1.3"
 __all__ = [
     "Ambiguities",
     "CachingStrategy",
-    # "Cell",
-    "CellFilter",
+    "Context",
     "Cube",
     "CubeAggregationFunctionType",
     "CubeAggregationFunction",
@@ -32,13 +30,9 @@ __all__ = [
     "CubedPandasAccessor",
     "Dimension",
     "DimensionCollection",
-    "DimensionFilter",
     "EAGER_CACHING_THRESHOLD",
-    "Filter",
-    "FilterOperation",
     "Measure",
     "MeasureCollection",
-    "MeasureFilter",
     "Resolver",
     "Resolvers",
     "Schema",

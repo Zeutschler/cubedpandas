@@ -3,15 +3,12 @@
 from __future__ import annotations
 
 import datetime
-import inspect
 from collections.abc import Iterable
 from enum import IntEnum
 from typing import SupportsFloat, TYPE_CHECKING, Any
 import numpy as np
 import pandas as pd
 
-import context
-from cubedpandas.member import Member, MemberSet
 
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
@@ -25,6 +22,7 @@ if TYPE_CHECKING:
 from cubedpandas.cube_aggregation import (CubeAggregationFunctionType,
                                           CubeAggregationFunction,
                                           CubeAllocationFunctionType)
+from cubedpandas.member import Member, MemberSet
 from cubedpandas.measure import Measure
 from cubedpandas.expression import Expression
 from cubedpandas.date_parser import parse_date
