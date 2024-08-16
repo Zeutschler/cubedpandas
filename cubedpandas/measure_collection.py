@@ -32,7 +32,9 @@ class MeasureCollection(Iterable[Measure]):
     def __len__(self):
         return len(self._measures)
 
-    def __getitem__(self, item) -> Measure:
+    def __getitem__(self, item) -> Measure | None:
+        if len(self._measures) == 0:
+            return None
         if isinstance(item, str):
             return self._measures[item]
         return self._measure_list[item]

@@ -19,8 +19,8 @@ from cubedpandas.member import Member
 from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.filter import Filter, FilterOperation
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
-from cubedpandas.cell import Cell
-from cubedpandas.context import Context, CubeContext
+# from cubedpandas.cell import Cell
+from cubedpandas.context import Context, CubeContext, FilterContext
 from cubedpandas.slice import Slice
 
 from cubedpandas.resolvers.resolvers import Resolvers
@@ -68,6 +68,7 @@ class Cube:
     def __init__(self, df: pd.DataFrame, schema=None,
                  infer_schema: bool = True,
                  read_only: bool = True,
+                 ignore_member_key_errors: bool = True,
                  ignore_case: bool = True,
                  ignore_key_errors: bool = True,
                  caching: CachingStrategy = CachingStrategy.LAZY,
@@ -162,6 +163,7 @@ class Cube:
         self._caching: CachingStrategy = caching
         self._caching_threshold: int = caching_threshold
         self._member_cache: dict = {}
+        self._ignore_member_key_errors: bool = ignore_member_key_errors
         self._ignore_case: bool = ignore_case
         self._ignore_key_errors: bool = ignore_key_errors
         self._eager_evaluation: bool = eager_evaluation
@@ -180,21 +182,6 @@ class Cube:
         # warm up cache, if required
         if self._caching >= CachingStrategy.EAGER:
             self._warm_up_cache()
-
-        # setup default aggregation functions
-        self._sum_op = CubeAggregationFunction(self, CubeAggregationFunctionType.SUM)
-        self._avg_op = CubeAggregationFunction(self, CubeAggregationFunctionType.AVG)
-        self._median_op = CubeAggregationFunction(self, CubeAggregationFunctionType.MEDIAN)
-        self._min_op = CubeAggregationFunction(self, CubeAggregationFunctionType.MIN)
-        self._max_op = CubeAggregationFunction(self, CubeAggregationFunctionType.MAX)
-        self._count_op = CubeAggregationFunction(self, CubeAggregationFunctionType.COUNT)
-        self._stddev_op = CubeAggregationFunction(self, CubeAggregationFunctionType.STD)
-        self._var_op = CubeAggregationFunction(self, CubeAggregationFunctionType.VAR)
-        self._pof_op = CubeAggregationFunction(self, CubeAggregationFunctionType.POF)
-        self._nan_op = CubeAggregationFunction(self, CubeAggregationFunctionType.NAN)
-        self._an_op = CubeAggregationFunction(self, CubeAggregationFunctionType.AN)
-        self._zero_op = CubeAggregationFunction(self, CubeAggregationFunctionType.ZERO)
-        self._nzero_op = CubeAggregationFunction(self, CubeAggregationFunctionType.NZERO)
 
         # setup default context for the cube
         self._context: Context | None = None
@@ -251,6 +238,21 @@ class Cube:
         """
         raise NotImplementedError("Not implemented yet")
         self._read_only = value
+
+    @property
+    def ignore_member_key_errors(self) -> bool:
+        """
+        Returns:
+            True if the Cube is ignoring member key errors, otherwise False.
+        """
+        return self._ignore_member_key_errors
+
+    @ignore_member_key_errors.setter
+    def ignore_member_key_errors(self, value: bool):
+        """
+        Sets the member key error handling of the Cube.
+        """
+        self._ignore_member_key_errors = value
 
     @property
     def ignore_case(self) -> bool:
@@ -377,7 +379,6 @@ class Cube:
     def context(self) -> Context:
         context = CubeContext(self)
         return context
-        return self._context
 
     def __getattr__(self, name) -> Context:
         """
@@ -401,9 +402,14 @@ class Cube:
             50
         """
         context = CubeContext(self)
-        return context[name]
-        return self._context[name]
 
+        if str(name).endswith("_"):
+            name = str(name)[:-1]
+            context = context[name]
+            context = FilterContext(context)
+            return context
+
+        return context[name]
 
     def __getitem__(self, address: Any) -> Context:
         """
@@ -437,10 +443,11 @@ class Cube:
             PermissionError:
                 If write back is attempted on a read-only Cube.
         """
-        if self._read_only:
-            raise PermissionError("Write back is not permitted on a read-only cube.")
-        dest_slice: Cell = Cell(cube=self, adress=address)
-        dest_slice.value = value
+        raise NotImplementedError("Not implemented yet")
+        #if self._read_only:
+        #    raise PermissionError("Write back is not permitted on a read-only cube.")
+        #dest_slice: Cell = Cell(cube=self, adress=address)
+        #dest_slice.value = value
 
     def __delitem__(self, address):
         """
@@ -454,10 +461,11 @@ class Cube:
             PermissionError:
                 If write back is attempted on a read-only Cube.
         """
-        if self._read_only:
-            raise PermissionError("Write back is not permitted on a read-only cube.")
-        dest_slice: Cell = Cell(self, address=address)
-        self._delete(dest_slice._row_mask)
+        raise NotImplementedError("Not implemented yet")
+        #if self._read_only:
+        #    raise PermissionError("Write back is not permitted on a read-only cube.")
+        #dest_slice: Cell = Cell(self, address=address)
+        #self._delete(dest_slice._row_mask)
 
     def slice(self, rows=None, columns=None, filters=None) -> Slice:
         """

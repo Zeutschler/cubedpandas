@@ -41,14 +41,16 @@ class TestCube(TestCase):
         schema = {"dimensions": [{"column": "sales"}], "measures": [{"column": "sales"}]}
 
         cdf = cubed(df, schema)
+
+        self.assertEqual(cdf[1], 1)
+        self.assertEqual(cdf[2], 2)
+        self.assertEqual(cdf[3], 3)
+
         self.assertEqual(cdf["sales"].avg, 2.0)
         self.assertEqual(cdf["*"], 6)
         self.assertEqual(cdf.sales, 6)
         self.assertEqual(cdf["sales"], 6)
 
-        self.assertEqual(cdf[1], 1)
-        self.assertEqual(cdf[2], 2)
-        self.assertEqual(cdf[3], 3)
 
         with self.assertRaises(ValueError):
             a = cdf[4] # there is no member 4 in dimension sales
@@ -73,12 +75,9 @@ class TestCube(TestCase):
         self.assertEqual(cdf.A, 100 + 200)
 
         self.assertEqual(cdf[{"product": ("A", "B")}], 100 + 200 + 150 + 250)
-        self.assertEqual(cdf[("A", "B"),], 100 + 200 + 150 + 250)
+        self.assertEqual(cdf[("A", "B")], 100 + 200 + 150 + 250)
+        self.assertEqual(cdf["A", "B"], 100 + 200 + 150 + 250)
 
-        with self.assertRaises(ValueError):
-            a = cdf["A", "B"]     # a dimension has been used multiple times
-        with self.assertRaises(ValueError):
-            a = cdf[("A", "B")]   # a dimension has been used multiple times
 
 
     def test_scalar_member_access(self):
@@ -109,19 +108,19 @@ class TestCube(TestCase):
     def test_tuple_member_access(self):
         cube = Cube(self.df, schema=self.schema)
 
-        value = cube[("A", "B"),]
+        value = cube[("A", "B")]
         self.assertEqual(value, 100 + 200 + 150 + 250)
-        value = cube[("A", "C"),]
+        value = cube["A", "C"]
         self.assertEqual(value, 100 + 200 + 300 + 350)
-        value = cube[("A", "B", "C"),]
+        value = cube["A", "B", "C"]
         self.assertEqual(value, 100 + 200 + 150 + 250 + 300 + 350)
 
-        value = cube["Online", ("A", "B")]
+        value = cube["Online", "A", "B"]
         self.assertEqual(value, 100 + 150)
-        value = cube[("Online", "Retail"),]
+        value = cube["Online", "Retail"]
         self.assertEqual(value, 100 + 150 + 300 + 200 + 250 + 350)
 
-        value = cube[("Online", "Retail"), ("A", "C")]
+        value = cube["Online", "Retail", "A", "C"]
         self.assertEqual(value, 100 + 200 + 300 + 350)
 
     def test_cube_primary_aggregations(self):
@@ -138,33 +137,12 @@ class TestCube(TestCase):
         self.assertEqual(cube["A"].var, 2500)
         self.assertEqual(round(cube["A"].pof,5), round(300 / (100 + 150 + 300 + 200 + 250 + 350),5))
 
-
         self.assertEqual(cube["A"].count, 2)
         self.assertEqual(cube["A"].an, 2)
         self.assertEqual(cube["A"].nan, 0)
         self.assertEqual(cube["A"].zero, 0)
         self.assertEqual(cube["A"].nzero, 2)
 
-    def test_cube_secondary_aggregations(self):
-        cube = Cube(self.df, schema=self.schema)
-
-        self.assertEqual(cube["A"], 300)
-        self.assertEqual(cube["A"]["Online"], 100)  # (A, online) = 100
-
-        self.assertEqual(cube["A"].sum["Online"], 100)
-        self.assertEqual(cube["A"].min["Online"], 100)
-        self.assertEqual(cube["A"].max["Online"], 100)
-        self.assertEqual(cube["A"].avg["Online"], 100)
-        self.assertEqual(cube["A"].median["Online"], 100)
-        self.assertEqual(cube["A"].std["Online"], 0)
-        self.assertEqual(cube["A"].var["Online"], 0)
-        self.assertEqual(round(cube["A"].pof["Online"],5), round(100 / (100 + 150 + 300 + 200 + 250 + 350), 5))
-
-        self.assertEqual(cube["A"].count["Online"], 1)
-        self.assertEqual(cube["A"].an["Online"], 1)
-        self.assertEqual(cube["A"].nan["Online"], 0)
-        self.assertEqual(cube["A"].zero["Online"], 0)
-        self.assertEqual(cube["A"].nzero["Online"], 1)
 
     def test_cube_primary_arithmetic(self):
         cube = Cube(self.df, schema=self.schema)

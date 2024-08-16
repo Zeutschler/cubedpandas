@@ -1,6 +1,7 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 import random
 import sys
+import re
 from fnmatch import fnmatch
 from abc import ABC
 from typing import Iterable, Self, Literal
@@ -78,15 +79,21 @@ class Dimension(Iterable, ABC):
 
     def _load_members(self):
         if self._member_array is None:
-            #values, counts = np.unique(self._df[self._column].to_numpy(), return_counts=True)
             values = self._df[self._column].to_numpy()
-            values = np.unique(values[values != np.array(None)])
+            try:
+                values = np.unique(values[values != np.array(None)], equal_nan=True)
+            except TypeError:
+                # Occurs when the column contains 2+ datatypes that can not be compared (for sorting) e.g. date and str
+                # In this case, we can not use np.unique, so we just use the slower Python set
+                values = list(set(values))  # sorting would throw again an error, so we use the set as-is
+                values = np.array(values)
+
+            if self._df[self._column].dtype == np.dtype('<M8[ns]'):
+                values = pd.to_datetime(values)
+
             self._member_array = values
             self._member_list = self._member_array.tolist()
             self._members = set(self._member_list)
-        #if self._members is None:  # lazy loading
-        #    self._member_list = self._df[self._column].unique().tolist()
-        #    self._members = set(self._member_list)
 
     def _cache_warm_up(self, caching_threshold: int = EAGER_CACHING_THRESHOLD):
         """Warms up the cache of the Cube."""
@@ -131,17 +138,45 @@ class Dimension(Iterable, ABC):
         else:
             return member in self._members
 
-    def filter(self, expression) -> DimensionFilter:
+    def wildcard_filter(self, pattern) -> (bool, list):
         """
-        Returns a new DimensionFilter object based on the given expression.
+        Returns a list of members that match the given wildcard pattern.
 
         Args:
-            expression: A member name or a valid filter expression.
+            pattern: A wildcard pattern to filter the dimension members.
 
         Returns:
             A new DimensionFilter object.
         """
-        return DimensionFilter(self,expression)
+        if pattern == "*":
+            # return all members
+            return True, None
+
+        members = self.members
+
+        matched_members = []
+        if isinstance(pattern,re.Pattern):
+            # a compiled regex pattern was given
+            matched_members = [x for x in members if pattern.match(x)]
+        elif isinstance(pattern, str):
+            try:
+                # wildcard search
+                pattern = "^" + re.escape(pattern).replace("\\*", ".*").replace("\\?", ".") + "$";
+                pattern = re.compile(pattern)
+                matched_members = [x for x in members if pattern.match(x)]
+            except re.error:
+                try:
+                    # regex search
+                    pattern = re.compile(pattern)
+                    matched_members = [x for x in members if pattern.match(x)]
+                except re.error:
+                    return False, None
+
+        if len(matched_members) == 0:
+            return False, None
+
+        return True, matched_members
+
 
     @property
     def df(self) -> pd.DataFrame:
@@ -209,16 +244,6 @@ class Dimension(Iterable, ABC):
     def __repr__(self):
         return self._column
 
-    def _resolve_wildcard_members(self, members) -> list:
-        if members == "*":
-            return self.members
-        else:
-            if not isinstance(members, list | tuple):
-                members = (members, )
-            l1 = self.members
-            l2 = set(members)
-            matched_members = [x for x in l1 if any(fnmatch(x, p) for p in l2)]
-            return matched_members
 
     def _resolve(self, member, row_mask=None) -> np.array:
         """
@@ -239,7 +264,7 @@ class Dimension(Iterable, ABC):
                     return self._cache[member]
                 else:
                     # todo: maybe add faster intersection?
-                    return np.intersect1d(row_mask, self._cache[member])
+                    return np.intersect1d(row_mask, self._cache[member], assume_unique=True)
 
         # 2. ...if not, resolve the member(s)
         mask: np.ndarray | None = None
@@ -259,12 +284,13 @@ class Dimension(Iterable, ABC):
         if row_mask is None:
             return mask
         else:
-            return np.intersect1d(row_mask, mask)
+            return np.intersect1d(row_mask, mask, assume_unique=True)
 
     def _check_exists_and_resolve_member(self, member,
                                          row_mask:np.ndarray | None = None,
                                          parent_member_mask:np.ndarray | None = None,
-                                         skip_checks:bool = False) \
+                                         skip_checks:bool = False,
+                                         evaluate_as_range: bool = False) \
             -> tuple[bool, np.ndarray | None, np.ndarray | None]:
 
         if self._caching > CachingStrategy.NONE:
@@ -280,7 +306,7 @@ class Dimension(Iterable, ABC):
                     if row_mask is None:
                         return True, member_mask, member_mask
                     else:
-                        return True, np.intersect1d(row_mask, member_mask), member_mask
+                        return True, np.intersect1d(row_mask, member_mask, assume_unique=True), member_mask
             except TypeError:
                 return False, None, None
 
@@ -291,10 +317,15 @@ class Dimension(Iterable, ABC):
 
         # Evaluate the matching records
         if isinstance(member, tuple) or isinstance(member, list):
-            mask = self._df[self._column].isin(member,)
+            if evaluate_as_range:
+                mask = self._df[self._column].between(member[0], member[1])
+            else:
+                mask = self._df[self._column].isin(member,)
         else:
             mask = self._df[self._column] == member
         member_mask = mask[mask].index.to_numpy()
+        if member_mask.size == 0:
+            return False, None, None
 
         if self._caching > CachingStrategy.NONE:
             self._cache[member] = member_mask
@@ -307,7 +338,7 @@ class Dimension(Iterable, ABC):
         if row_mask is None:
             return True, member_mask, member_mask
         else:
-            return True, np.intersect1d(row_mask, member_mask), member_mask
+            return True, np.intersect1d(row_mask, member_mask, assume_unique=True), member_mask
 
 
     def _resolve_member(self, member, row_mask=None) -> np.ndarray:
