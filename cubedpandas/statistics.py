@@ -36,7 +36,7 @@ class DimensionStatistics:
         import matplotlib.pyplot as plt
 
         if measures is None:
-            measures = [self._dimension.cube.default_measure, ]
+            measures = [self._dimension.cube.default, ]
 
         for measure in measures:
             data = self._dimension.cube._df[measure].value_counts(dropna=False, ascending=False)

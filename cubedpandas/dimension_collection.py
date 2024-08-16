@@ -32,9 +32,25 @@ class DimensionCollection(Iterable[Dimension]):
     def __getitem__(self, item) -> Dimension:
         return self._dims[item]
 
+    def __contains__(self, key):
+        return key in self._dims
+
     def add(self, dimension: Dimension):
         self._dims[dimension.column] = dimension
 
-    @property
-    def as_set(self):
+    def to_set(self):
         return set(self._dims.values())
+    def to_list(self):
+        return list(self._dims.values())
+
+    def excluded(self, exclude: Dimension | None = None):
+        if exclude is None:
+            return self._dims.values()
+        return [dim for dim in self._dims.values() if dim != exclude]
+
+    def starting_with_this_dimension(self, first: Dimension | None = None):
+        if first is None:
+            return self._dims.values()
+        result =[first]
+        result.extend([dim for dim in self._dims.values() if dim != first])
+        return result

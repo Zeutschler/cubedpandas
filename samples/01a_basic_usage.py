@@ -9,7 +9,7 @@ df = pd.DataFrame({"product":  ["Apple",  "Pear",   "Banana", "Apple",  "Pear", 
                    "revenue":  [100,      150,      300,      200,      250,      350     ],
                    "cost":     [50,        90,      150,      100,      150,      175     ]})
 
-cdf = cubed(df)  # That's it! You now have multi-dimensional access to your dataframe. Let's see...
+cdf = df.cubed.cube  # That's it! You now have multi-dimensional access to your dataframe. Let's see...
 
 # CubedPandas automatically infers the schema from the dataframe. (By default) numeric columns are considered as
 # measures, all other columns are considered as dimensions. But you can also provide your own schema.
@@ -31,6 +31,8 @@ print(cdf["Online", "Apple", "Peter", "revenue"]) # 100
 # 1.4 If member names (string values) are also compliant with Python variable naming,
 #     also this super convenient form is supported:
 print(cdf.Online.Apple.Peter.revenue) # 100
+
+print(cdf.Online.Apple.Peter) # 100, as revenue is the default measure
 
 
 # 2. Aggregations
@@ -55,5 +57,13 @@ online = cdf["Online"]
 print(online["Apple"])              # 100, the value for "Apple" in "Online" channel
 print(online.Peter)                 # 250 = 100 + 150, the values for "peter" in "Online" channel
 print(online.Peter.cost)            # 140 = 50 + 90, the values for "peter" in "Online" channel
+
+print(df.cubed.cube.Peter.cost)
+print(df.cubed["Peter", "cost"])
+print(df.cubed["customer:Peter", "cost"])
+
+#print(online.customer.Peter)
+#print(online.customer.Peter.cost)
+print(cdf.linked_cubes.count)
 
 # ...that's it for an intro! Thanks for trying CubedPandas. Feedback and ideas very welcome.

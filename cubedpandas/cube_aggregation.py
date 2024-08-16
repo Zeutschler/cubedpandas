@@ -9,33 +9,62 @@ class CubeAllocationFunctionType(IntEnum):
     """
     Allocation functions supported for value write back in a cube.
     """
-    DISTRIBUTE = 1  # distribute the value to all affected records based on the current distribution
-    SET = 2         # set the value to all affected records
-    DELTA = 3       # add the value to all affected records
-    MULTIPLY = 4    # multiply the value with all affected records
-    ZERO = 5        # set the value to zero to all affected records
-    NAN = 6         # set the value to NaN to all affected records
-    DEL = 7         # delete all affected records / rows
+    DISTRIBUTE = 1
+    """Distributes a new value to all affected records based on the current distribution of values."""
+    SET = 2
+    """Sets the new value to all affected records, independent of the current values."""
+    DELTA = 3
+    """Adds the new value to all affected records. Nan values are treated as zero values."""
+    MULTIPLY = 4
+    """Multiplies all affected records with the new value."""
+    ZERO = 5
+    """Sets all affected values/records to zero. Dependent on the measure type, the value is set to either (int) 0 or (float) 0.0."""
+    NAN = 6
+    """Sets all affected values/records to NaN."""
+    DEL = 7
+    """Deletes all affected records from the Pandas dataframe."""
 
 
 class CubeAggregationFunctionType(IntEnum):
     """
-    Aggregation functions supported for the value in a cube.
+    Aggregation functions supported by a cube.
     """
+    # returning the dtype of the current measure or float
     SUM = 1
+    """Sum of all values in the current context."""
     AVG = 2
+    """Average of all values in the current context."""
     MEDIAN = 3
+    """Median of all values/rows in the current context."""
     MIN = 4
+    """Minimum of all values/rows in the current context."""
     MAX = 5
-    COUNT = 6
-    STD = 7
-    VAR = 8
-    POF = 9
-    NAN = 10
-    AN = 11
-    ZERO = 12
-    NZERO = 13
+    """Maximum of all values/rows in the current context."""
+    STD = 6
+    """Standard deviation of all values/rows in the current context."""
+    VAR = 7
+    """Variance of all values/rows in the current context."""
+    POF = 8
+    """Percentage of the first value in the current context."""
 
+
+    # returning an integer
+    COUNT = 9
+    """Number of values/rows in the current context."""
+    NAN = 10
+    """Number of NaN values/rows in the current context."""
+    AN = 11
+    """Number of non-NaN values/rows in the current context."""
+    ZERO = 12
+    """Number of zero values/rows in the current context."""
+    NZERO = 13
+    """Number of non-zero values/rows in the current context."""
+
+    @staticmethod
+    def is_count_function(function_type: int) -> bool:
+        """Returns True if the function type represents one of the
+        counting function types `COUNT`, `NAN`, `AN`, `ZERO` or `NZERO`."""
+        return function_type >= CubeAggregationFunctionType.COUNT
 
 class CubeAggregationFunction(SupportsFloat):
     """

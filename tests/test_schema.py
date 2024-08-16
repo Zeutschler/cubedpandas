@@ -53,16 +53,3 @@ class TestSchema(TestCase):
         value = cube["B", "Retail"]
         self.assertEqual(value, 250)
 
-    def test_cell(self):
-
-        cube = Cube(self.df, schema=self.schema)
-
-        some_cell = cube.cell("product:A")
-        self.assertEqual(some_cell.value, 100 + 200)
-
-        float_value = some_cell + 100 - 100
-        self.assertEqual(float_value, 100 + 200)
-
-        derived_cell = some_cell.cell("channel:Online")
-        self.assertEqual(derived_cell.value, 100)
-

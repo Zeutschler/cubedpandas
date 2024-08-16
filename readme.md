@@ -1,7 +1,7 @@
 # CubedPandas 
 <picture align="center"><img alt="Pandas Logo" src="https://raw.githubusercontent.com/Zeutschler/cubedpandas/master/pages/assets/cpd_logo.jpg"></picture>
 
-## Multi-dimensional data analysis for Pandas dataframes.
+## Multi-dimensional data analysis for Pandas dataframes
 
 [![PyPI version](https://badge.fury.io/py/cubedpandas.svg)](https://badge.fury.io/py/cubedpandas)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?label=PyPI%20downloads)](https://pypi.org/project/cubedpandas)
@@ -10,27 +10,28 @@
 
 -----------------
 
-***Note:*** *CubedPandas is at an early stage of its development. Features may change. 
-[Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
+***Remark:*** *CubedPandas is in an early stage of its development. Features are likely subject to change. 
+But it's worth an early try. Your [Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
 [Feedback](https://github.com/Zeutschler/cubedpandas/discussions) are very welcome!*
 
-CubedPandas provides an ***easy, fast & fun*** approach to perform multi-dimensional 
-data analysis on Pandas dataframes. CubedPandas wraps almost any dataframe into a 
-multi-dimensional cube, which can be analyzed, aggregated, sliced, filtered, viewed 
-and much more. 
+CubedPandas aims to provide an ***easy, fast & fun*** approach to access and analyse data in Pandas dataframes. 
+CubedPandas wraps almost any dataframe into a virtual multi-dimensional cube, which can be accessed, 
+aggregated, filtered, viewed and used in a highly convenient and natural way. A simple example: 
 
-CubedPandas is ***inspired by OLAP databases*** (online analytical processing), which are 
-typically used for reporting, business intelligence, data warehousing and financial analysis 
-purposes. Check out the sample code below and ***give it a try***.
+```python
+# this...
+value = df.loc[df['make'] == 'Audi', 'price'].sum()
+# ...can turn into this.
+value = cdf.Audi.price
+```
 
-CubedPandas is licensed under the [BSD 3-Clause License](LICENSE) and is available on 
-[GitHub](https://github.com/Zeutschler/cubedpandas) and [PyPi](https://pypi.org/project/cubedpandas/).
+CubedPandas is inspired by [multi-dimensional OLAP Cubes](https://en.wikipedia.org/wiki/Online_analytical_processing), 
+which are typically used for business intelligence, data warehousing,reporting, planning and financial analysis.
+Cubed Pandas is also very lightweight, as data is not no unnecessary copied or transformed, but accessed directly 
+from the underlying dataframe. And it can be also quite fast, as it uses efficient filtering and can leverage
+clever caching to boost performance by factors. CubedPandas is available on [GitHub](https://github.com/Zeutschler/cubedpandas) and [PyPi](https://pypi.org/project/cubedpandas/). 
 
-If you have fallen in love with CubedPandas or find it otherwise valuable, please **consider 
-to sponsor the project** on [GitHub Sponsors](https://github.com/sponsors/Zeutschler), so many cool ideas/features to come. 
-
-
-## Getting started
+### Installation and Getting Started
 
 After installing CubedPandas...
 
@@ -45,6 +46,7 @@ pip install cubedpandas
 import pandas as pd
 from common import cubed
 
+# Create a dataframe with some sales data
 df = pd.DataFrame({"product":  ["Apple",  "Pear",   "Banana", "Apple",  "Pear",   "Banana"],
                    "channel":  ["Online", "Online", "Online", "Retail", "Retail", "Retail"],
                    "customer": ["Peter",  "Peter",  "Paul",   "Paul",   "Mary",   "Mary"  ],
@@ -52,77 +54,80 @@ df = pd.DataFrame({"product":  ["Apple",  "Pear",   "Banana", "Apple",  "Pear", 
                    "revenue":  [100,      150,      300,      200,      250,      350     ],
                    "cost":     [50,       90,       150,      100,      150,      175     ]})
 
-cdf = cubed(df)  # That's it! 'cdf' is now a CubedDataFrame
+cdf = cubed(df)  # That's it! 'cdf' is now a (C)ubed(D)ata(F)rame
 ```
 
-### Multi-Dimensional Cubes?
-CubedPandas **automatically infers a multi-dimensional schema** from the dataframe. By default, numeric 
-columns are considered as **measures** - *the values to analyse & aggregate* - all other columns are 
-considered as the **dimensions** *to filter, navigate and view the data*. The values in the dimensions
-are called **members**.
+### Multi-dimensional OLAP Cubes - What the heck is that?
+CubedPandas **automatically infers a multi-dimensional schema** from your Pandas dataframe. This schema 
+then defines a multi-dimensional **Cube** over the dataframe. By default, numeric columns of the dataframe 
+are considered as **measures** - *the numeric values to analyse & aggregate* - all other columns are 
+considered as **dimensions** - *to filter, navigate and view the data*. The individual values in a 
+dimension column are called the **members** of the dimension. In the example above, column `channel` 
+becomes a dimension with the 2 members `Online` and `Retail`.
 
 But you can also define your own schema. Schemas are quite powerful and flexible, as they will allow 
-you to define not only your dimensions and measures, but also custom aggregations, some business logic, 
-sorting, number formating etc. ***Note: This feature not yet available, planned for release 0.2.0***.
+you to define not only your dimensions and measures, but also aliases, custom aggregations, business logic, 
+sorting, number formating etc. Note: As of today, this feature is only partially implemented and planned 
+for an upcoming release.
 
-### Multi-Dimensional Cells - Numbers Please...
-One key feature of CubePandas is its easy & intuitive access to individual data cells in the cube.
-You define a multi-dimensional address and CubedPandas will evaluate and return the corresponding value.
+### Context please...
+The key feature of CubePandas is an easy & intuitive access to individual **Data Cells** in 
+the virtual multi-dimensional data space of a cube. You'll need to define a multi-dimensional **Context** and 
+CubedPandas will evaluate, aggregate and return its corresponding value from the underlying dataframe.
 
-**Cells behave like numbers** (float, int), so you can use them in arithmetic operations. In the 
-following examples, all addresses will refer to the same data and return the same value of `100`. 
+**Context objects behave like numbers** (float, int), so you can use them in any arithmetic operations. In the 
+following examples, all addresses will refer to the exactly same data and thereby all return the same 
+value of `100`. 
 
 ```python
-# Using a proper, fully qualified and unambiguous address, order doesn't matter
-a = cdf["product:Apple", "channel:Online", "customer:Peter", "revenue"]
+# First, let Pandas set the scene...
+a = df.loc[(df["product"] == "Apple") & (df["channel"] == "Online") & (df["customer"] == "Peter"), "revenue"].sum()
 
-# If there are no ambiguities in your data, you can use a shorthand address
-b = cdf["Online", "Apple", "Peter", "revenue"]
+# Now, let's do the same thing with CubedPandas and 'cube' your dataframe...
+cdf = cubed(df)
 
-# And if member values are compliant with Python naming conventions, you can use
-c = cdf.Online.Apple.Peter.revenue
+# The best and recommended way to define a context, is to aim for a non-ambiguous context 
+# that defines the requested dimensions, their members and a measure to be returned.
+b = cdf.product["Apple"].channel["Online"].customer["Peter"].revenue    # optimal way, best readability
+c = cdf["product:Apple", "channel:Online", "customer:Peter", "revenue"] # as a list or tuple
+d = cdf[{"product": "Apple", "channel": "Online", "customer": "Peter", "measure": "revenue"}] # as a dictionary 
+e = cdf.product.Apple.channel.Online.customer.Peter.revenue  # also possible, if member names are Python-compliant
 
-assert a == b == c  == 100
+# If there are no ambiguities in your data, you can also use shorthand contexts
+f = cdf["Online", "Apple", "Peter", "revenue"]
+g = cdf.Online.Apple.Peter.revenue
+h = cdf.Online.Apple.Peter # if the measure is the default measure ('revenue' is), it can be omitted
+
+assert a == b == c == d == e == f == g ==  h == 100
 ```
 
-### It's All About Slicing & Aggregating
+### Aggregations, slicing, dicing and much more...
 
-CubedPandas allows you to slice & dice your data. You can filter by dimensions, aggregate by 
-measures in a very convenient way. The first measure in the dataframe (left to right) is used 
-as the default measure, here `revenue`. So, if no measure is specified, the default measure is used,
-hence `cdf["Apple", "Online"]` is equivalent to `cdf["Apple", "Online", "revenue"]`.
+CubedPandas allows you to slice & aggregate your data in a very convenient and flexible way. Some examples:
 
 ```python
 a = cdf["Online"]              # 550 = 100 + 150 + 300
 b = cdf["product:Banana"]      # 650 = 300 + 350
 c = cdf["Apple", "cost"]       # 100 = 100 -> explicit sum
 d = cdf["Apple", "cost"].avg   # 75 = (50 + 100) / 2
-e = cdf["*"]                   # 1350 -> '*' means 'all' 
-f = cdf.count                  # 6 -> number of affected records
-g = cdf["customer:P*"]         # 750 = 100 + 150 + 300 + 200  -> wildcard search
+e = cdf.revenue                # 1350 -> all records for the measure 'revenue' 
+f = cdf.revenue.count          # 6 -> returns the number of records in the cube
+g = cdf["customer:P*"]         # 750 = 100 + 150 + 300 + 200  -> wildcard search for Peter and Paul
 h = cdf.Peter + cdf.Mary       # 850 = (100 + 150) + (250 + 350)
 i = cdf.cost                   # 715 -> sum of all records for the measure 'cost'
 ```
 
-### Seeing Is Believing
+For all the features, more information, cool capabilities and use cases as well as valuable tips and tricks, 
+please visit the [CubedPandas Documentation](https://zeutschler.github.io/cubedpandas/).
 
-***Note: This feature not yet available, planned for release 0.2.0***
 
-Pandas printing capabilities are tied to the tabular structure of a dataframe. CubedPandas 
-unlocks the full potential of dataframes by providing multi-dimensional views. 
-These are called **Slice** and look **like an Excel Pivot-Table**. 
-
-The following code will **show a slice** with `product` and `customer` nested on the rows, 
-`channel` on the columns, and `mailing` as a filter. The default measure `revenue` is used.
-
-```python
-cdf.slice(("product", "customer"), "channel", "mailing").show()
-```
-
-### Your feedback is very welcome!
+### Your feedback, ideas and support are very welcome!
 Please help improve and extend CubedPandas with **your feedback & ideas** and use the 
 [CubedPandas GitHub Issues](https://github.com/Zeutschler/cubedpandas/issues) to request new features and report bugs. 
 For general questions, discussions and feedback, please use the 
 [CubedPandas GitHub Discussions](https://github.com/Zeutschler/cubedpandas/discussions).
 
-*Enjoy ... and happy cubing!*
+If you have fallen in love with CubedPandas or find it otherwise valuable, 
+please consider to [become a sponsor of the CubedPandas project](https://github.com/sponsors/Zeutschler).
+
+*...happy cubing!*

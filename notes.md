@@ -18,3 +18,5 @@
 * A Python Plugin Pattern
   https://www.vinnie.work/blog/2021-02-16-python-plugin-pattern
 
+### Python Pivottable for Pandas
+* https://github.com/Kanaries/pygwalker
