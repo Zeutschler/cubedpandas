@@ -23,7 +23,7 @@ from cubedpandas.context.measure_context import MeasureContext
 from cubedpandas.context.member_context import MemberContext
 from cubedpandas.context.member_not_found_context import MemberNotFoundContext
 
-VERSION = "0.2.3"
+VERSION = "0.2.4"
 
 __all__ = [
     "Ambiguities",

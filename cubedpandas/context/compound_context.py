@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, TypeVar, Tuple
+
+from typing import TYPE_CHECKING, Any
 
 from cubedpandas.context.context import Context
 
 if TYPE_CHECKING:
-    from cubedpandas.context.context import MemberContext
+    from cubedpandas.context.member_context import MemberContext
 
 class CompoundContext(Context):
     def __init__(self, parent:Context, rows: Any, columns: Any | None = None):

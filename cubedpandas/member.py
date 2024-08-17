@@ -1,6 +1,8 @@
-from typing import SupportsFloat, TYPE_CHECKING, Any
-from cubedpandas.dimension import Dimension
+from typing import Any
+
 import numpy as np
+
+from cubedpandas.dimension import Dimension
 
 
 class Member:

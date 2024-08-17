@@ -70,7 +70,8 @@ def cubed(df: pd.DataFrame, schema=None,
         >>> cdf["product:B"]
         2
     """
-    return Cube(df, schema, infer_schema, caching, caching_threshold, read_only)
+    return Cube(df=df, schema=schema, infer_schema=infer_schema, caching=caching,
+                caching_threshold=caching_threshold, read_only=read_only)
 
 
 def pythonize(name: str, lowered: bool = False) -> str:

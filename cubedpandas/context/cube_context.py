@@ -1,11 +1,11 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, TypeVar, Tuple
+
+from typing import TYPE_CHECKING
 
 from cubedpandas.context.context import Context
 
 if TYPE_CHECKING:
     from cubedpandas.cube import Cube
-    from cubedpandas.context.context import MemberContext
 
 
 class CubeContext(Context):

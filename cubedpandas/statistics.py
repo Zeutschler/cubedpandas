@@ -1,4 +1,5 @@
 from typing import Literal
+
 import numpy as np
 import pandas as pd
 
@@ -33,7 +34,6 @@ class DimensionStatistics:
         Returns:
             Return one or multiple plots, renderer using matplotlib.
         """
-        import matplotlib.pyplot as plt
 
         if measures is None:
             measures = [self._dimension.cube.default, ]
@@ -72,15 +72,15 @@ class DimensionStatistics:
         nan_mask = df.isna().any(axis=1)
         zero_mask = (df == 0).all(axis=1)
         exclude_mask = nan_mask | zero_mask
-        X = df[~exclude_mask]
-        X = df[features]
-        X.fillna(0, inplace=True)
+        x = df[~exclude_mask]
+        x = df[features]
+        x.fillna(0, inplace=True)
         scaler = StandardScaler()
-        X_std = scaler.fit_transform(X)
+        x_std = scaler.fit_transform(x)
         pca = PCA(n_components=components)
-        pca.fit(X_std)
-        X_pca = pca.transform(X_std)
-        mahalanobis_distance = np.sqrt(np.sum(X_pca ** 2, axis=1))
+        pca.fit(x_std)
+        x_pca = pca.transform(x_std)
+        mahalanobis_distance = np.sqrt(np.sum(x_pca ** 2, axis=1))
         outliers_pca = df[mahalanobis_distance > threshold]
         outliers_pca = outliers_pca[outliers_pca["deltae"] != 0]
         return outliers_pca

@@ -68,7 +68,7 @@ class Ambiguities:
                     if ambiguous_members:
                         members = list(ambiguous_members)
                         ambiguity = {
-                            "message": f"{len(members)} ambiguit{'y' if len(members) == 1 else 'ies'} between dimensions '{dim.name}' and '{other.name}' found "
+                            "message": f"{len(members)} ambiguity{'y' if len(members) == 1 else 'ies'} between dimensions '{dim.name}' and '{other.name}' found "
                                        f"on member{'' if len(members) == 1 else 's'}: {', '.join(members[:3])}{'' if len(members) <= 3 else ' ...'}",
                             "dim1": dim.name,
                             "dim2": other.name,
@@ -80,7 +80,6 @@ class Ambiguities:
     def __len__(self):
         # todo: decide what to return here, number of ambiguities between dimensions or number of ambiguous members?
         return len(self._ambiguities)
-        # return sum([a['count'] for a in self._ambiguities])
 
     def __getitem__(self, item):
         return self._ambiguities[item]
