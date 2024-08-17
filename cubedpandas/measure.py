@@ -1,3 +1,4 @@
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 from __future__ import annotations
 import numpy as np
@@ -8,6 +9,7 @@ class Measure:
     """
     Represents a measure within a Cube. Each measure is mapped to a column in the underlying Pandas dataframe.
     """
+
     # todo: add support for aliases
     def __init__(self, df: pd.DataFrame, column):
         self._df: pd.DataFrame = df

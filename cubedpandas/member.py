@@ -1,3 +1,5 @@
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+
 from typing import Any
 
 import numpy as np
@@ -7,14 +9,15 @@ from cubedpandas.dimension import Dimension
 
 class Member:
     def __init__(self, dimension: Dimension, name):
-        self.name:str = name
-        self.alias:str | None = None
-        self.dimension:Dimension = dimension
+        self.name: str = name
+        self.alias: str | None = None
+        self.dimension: Dimension = dimension
         self._row_mask: np.ndarray | None = None
 
     @property
     def row_mask(self) -> np.ndarray | None:
         return self._row_mask
+
     @row_mask.setter
     def row_mask(self, value: np.ndarray):
         self._row_mask = value
@@ -24,7 +27,7 @@ class Member:
 
 
 class MemberSet(set):
-    def __init__(self, dimension:Dimension, address:Any, row_mask: np.ndarray| None, members = ()):
+    def __init__(self, dimension: Dimension, address: Any, row_mask: np.ndarray | None, members=()):
         super().__init__(members)
         self._dimension: Dimension = dimension
         self._address = address

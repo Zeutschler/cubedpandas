@@ -1,4 +1,5 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+
 from __future__ import annotations
 import sys
 from types import ModuleType, FunctionType
@@ -18,7 +19,6 @@ from cubedpandas.context import Context, CubeContext, FilterContext
 from cubedpandas.slice import Slice
 
 
-
 class CubeLinks:
     def __init__(self, parent: Cube):
         self._parent: Cube = parent
@@ -26,6 +26,7 @@ class CubeLinks:
 
     def __len__(self):
         return len(self._links)
+
     def __getitem__(self, index):
         return self._links[index]
 
@@ -44,8 +45,6 @@ class CubeLinks:
     @property
     def count(self) -> int:
         return len(self._links)
-
-
 
 
 class Cube:
@@ -289,7 +288,6 @@ class Cube:
         """
         return self._eager_evaluation
 
-
     @property
     def schema(self) -> Schema:
         """
@@ -363,8 +361,8 @@ class Cube:
         self._member_cache = {}
         for dimension in self._dimensions:
             dimension.clear_cache()
-    # endregion
 
+    # endregion
 
     # region Data Access Methods
     @property
@@ -435,10 +433,10 @@ class Cube:
                 If write back is attempted on a read-only Cube.
         """
         raise NotImplementedError("Not implemented yet")
-        #if self._read_only:
+        # if self._read_only:
         #    raise PermissionError("Write back is not permitted on a read-only cube.")
-        #dest_slice: Cell = Cell(cube=self, address=address)
-        #dest_slice.value = value
+        # dest_slice: Cell = Cell(cube=self, address=address)
+        # dest_slice.value = value
 
     def __delitem__(self, address):
         """
@@ -453,10 +451,10 @@ class Cube:
                 If write back is attempted on a read-only Cube.
         """
         raise NotImplementedError("Not implemented yet")
-        #if self._read_only:
+        # if self._read_only:
         #    raise PermissionError("Write back is not permitted on a read-only cube.")
-        #dest_slice: Cell = Cell(self, address=address)
-        #self._delete(dest_slice._row_mask)
+        # dest_slice: Cell = Cell(self, address=address)
+        # self._delete(dest_slice._row_mask)
 
     def slice(self, rows=None, columns=None, filters=None) -> Slice:
         """
@@ -481,11 +479,9 @@ class Cube:
         """
         raise NotImplementedError("Not implemented yet. Sorry...")
 
-
     def _write_back(self, row_mask: np.ndarray | None = None, measure: Any = None, value: Any = None):
         """Writes back a value for a given address in the cube."""
         raise NotImplementedError("Not implemented yet")
-
 
     def _allocate(self, row_mask: np.ndarray | None = None, measure: Any = None, value: Any = None,
                   operation: CubeAllocationFunctionType = CubeAllocationFunctionType.DISTRIBUTE):

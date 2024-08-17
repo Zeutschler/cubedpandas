@@ -1,4 +1,4 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
@@ -13,7 +13,8 @@ class Slice:
     """A slice represents a view on a cube, and allows for easy access to the underlying Pandas dataframe.
     Typically, a slice has rows, columns and filter, just like in an Excel PivotTable. Slices
     are easy to define and use for convenient data analysis."""
-    def __init__(self, context:Context, rows: Any = None, columns: Any = None,
+
+    def __init__(self, context: Context, rows: Any = None, columns: Any = None,
                  filters: Any = None, config: dict | str | None = None):
         self.context = context
         self.rows = rows

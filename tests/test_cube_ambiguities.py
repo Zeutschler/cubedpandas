@@ -1,10 +1,10 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 import pandas as pd
 from unittest import TestCase
-from cubedpandas.cube import Cube
-from cubedpandas.common import cubed
+from cubedpandas import cubed
 from datetime import datetime
+
 
 class TestCubeWithDates(TestCase):
     def setUp(self) -> None:
@@ -33,7 +33,6 @@ class TestCubeWithDates(TestCase):
             ]
         }
 
-
     def test_cube_without_ambiguities(self):
         cdf = cubed(self.df, schema=self.schema)
         self.assertEquals(cdf.ambiguities == False, True)
@@ -46,4 +45,3 @@ class TestCubeWithDates(TestCase):
         self.assertEquals(cdf.ambiguities == 3, True)
         self.assertEquals(any(cdf.ambiguities), True)
         print(cdf.ambiguities)
-

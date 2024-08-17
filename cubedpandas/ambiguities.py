@@ -1,4 +1,5 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+
 import pandas as pd
 from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.measure_collection import MeasureCollection
@@ -25,7 +26,7 @@ class Ambiguities:
         self._find_ambiguities(df, dimensions, measures)
 
     @property
-    def members(self)-> set | None:
+    def members(self) -> set | None:
         """
         Returns a set of all ambiguous members found in the cube. If no ambiguities are found, `None` is returned.
         """

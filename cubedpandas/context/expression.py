@@ -1,14 +1,16 @@
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+
 import ast
 import inspect
 import operator as op
 import math
 
 
-
 class ExpressionFunctionLibrary:
     @classmethod
     def mul(cls, a, b):
         return a * b
+
 
 class Expression:
     # supported operators
@@ -20,7 +22,7 @@ class Expression:
                  ast.USub: op.neg, ast.UAdd: op.add,
                  ast.Gt: op.gt, ast.GtE: op.ge,
                  ast.Lt: op.lt, ast.LtE: op.le,
-                 ast.Eq: op.eq, ast.NotEq: op.ne,}
+                 ast.Eq: op.eq, ast.NotEq: op.ne, }
 
     functions = {"sin": math.sin, "cos": math.cos, "tan": math.tan,
                  "mul": ExpressionFunctionLibrary.mul}
@@ -32,14 +34,18 @@ class Expression:
 
     def __str__(self):
         return self.__repr__()
+
     def __repr__(self):
         return f"Expression('{self._expression}')"
+
     @property
     def expression(self):
         return self._expression
+
     @expression.setter
     def expression(self, value):
         self._expression = value
+
     @property
     def root(self) -> ast.Expression | None:
         return self._ast_root
@@ -66,7 +72,7 @@ class Expression:
     def evaluate(self, resolver):
         return self._eval(self._ast_root, resolver)
 
-    def _eval(self, node, resolver = None):
+    def _eval(self, node, resolver=None):
         if resolver is None:
             raise ValueError("Resolver for expressions must be provided.")
         match node:
@@ -78,7 +84,7 @@ class Expression:
                 return self.operators[type(op)](self._eval(operand, resolver))
             case ast.Name():
                 # resolve the context
-                name= node.id
+                name = node.id
                 context = resolver.resolve(name)
                 return context
             case ast.List():
@@ -103,4 +109,3 @@ class Expression:
                 return result
             case _:
                 raise TypeError(node)
-

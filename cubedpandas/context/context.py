@@ -1,4 +1,4 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 from __future__ import annotations
 
@@ -257,7 +257,7 @@ class Context(SupportsFloat):
 
         if self._semaphore:
             raise AttributeError(f"Unexpected fatal error while trying to resolve the context for '{name}'.")
-            #return super().__getattr__(name)
+            # return super().__getattr__(name)
             # raise AttributeError(f"Unexpected fatal error while trying to resolve the context for '{name}'."
             #                     f"Likely due to multithreading issues. Please report this issue to the developer.")
 
@@ -616,43 +616,50 @@ class Context(SupportsFloat):
 
     def __and__(self, other):  # AND operator (A & B)
         if isinstance(other, Context):
-            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, BooleanOperationContextEnum
+            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
+                BooleanOperationContextEnum
             return BooleanOperationContext(self, other, BooleanOperationContextEnum.AND)
         return self.numeric_value and other
 
     def __iand__(self, other):  # inplace AND operator (a &= b)
         if isinstance(other, Context):
-            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, BooleanOperationContextEnum
+            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
+                BooleanOperationContextEnum
             return BooleanOperationContext(self, other, BooleanOperationContextEnum.AND)
         return self.numeric_value and other
 
     def __rand__(self, other):  # and operator
         if isinstance(other, Context):
-            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, BooleanOperationContextEnum
+            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
+                BooleanOperationContextEnum
             return BooleanOperationContext(self, other, BooleanOperationContextEnum.AND)
         return self.numeric_value and other
 
     def __or__(self, other):  # OR operator (A | B)
         if isinstance(other, Context):
-            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, BooleanOperationContextEnum
+            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
+                BooleanOperationContextEnum
             return BooleanOperationContext(self, other, BooleanOperationContextEnum.OR)
         return self.numeric_value or other
 
     def __ior__(self, other):  # inplace OR operator (A |= B)
         if isinstance(other, Context):
-            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, BooleanOperationContextEnum
+            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
+                BooleanOperationContextEnum
             return BooleanOperationContext(self, other, BooleanOperationContextEnum.OR)
         return self.numeric_value or other
 
     def __ror__(self, other):  # or operator
         if isinstance(other, Context):
-            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, BooleanOperationContextEnum
+            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
+                BooleanOperationContextEnum
             return BooleanOperationContext(self, other, BooleanOperationContextEnum.OR)
         return other or self.numeric_value
 
     def __xor__(self, other):  # xor operator
         if isinstance(other, Context):
-            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, BooleanOperationContextEnum
+            from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
+                BooleanOperationContextEnum
             return BooleanOperationContext(self, other, BooleanOperationContextEnum.XOR)
         return self._value ^ other
 

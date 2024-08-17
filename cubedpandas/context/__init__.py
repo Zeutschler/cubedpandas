@@ -1,4 +1,4 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 from cubedpandas.context.context import Context
 from cubedpandas.context.cube_context import CubeContext
@@ -9,4 +9,3 @@ __all__ = [
     "FilterContext",
     "Context",
 ]
-

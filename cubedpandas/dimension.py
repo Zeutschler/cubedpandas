@@ -1,4 +1,5 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+
 import random
 import sys
 import re
@@ -72,7 +73,6 @@ class Dimension(Iterable, ABC):
             50
         """
         raise NotImplementedError("Not implemented yet")
-
 
     def _load_members(self):
         if self._member_array is None:
@@ -152,7 +152,7 @@ class Dimension(Iterable, ABC):
         members = self.members
 
         matched_members = []
-        if isinstance(pattern,re.Pattern):
+        if isinstance(pattern, re.Pattern):
             # a compiled regex pattern was given
             matched_members = [x for x in members if pattern.match(x)]
         elif isinstance(pattern, str):
@@ -173,7 +173,6 @@ class Dimension(Iterable, ABC):
             return False, None
 
         return True, matched_members
-
 
     @property
     def df(self) -> pd.DataFrame:
@@ -241,13 +240,12 @@ class Dimension(Iterable, ABC):
     def __repr__(self):
         return self._column
 
-
     def _resolve(self, member, row_mask=None) -> np.array:
         """
         Resolves a member or a list of members to a mask to filter the underlying dataframe.
         """
         if isinstance(member, list):
-            member = tuple(sorted(member)) # make sure the order is always the same, e.g. A,B == B,A
+            member = tuple(sorted(member))  # make sure the order is always the same, e.g. A,B == B,A
         if not isinstance(member, tuple):
             member = (member,)
 
@@ -281,9 +279,9 @@ class Dimension(Iterable, ABC):
             return np.intersect1d(row_mask, mask, assume_unique=True)
 
     def _check_exists_and_resolve_member(self, member,
-                                         row_mask:np.ndarray | None = None,
-                                         parent_member_mask:np.ndarray | None = None,
-                                         skip_checks:bool = False,
+                                         row_mask: np.ndarray | None = None,
+                                         parent_member_mask: np.ndarray | None = None,
+                                         skip_checks: bool = False,
                                          evaluate_as_range: bool = False) \
             -> tuple[bool, np.ndarray | None, np.ndarray | None]:
 
@@ -314,7 +312,7 @@ class Dimension(Iterable, ABC):
             if evaluate_as_range:
                 mask = self._df[self._column].between(member[0], member[1])
             else:
-                mask = self._df[self._column].isin(member,)
+                mask = self._df[self._column].isin(member, )
         else:
             mask = self._df[self._column] == member
         member_mask = mask[mask].index.to_numpy()
@@ -333,7 +331,6 @@ class Dimension(Iterable, ABC):
             return True, member_mask, member_mask
         else:
             return True, np.intersect1d(row_mask, member_mask, assume_unique=True), member_mask
-
 
     def _resolve_member(self, member, row_mask=None) -> np.ndarray:
         # let's try to find the exact member
@@ -404,7 +401,7 @@ class Dimension(Iterable, ABC):
         self._load_members()
         return random.choice(self._member_list)
 
-    def choices(self, k:int=1, weights=None, cum_weights=None):
+    def choices(self, k: int = 1, weights=None, cum_weights=None):
         """
         Return a `k` sized list of members chosen from the dimension (with replacement).
 
@@ -416,7 +413,7 @@ class Dimension(Iterable, ABC):
         self._load_members()
         return random.choices(self._member_list, weights=weights, cum_weights=cum_weights, k=k)
 
-    def sample(self, k:int=1, counts=None):
+    def sample(self, k: int = 1, counts=None):
         """
         Return a `k` sized list of unique members chosen from the dimension (without replacement).
 

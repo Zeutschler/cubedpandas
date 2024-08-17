@@ -1,3 +1,5 @@
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from collections.abc import Iterable
@@ -9,10 +11,10 @@ from cubedpandas.context.datetime_resolver import resolve_datetime
 from cubedpandas.context.context import Context
 from cubedpandas.context.expression import Expression
 
-
 if TYPE_CHECKING:
     from cubedpandas.dimension import Dimension
     from cubedpandas.member import Member, MemberSet
+
 
 class ContextResolver:
     """A helper class to resolve the address of a context."""
@@ -347,7 +349,7 @@ class ContextResolver:
     def matching_data_type(address: any, dimension: Dimension) -> bool:
         """Checks if the address matches the data type of the dimension."""
         if isinstance(address, str):
-            return pd.api.types.is_string_dtype(dimension.dtype) # pd.api.types.is_object_dtype((dimension.dtype)
+            return pd.api.types.is_string_dtype(dimension.dtype)  # pd.api.types.is_object_dtype((dimension.dtype)
         elif isinstance(address, int):
             return pd.api.types.is_integer_dtype(dimension.dtype)
         elif isinstance(address, (str, datetime.datetime, datetime.date)):

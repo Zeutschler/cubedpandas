@@ -1,9 +1,9 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 import pandas as pd
 from unittest import TestCase
-from cubedpandas.cube import Cube
-from cubedpandas.schema import Schema
+from cubedpandas import Cube
+
 
 class TestSchema(TestCase):
     def setUp(self) -> None:
@@ -15,16 +15,15 @@ class TestSchema(TestCase):
         self.df = pd.DataFrame.from_dict(data)
         self.schema = {
             "dimensions": [
-                {"column":"product"},
+                {"column": "product"},
                 {"column": "channel"}
             ],
             "measures": [
-                {"column":"sales"}
+                {"column": "sales"}
             ]
         }
 
     def test_infer_schema(self):
-
         # create a cube without a schema,
         # this will force a call to Schema.infer_schema(...)
         cube = Cube(self.df)
@@ -52,4 +51,3 @@ class TestSchema(TestCase):
         self.assertEqual(value, 100)
         value = cube["B", "Retail"]
         self.assertEqual(value, 250)
-

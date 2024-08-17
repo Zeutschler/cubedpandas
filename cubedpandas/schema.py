@@ -1,4 +1,4 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 import json
 from typing import Self, Any
@@ -22,7 +22,8 @@ class Schema:
     to ensure the schema is valid for the table.
     """
 
-    def __init__(self, df: pd.DataFrame | None = None, schema: Self | Any = None, caching: CachingStrategy = CachingStrategy.LAZY):
+    def __init__(self, df: pd.DataFrame | None = None, schema: Self | Any = None,
+                 caching: CachingStrategy = CachingStrategy.LAZY):
         """
         Initializes a new schema for a Cube upon a given Pandas dataframe. If the dataframe is not provided,
         the schema needs to be built manually and can also not be validated against the Pandas dataframe.
@@ -216,6 +217,7 @@ class Schema:
         """
         with open(file_name, 'w') as file:
             json.dump(self.to_dict(), file)
+
     # endregion
 
     def __str__(self) -> str:
