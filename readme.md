@@ -1,6 +1,6 @@
 # CubedPandas 
 
-## Multi-dimensional data analysis for Pandas dataframes
+## Multi-dimensional data analysis for Pandas dataframes.
 
 ![PyPI version](https://badge.fury.io/py/cubedpandas.svg)
 ![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?label=PyPI%20downloads)

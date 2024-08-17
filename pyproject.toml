@@ -1,0 +1,32 @@
+[project]
+name = "cubedpandas"
+description = "Multi-dimensional data analysis for Pandas dataframes."
+keywords = ['pandas', 'analysis', 'database', 'olap', 'planning', 'reporting', 'forecasting', 'multidimensional', 'cube', 'data', 'dataframe', 'pivot', 'table']
+classifiers = [
+  "Development Status :: 2 - Pre-alpha",
+  "Programming Language :: Python"
+]
+readme = "README.md"
+dynamic = ["version"]
+license = {file = "LICENSE"}
+requires-python = ">= 3.10"
+authors = [
+  {name = "Thomas Zeutschler"},
+  {email = "cubedpandas@gmail.com"},
+]
+dependencies = [
+    "pandas",
+    "numpy",
+    "python-dateutil"
+]
+
+[project.urls]
+Homepage = "https://zeutschler.github.io/cubedpandas/"
+Documentation = "https://zeutschler.github.io/cubedpandas/"
+Repository = "https://github.com/Zeutschler/cubedpandas.git"
+Issues = "https://github.com/Zeutschler/cubedpandas/issues"
+Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+pypi = "https://pypi.org/project/cubedpandas/"
+
+[tool.setuptools.dynamic]
+version = {attr = "cubedpandas.__version__"}
