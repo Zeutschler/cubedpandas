@@ -70,7 +70,6 @@ setup(
     install_requires=[
         'numpy',
         'pandas',
-        'pyarrow',
         'python-dateutil',
     ],
     test_suite="cubedpandas.tests",

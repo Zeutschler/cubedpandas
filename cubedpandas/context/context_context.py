@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, TypeVar, Tuple
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from cubedpandas.context.context import Context
@@ -46,6 +48,6 @@ class ContextContext(Context):
                          resolve=False)
         self._referenced_context = nested
 
-        @property
-        def referenced_context(self):
-            return self._referenced_context
+    @property
+    def referenced_context(self):
+        return self._referenced_context

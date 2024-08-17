@@ -1,7 +1,8 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 
 from enum import IntEnum
-from typing import SupportsFloat, TYPE_CHECKING
+from typing import SupportsFloat
+
 import numpy as np
 
 
@@ -69,7 +70,7 @@ class CubeAggregationFunctionType(IntEnum):
 class CubeAggregationFunction(SupportsFloat):
     """
     Represents aggregation functions, like SUM, MIN, MAX, VAG etc.,
-    which are provided through the 'Cube' and 'Cell' object, e.g. by cube.avg["Apple", "Online"].
+    which are provided through the 'Cube' and 'Cell' object, e.g. by `cube.avg["Apple", "Online"]`.
     """
     def __new__(cls, *args, **kwargs):
         return SupportsFloat.__new__(cls)
@@ -161,13 +162,13 @@ class CubeAggregationFunction(SupportsFloat):
     def __rfloordiv__(self, other):  # // operator (returns an integer)
         return other // self.numeric_value
 
-    def __truediv__(self, other):  # / operator (returns an float)
+    def __truediv__(self, other):  # / operator (returns a float)
         return self.numeric_value / other
 
-    def __idiv__(self, other):  # /= operator (returns an float)
+    def __idiv__(self, other):  # /= operator (returns a float)
         return self.numeric_value / other
 
-    def __rtruediv__(self, other):  # / operator (returns an float)
+    def __rtruediv__(self, other):  # / operator (returns a float)
         return other / self.numeric_value
 
     def __mod__(self, other):  # % operator (returns a tuple)

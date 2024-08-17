@@ -120,7 +120,7 @@ class Cube:
             caching_threshold:
                 (optional) The threshold as 'number of members' for EAGER caching only. If the number of
                 distinct members in a dimension is below this threshold, the dimension will be cached
-                eargerly, if caching is set to CacheStrategy.EAGER or CacheStrategy.FULL. Above this
+                eargerly, if caching is set to `CacheStrategy.EAGER` or `CacheStrategy.FULL`. Above this
                 threshold, the dimension will be cached lazily.
                 Default value is `EAGER_CACHING_THRESHOLD`, equivalent to 256 unique members per dimension.
 
@@ -229,7 +229,7 @@ class Cube:
         Sets the read-only status of the Cube.
         """
         raise NotImplementedError("Not implemented yet")
-        self._read_only = value
+        # self._read_only = value
 
     @property
     def ignore_member_key_errors(self) -> bool:
@@ -260,7 +260,7 @@ class Cube:
         Sets the case sensitivity of the Cube.
         """
         raise NotImplementedError("Not implemented yet")
-        self._ignore_case = value
+        # self._ignore_case = value
 
     @property
     def ignore_key_errors(self) -> bool:
@@ -276,7 +276,7 @@ class Cube:
         Sets the key error handling of the Cube.
         """
         raise NotImplementedError("Not implemented yet")
-        self._ignore_key_errors = value
+        # self._ignore_key_errors = value
 
     @property
     def eager_evaluation(self) -> bool:
@@ -437,7 +437,7 @@ class Cube:
         raise NotImplementedError("Not implemented yet")
         #if self._read_only:
         #    raise PermissionError("Write back is not permitted on a read-only cube.")
-        #dest_slice: Cell = Cell(cube=self, adress=address)
+        #dest_slice: Cell = Cell(cube=self, address=address)
         #dest_slice.value = value
 
     def __delitem__(self, address):

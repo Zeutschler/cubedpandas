@@ -1,12 +1,14 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, TypeVar, Tuple
+
 from enum import IntEnum
+from typing import TYPE_CHECKING
+
 import numpy as np
+
 from cubedpandas.context.context import Context
 
 if TYPE_CHECKING:
-    from cubedpandas.cube import Cube
-    from cubedpandas.context.context import MemberContext
+    pass
 
 
 class BooleanOperationContextEnum(IntEnum):
@@ -47,14 +49,14 @@ class BooleanOperationContext(Context):
                              row_mask=row_mask, member_mask=None,
                              measure=right.measure, dimension=right.dimension, resolve=False)
 
-        @property
-        def left(self) -> Context:
-            return self._left
+    @property
+    def left(self) -> Context:
+        return self._left
 
-        @property
-        def right(self) -> Context | None:
-            return self._right
+    @property
+    def right(self) -> Context | None:
+        return self._right
 
-        @property
-        def operation(self) -> BooleanOperationContextEnum:
-            return self._operation
+    @property
+    def operation(self) -> BooleanOperationContextEnum:
+        return self._operation

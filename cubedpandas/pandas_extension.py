@@ -34,12 +34,11 @@ class CubedPandasAccessor:
                  infer_schema_if_not_provided: bool = True,
                  caching: CachingStrategy = CachingStrategy.LAZY,
                  caching_threshold: int = EAGER_CACHING_THRESHOLD,
-                 enable_write_back: bool = False):
+                 read_only: bool = True):
         """
         Initializes a new Cube wrapping and providing a Pandas dataframe as a multi-dimensional data cube.
         The schema of the Cube can be either inferred automatically from the dataframe  (default) or defined explicitly.
 
-        :param df: The Pandas dataframe to wrap into a Cube.
         :param schema: The schema of the Cube. If not provided, the schema will be inferred from the dataframe if
                 parameter `infer_schema` is set to `True`.
         :param infer_schema_if_not_provided:  If True, the schema will be inferred from the dataframe if not provided.
@@ -49,7 +48,7 @@ class CubedPandasAccessor:
         :param caching_threshold: The threshold for EAGER caching. If the number of members in a dimension
                 is below this threshold, the dimension will be cached eagerly.
                 Default value is `EAGER_CACHING_THRESHOLD` := 256 members.
-        :param enable_write_back: If True, the Cube will become write-back enable and changes to the data
+        :param read_only: If set to `False`, the Cube will become write-back enable and changes made to the data
                 will be written to the underlying dataframe.
         """
-        return Cube(self._df, schema, infer_schema_if_not_provided, caching, caching_threshold, enable_write_back)
+        return Cube(df=self._df, schema=schema, infer_schema=infer_schema_if_not_provided, caching=caching, caching_threshold=caching_threshold, read_only=read_only)

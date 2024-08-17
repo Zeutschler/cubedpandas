@@ -4,9 +4,10 @@ import operator as op
 import math
 
 
+
 class ExpressionFunctionLibrary:
     @classmethod
-    def mul(self, a, b):
+    def mul(cls, a, b):
         return a * b
 
 class Expression:
@@ -65,7 +66,9 @@ class Expression:
     def evaluate(self, resolver):
         return self._eval(self._ast_root, resolver)
 
-    def _eval(self, node, resolver):
+    def _eval(self, node, resolver = None):
+        if resolver is None:
+            raise ValueError("Resolver for expressions must be provided.")
         match node:
             case ast.Constant(value):
                 return value
@@ -100,10 +103,4 @@ class Expression:
                 return result
             case _:
                 raise TypeError(node)
-
-
-if __name__ == '__main__':
-    print(Expression().eval("[A,B,C]"))
-    print(Expression().eval("x * 6"))
-    print(Expression().eval("mul(6, b=2)"))
 

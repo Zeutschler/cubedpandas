@@ -158,7 +158,7 @@ class Dimension(Iterable, ABC):
         elif isinstance(pattern, str):
             try:
                 # wildcard search
-                pattern = "^" + re.escape(pattern).replace("\\*", ".*").replace("\\?", ".") + "$";
+                pattern = "^" + re.escape(pattern).replace("\\*", ".*").replace("\\?", ".") + "$"
                 pattern = re.compile(pattern)
                 matched_members = [x for x in members if pattern.match(x)]
             except re.error:

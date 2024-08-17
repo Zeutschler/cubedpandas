@@ -1,11 +1,11 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 
 from __future__ import annotations
+
 from typing import SupportsFloat, TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
-
 
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
@@ -24,7 +24,6 @@ if TYPE_CHECKING:
 from cubedpandas.cube_aggregation import (CubeAggregationFunctionType,
                                           CubeAllocationFunctionType)
 from cubedpandas.measure import Measure
-from cubedpandas.context.expression import Expression
 
 
 class Context(SupportsFloat):
@@ -43,7 +42,7 @@ class Context(SupportsFloat):
     """
 
     # region Initialization
-    def __init__(self, cube: 'Cube', address: Any, parent: 'Context' | None = None,
+    def __init__(self, cube: 'Cube', address: Any, parent: Context | None = None,
                  row_mask: np.ndarray | None = None, member_mask: np.ndarray | None = None,
                  measure: str | None | Measure = None, dimension: str | None | Dimension = None,
                  resolve: bool = True, filtered: bool = False, dynamic_attribute: bool = False):
@@ -61,7 +60,7 @@ class Context(SupportsFloat):
         self._cube: Cube = cube
         self._address = address
         self._parent: Context = parent
-        self._df = cube.df
+        self._df: pd.DataFrame = cube.df
         self._row_mask: np.ndarray | None = row_mask
         self._member_mask: np.ndarray | None = member_mask
         self._measure: Measure | None = measure
@@ -257,9 +256,11 @@ class Context(SupportsFloat):
         from cubedpandas.context.filter_context import FilterContext
 
         if self._semaphore:
-            return super().__getattr__(name)
+            raise AttributeError(f"Unexpected fatal error while trying to resolve the context for '{name}'.")
+            #return super().__getattr__(name)
             # raise AttributeError(f"Unexpected fatal error while trying to resolve the context for '{name}'."
             #                     f"Likely due to multithreading issues. Please report this issue to the developer.")
+
         from cubedpandas.context.context_resolver import ContextResolver
         self._semaphore = True
         if str(name).endswith("_"):
@@ -381,10 +382,10 @@ class Context(SupportsFloat):
             A new context with the filtered data.
         """
         raise NotImplementedError("Filtering is not yet implemented.")
-        if isinstance(expression, str):
-            expression = Expression(expression)
-        row_mask = expression.evaluate(self._df)
-        return Context(self._cube, self._address, self, row_mask=row_mask)
+        # if isinstance(expression, str):
+        #     expression = Expression(expression)
+        # row_mask = expression.evaluate(self._df)
+        # return Context(self._cube, self._address, self, row_mask=row_mask)
 
     # endregion
 
@@ -534,13 +535,13 @@ class Context(SupportsFloat):
     def __rfloordiv__(self, other):  # // operator (returns an integer)
         return other // self.numeric_value
 
-    def __truediv__(self, other):  # / operator (returns an float)
+    def __truediv__(self, other):  # / operator (returns a float)
         return self.numeric_value / other
 
-    def __idiv__(self, other):  # /= operator (returns an float)
+    def __idiv__(self, other):  # /= operator (returns a float)
         return self.numeric_value / other
 
-    def __rtruediv__(self, other):  # / operator (returns an float)
+    def __rtruediv__(self, other):  # / operator (returns a float)
         return other / self.numeric_value
 
     def __mod__(self, other):  # % operator (returns a tuple)
@@ -675,21 +676,21 @@ class Context(SupportsFloat):
     def __repr__(self):
         return self.value.__str__()
 
-        t = ""
-        if self._dimension is not None:
-            t += f"{self.dimension}:{self.address}"
-        elif self._address is not None:
-            t += f"{self._address}"
-        else:
-            t += f"*"
-        if not self.value is None:
-            t += f" = {self.value.__str__()}"
-        else:
-            t += f" = None"
-
-        if isinstance(self._parent, Context):
-            t += f" <<< {self.parent.__repr__()}"
-        return t
+        # t = ""
+        # if self._dimension is not None:
+        #     t += f"{self.dimension}:{self.address}"
+        # elif self._address is not None:
+        #     t += f"{self._address}"
+        # else:
+        #     t += f"*"
+        # if not self.value is None:
+        #     t += f" = {self.value.__str__()}"
+        # else:
+        #     t += f" = None"
+        #
+        # if isinstance(self._parent, Context):
+        #     t += f" <<< {self.parent.__repr__()}"
+        # return t
 
     def __round__(self, n=None):
         return self.numeric_value.__round__(n)

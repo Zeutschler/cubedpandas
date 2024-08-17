@@ -1,7 +1,7 @@
 # for core cubedpandas library
 numpy
 pandas
-
+python-dateutil
 
 
 # for future use

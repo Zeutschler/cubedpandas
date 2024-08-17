@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, TypeVar, Tuple
+
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
 
 from cubedpandas.context.context import Context
 
 if TYPE_CHECKING:
-    from cubedpandas.cube import Cube
     from cubedpandas.measure import Measure
     from cubedpandas.dimension import Dimension
 
