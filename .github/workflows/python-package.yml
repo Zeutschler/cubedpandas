@@ -32,8 +32,6 @@ jobs:
         python -m pip install build
         python -m pip install numpy
         python -m pip install pandas
-        python -m pip install pyarrow
-        python -m pip install python-dateutil
         if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
 
     - name: Lint with flake8

@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 from cubedpandas.cube_aggregation import (CubeAggregationFunctionType,
                                           CubeAllocationFunctionType)
 from cubedpandas.measure import Measure
-from context.expression import Expression
+from cubedpandas.context.expression import Expression
 
 
 class Context(SupportsFloat):
@@ -46,7 +46,7 @@ class Context(SupportsFloat):
     def __init__(self, cube: 'Cube', address: Any, parent: 'Context' | None = None,
                  row_mask: np.ndarray | None = None, member_mask: np.ndarray | None = None,
                  measure: str | None | Measure = None, dimension: str | None | Dimension = None,
-                 resolve: bool = True, filtered: bool = False):
+                 resolve: bool = True, filtered: bool = False, dynamic_attribute: bool = False):
         """
         Initializes a new Context object. For internal use only.
         Raises:
@@ -68,6 +68,7 @@ class Context(SupportsFloat):
         self._dimension: Dimension | None = dimension
         self._convert_values_to_python_data_types: bool = True
         self._filtered: bool = filtered
+        self._dynamic_attribute: bool = dynamic_attribute
 
         if resolve and cube.eager_evaluation:
             from cubedpandas.context.context_resolver import ContextResolver

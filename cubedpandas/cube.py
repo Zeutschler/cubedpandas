@@ -393,7 +393,7 @@ class Cube:
             >>> cdf.Online.Apple.cost
             50
         """
-        context = CubeContext(self)
+        context = CubeContext(self, dynamic_attribute=True)
 
         if str(name).endswith("_"):
             name = str(name)[:-1]
@@ -420,7 +420,6 @@ class Cube:
         """
         context = CubeContext(self)
         return context[address]
-        return self._context[address]
 
     def __setitem__(self, address, value):
         """

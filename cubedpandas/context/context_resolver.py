@@ -5,9 +5,9 @@ import datetime
 import pandas as pd
 import numpy as np
 
-from context.datetime_resolver import resolve_datetime
+from cubedpandas.context.datetime_resolver import resolve_datetime
 from cubedpandas.context.context import Context
-from context.expression import Expression
+from cubedpandas.context.expression import Expression
 
 
 if TYPE_CHECKING:

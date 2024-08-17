@@ -19,3 +19,7 @@ class DimensionContext(Context):
                  measure: Measure | None = None, dimension: Dimension | None = None, resolve: bool = True):
         super().__init__(cube=cube, address=address, parent=parent, row_mask=row_mask,
                          measure=measure, dimension=dimension, resolve=resolve)
+
+    @property
+    def members(self) -> list:
+        return self._dimension.members

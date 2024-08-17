@@ -11,7 +11,7 @@ from pandas.api.types import (is_string_dtype, is_numeric_dtype, is_bool_dtype,
                               is_datetime64_any_dtype)
 
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
-from context.datetime_resolver import resolve_datetime
+from cubedpandas.context.datetime_resolver import resolve_datetime
 from cubedpandas.statistics import DimensionStatistics
 
 

@@ -13,6 +13,6 @@ class CubeContext(Context):
     A context representing the cube itself.
     """
 
-    def __init__(self, cube: 'Cube'):
-        super().__init__(cube=cube, address=None, parent=None, row_mask=None, measure=None)
+    def __init__(self, cube: 'Cube', dynamic_attribute: bool = False):
+        super().__init__(cube=cube, address=None, parent=None, row_mask=None, measure=None, dynamic_attribute=dynamic_attribute)
         self._measure = cube.measures.default

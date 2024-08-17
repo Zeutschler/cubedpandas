@@ -33,7 +33,7 @@ print(cdf["Online", "Apple", "Peter", "revenue"]) # 100
 print(cdf.Online.Apple.Peter.revenue) # 100
 
 print(cdf.Online.Apple.Peter) # 100
-print(cdf.cannel.Online.product.Apple.customer.Peter) # 100
+print(cdf.channel.Online.product.Apple.customer.Peter) # 100
 
 df2 = cdf.Online.Apple.Peter.df
 
