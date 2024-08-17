@@ -3,8 +3,6 @@
 import pandas as pd
 from unittest import TestCase
 from cubedpandas.cube import Cube
-from cubedpandas.context import Context, MeasureContext
-from cubedpandas.common import cubed
 
 
 class TestCubeContext(TestCase):

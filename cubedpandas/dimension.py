@@ -2,18 +2,16 @@
 import random
 import sys
 import re
-from fnmatch import fnmatch
 from abc import ABC
-from typing import Iterable, Self, Literal
+from typing import Iterable, Self
 import datetime
 import numpy as np
 import pandas as pd
 from pandas.api.types import (is_string_dtype, is_numeric_dtype, is_bool_dtype,
-                              is_datetime64_any_dtype, is_timedelta64_dtype,
-                              is_categorical_dtype, is_object_dtype)
+                              is_datetime64_any_dtype)
 
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
-from cubedpandas.date_parser import parse_date
+from context.datetime_resolver import resolve_datetime
 from cubedpandas.statistics import DimensionStatistics
 
 
@@ -362,7 +360,7 @@ class Dimension(Iterable, ABC):
                 if is_datetime64_any_dtype(self._dtype):
                     # for datetime dimension (and member is string), try to parse the string as a date or date range
                     mask = np.array([])
-                    first_date, last_date = parse_date(member)
+                    first_date, last_date = resolve_datetime(member)
                     if first_date is not None:
                         if last_date is None:
                             # a single date was returned

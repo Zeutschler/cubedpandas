@@ -1,0 +1,30 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING, Any
+import numpy as np
+
+from cubedpandas.context.context import Context
+
+if TYPE_CHECKING:
+    from cubedpandas.cube import Cube
+    from cubedpandas.measure import Measure
+    from cubedpandas.dimension import Dimension
+    from cubedpandas.member import MemberSet
+
+
+class MemberContext(Context):
+    """
+    A context representing a member or set of members of the cube.
+    """
+
+    # todo: implement something like: cdf.products[cdf.sales > 100]
+    def __init__(self, cube: Cube, parent: Context | None, address: Any = None, row_mask: np.ndarray | None = None,
+                 measure: Measure | None = None, dimension: Dimension | None = None,
+                 members: MemberSet | None = None, member_mask: np.ndarray | None = None, resolve: bool = True):
+        super().__init__(cube=cube, address=address, parent=parent, row_mask=row_mask,
+                         measure=measure, dimension=dimension, resolve=resolve)
+        self._members: MemberSet = members
+        self._member_mask = member_mask
+
+    @property
+    def members(self) -> 'MemberSet':
+        return self._members
