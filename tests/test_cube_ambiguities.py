@@ -35,13 +35,13 @@ class TestCubeWithDates(TestCase):
 
     def test_cube_without_ambiguities(self):
         cdf = cubed(self.df, schema=self.schema)
-        self.assertEquals(cdf.ambiguities == False, True)
-        self.assertEquals(cdf.ambiguities == 0, True)
-        self.assertEquals(any(cdf.ambiguities), False)
+        self.assertEqual(cdf.ambiguities == False, True)
+        self.assertEqual(cdf.ambiguities == 0, True)
+        self.assertEqual(any(cdf.ambiguities), False)
 
     def test_cube_with_ambiguities(self):
         cdf = cubed(self.df)
-        self.assertEquals(cdf.ambiguities == True, True)
-        self.assertEquals(cdf.ambiguities == 3, True)
-        self.assertEquals(any(cdf.ambiguities), True)
+        self.assertEqual(cdf.ambiguities == True, True)
+        self.assertEqual(cdf.ambiguities == 3, True)
+        self.assertEqual(any(cdf.ambiguities), True)
         print(cdf.ambiguities)
