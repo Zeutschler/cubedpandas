@@ -1,5 +1,4 @@
 # CubedPandas 
-<picture align="center"><img alt="Pandas Logo" src="https://raw.githubusercontent.com/Zeutschler/cubedpandas/master/pages/assets/cpd_logo.jpg"></picture>
 
 ## Multi-dimensional data analysis for Pandas dataframes
 
@@ -8,8 +7,8 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/Zeutschler/cubedpandas)
 ![CI - Test](https://github.com/pandas-dev/pandas/actions/workflows/unit-tests.yml/badge.svg)
 ![build](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/python-package.yml)
-![codecov](https://codecov.io/gh/Zeutschler/cubedpandas/branch/master/graph/badge.svg?token=3ZQZQ2ZQ2Z)
-![GitHub issues](https://img.shields.io/github/issues/Zeutschler/cubedpandas)
+![codecov](https://codecov.io/github/Zeutschler/cubedpandas/graph/badge.svg?token=B12O0B6F10)
+![Python versions](https://img.shields.io/pypi/pyversions/cubedpandas)
 ![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas)
 ![sponsor](https://img.shields.io/github/sponsors/zeutschler)
 
