@@ -246,9 +246,6 @@ class Dimension(Iterable, ABC):
         """
         Resolves a member or a list of members to a mask to filter the underlying dataframe.
         """
-        if isinstance(member, Filter):
-            return member.mask
-
         if isinstance(member, list):
             member = tuple(sorted(member)) # make sure the order is always the same, e.g. A,B == B,A
         if not isinstance(member, tuple):
