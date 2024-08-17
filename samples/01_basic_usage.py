@@ -32,6 +32,10 @@ print(cdf["Online", "Apple", "Peter", "revenue"]) # 100
 #     also this super convenient form is supported:
 print(cdf.Online.Apple.Peter.revenue) # 100
 
+print(cdf.Online.Apple.Peter) # 100
+print(cdf.channel.Online.product.Apple.customer.Peter) # 100
+
+df2 = cdf.Online.Apple.Peter.df
 
 # 2. Aggregations
 # Cells provide aggregation over all records in the dataframe that match the given address.

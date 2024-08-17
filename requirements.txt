@@ -1,13 +1,15 @@
+# for core cubedpandas library
 numpy
 pandas
-sortednp
-pyarrow >= 14.0.1
-python-dateutil
+
+
+
+# for future use
 matplotlib
 scipy
 scikit-learn
 
-# pyparsing  ' not needed for now
+
 
 
 # for deployment

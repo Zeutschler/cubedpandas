@@ -1,15 +1,12 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
 
 from __future__ import annotations
-from typing import SupportsFloat, TYPE_CHECKING, Any
-import numpy as np
-from cubedpandas.context import Context
+from typing import TYPE_CHECKING, Any
+from cubedpandas.context.context import Context
 
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
-    from cubedpandas.cube import Cube, CubeAggregationFunction
-
-from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction, CubeAllocationFunctionType
+    pass
 
 
 class Slice:

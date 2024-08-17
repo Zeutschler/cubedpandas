@@ -3,28 +3,20 @@ from __future__ import annotations
 import sys
 from types import ModuleType, FunctionType
 from gc import get_referents
-from typing import Any, List, Tuple
+from typing import Any
 import numpy as np
 import pandas as pd
 
-from cubedpandas.cube_aggregation import (CubeAggregationFunctionType,
-                                          CubeAggregationFunction, CubeAllocationFunctionType)
+from cubedpandas.cube_aggregation import (CubeAllocationFunctionType)
 from cubedpandas.cube_settings import CubeSettings
 from cubedpandas.schema import Schema
 from cubedpandas.measure_collection import MeasureCollection
-from cubedpandas.measure import Measure
 from cubedpandas.dimension_collection import DimensionCollection
-from cubedpandas.dimension import Dimension
-from cubedpandas.member import Member
 from cubedpandas.ambiguities import Ambiguities
-#from cubedpandas.filter import Filter, FilterOperation
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
-# from cubedpandas.cell import Cell
 from cubedpandas.context import Context, CubeContext, FilterContext
 from cubedpandas.slice import Slice
 
-from cubedpandas.resolvers.resolvers import Resolvers
-from cubedpandas.resolvers.resolver import Resolver
 
 
 class CubeLinks:
@@ -401,7 +393,7 @@ class Cube:
             >>> cdf.Online.Apple.cost
             50
         """
-        context = CubeContext(self)
+        context = CubeContext(self, dynamic_attribute=True)
 
         if str(name).endswith("_"):
             name = str(name)[:-1]
@@ -428,7 +420,6 @@ class Cube:
         """
         context = CubeContext(self)
         return context[address]
-        return self._context[address]
 
     def __setitem__(self, address, value):
         """

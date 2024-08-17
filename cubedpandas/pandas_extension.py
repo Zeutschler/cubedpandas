@@ -2,7 +2,7 @@
 
 import pandas as pd
 from cubedpandas.cube import Cube
-from cubedpandas.context import Context
+from cubedpandas.context.context import Context
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 
 @pd.api.extensions.register_dataframe_accessor("cubed")

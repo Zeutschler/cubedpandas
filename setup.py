@@ -8,6 +8,7 @@ from cubedpandas import VERSION as CUBEDPANDAS_VERSION
 
 # ...to run the build and deploy process to pypi.org manually:
 # 1. delete folder 'build'
+# 1. empty folder 'dist'
 # 2. python3 setup.py sdist bdist_wheel   # note: Wheel need to be installed: pip install wheel
 # 3. twine upload -r  pypi dist/*         # note: Twine need to be installed: pip install twine
 
