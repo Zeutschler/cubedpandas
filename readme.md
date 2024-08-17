@@ -3,10 +3,15 @@
 
 ## Multi-dimensional data analysis for Pandas dataframes
 
-[![PyPI version](https://badge.fury.io/py/cubedpandas.svg)](https://badge.fury.io/py/cubedpandas)
-[![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?label=PyPI%20downloads)](https://pypi.org/project/cubedpandas)
-[![CI - Test](https://github.com/pandas-dev/pandas/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/Zeutschler/cubedpandas/actions/workflows/unit-tests.yml)
-![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas)   
+![PyPI version](https://badge.fury.io/py/cubedpandas.svg)
+![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?label=PyPI%20downloads)
+![GitHub last commit](https://img.shields.io/github/last-commit/Zeutschler/cubedpandas)
+![CI - Test](https://github.com/pandas-dev/pandas/actions/workflows/unit-tests.yml/badge.svg)
+![build](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/python-package.yml)
+![codecov](https://codecov.io/gh/Zeutschler/cubedpandas/branch/master/graph/badge.svg?token=3ZQZQ2ZQ2Z)
+![GitHub issues](https://img.shields.io/github/issues/Zeutschler/cubedpandas)
+![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas)
+![sponsor](https://img.shields.io/github/sponsors/zeutschler)
 
 -----------------
 
