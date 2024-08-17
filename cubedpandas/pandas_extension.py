@@ -1,15 +1,17 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 import pandas as pd
 from cubedpandas.cube import Cube
 from cubedpandas.context.context import Context
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
 
+
 @pd.api.extensions.register_dataframe_accessor("cubed")
 class CubedPandasAccessor:
     """
     A Pandas extension that provides the 'cubed' accessor to Pandas dataframes.
     """
+
     def __init__(self, pandas_obj):
         self._validate(pandas_obj)
         self._df: pd.DataFrame = pandas_obj
@@ -31,10 +33,10 @@ class CubedPandasAccessor:
 
     @property
     def cube(self, schema=None,
-                 infer_schema_if_not_provided: bool = True,
-                 caching: CachingStrategy = CachingStrategy.LAZY,
-                 caching_threshold: int = EAGER_CACHING_THRESHOLD,
-                 read_only: bool = True):
+             infer_schema_if_not_provided: bool = True,
+             caching: CachingStrategy = CachingStrategy.LAZY,
+             caching_threshold: int = EAGER_CACHING_THRESHOLD,
+             read_only: bool = True):
         """
         Initializes a new Cube wrapping and providing a Pandas dataframe as a multi-dimensional data cube.
         The schema of the Cube can be either inferred automatically from the dataframe  (default) or defined explicitly.
@@ -51,4 +53,5 @@ class CubedPandasAccessor:
         :param read_only: If set to `False`, the Cube will become write-back enable and changes made to the data
                 will be written to the underlying dataframe.
         """
-        return Cube(df=self._df, schema=schema, infer_schema=infer_schema_if_not_provided, caching=caching, caching_threshold=caching_threshold, read_only=read_only)
+        return Cube(df=self._df, schema=schema, infer_schema=infer_schema_if_not_provided, caching=caching,
+                    caching_threshold=caching_threshold, read_only=read_only)

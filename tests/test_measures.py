@@ -1,9 +1,8 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 import pandas as pd
 from unittest import TestCase
-from cubedpandas.cube import Cube
-from cubedpandas.common import cubed
+from cubedpandas import Cube
 
 
 class TestMeasures(TestCase):
@@ -27,7 +26,6 @@ class TestMeasures(TestCase):
         }
 
     def test_change_default_measure(self):
-
         cdf = Cube(self.df, schema=self.schema)
 
         self.assertEqual(cdf.A.Online, 100)
@@ -36,4 +34,3 @@ class TestMeasures(TestCase):
 
         with self.assertRaises(ValueError):
             cdf.measures.default = "xxxxxxx"
-

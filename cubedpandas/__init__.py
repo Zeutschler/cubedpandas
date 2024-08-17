@@ -1,4 +1,4 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 from cubedpandas.schema import Schema
 from cubedpandas.measure import Measure
@@ -51,4 +51,3 @@ __all__ = [
     "Slice",
     "VERSION"
 ]
-

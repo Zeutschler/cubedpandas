@@ -1,9 +1,10 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 import pandas as pd
 from unittest import TestCase
-from cubedpandas.cube import Cube
+from cubedpandas import Cube
 from datetime import datetime
+
 
 class TestCubeWithDates(TestCase):
     def setUp(self) -> None:
@@ -27,9 +28,7 @@ class TestCubeWithDates(TestCase):
             ]
         }
 
-
     def test_simple_aggregations(self):
-
         cube = Cube(self.df, schema=self.schema)
 
         # simple aggregations
@@ -58,26 +57,21 @@ class TestCubeWithDates(TestCase):
         total = value1 + value2
         self.assertEqual(total, 350)
 
-
     def test_slicing_with_exact_dates(self):
         cube = Cube(self.df, schema=self.schema)
 
         # slicing with dates
         value = cube["date:June 2024"]
-        self.assertEqual(value, 100 + 150 ) # all sales in June 2024
-
+        self.assertEqual(value, 100 + 150)  # all sales in June 2024
 
         some_date = datetime(2024, 6, 1)
         some_non_existing_date = datetime(2019, 3, 24)
 
         value = cube["date:2024"]
-        self.assertEqual(value, 100 + 150 + 300 + 200 + 250) # all sales in 2024
-
+        self.assertEqual(value, 100 + 150 + 300 + 200 + 250)  # all sales in 2024
 
         value = cube.date[some_non_existing_date]
         self.assertEqual(value, 0)
 
         value = cube[some_date]
         self.assertEqual(value, 100)
-
-

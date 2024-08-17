@@ -1,4 +1,4 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see file LICENSE included in this package.
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 from enum import IntEnum
 from typing import SupportsFloat
@@ -48,7 +48,6 @@ class CubeAggregationFunctionType(IntEnum):
     POF = 8
     """Percentage of the first value in the current context."""
 
-
     # returning an integer
     COUNT = 9
     """Number of values/rows in the current context."""
@@ -67,11 +66,13 @@ class CubeAggregationFunctionType(IntEnum):
         counting function types `COUNT`, `NAN`, `AN`, `ZERO` or `NZERO`."""
         return function_type >= CubeAggregationFunctionType.COUNT
 
+
 class CubeAggregationFunction(SupportsFloat):
     """
     Represents aggregation functions, like SUM, MIN, MAX, VAG etc.,
     which are provided through the 'Cube' and 'Cell' object, e.g. by `cube.avg["Apple", "Online"]`.
     """
+
     def __new__(cls, *args, **kwargs):
         return SupportsFloat.__new__(cls)
 
@@ -89,14 +90,13 @@ class CubeAggregationFunction(SupportsFloat):
     def __setitem__(self, address, value):
         raise NotImplementedError("Not implemented yet")
 
-
     # region Properties
     @property
     def value(self):
         """Reads the value of the current cell idx_address from the underlying cube."""
-        #if self._row_mask is None:
+        # if self._row_mask is None:
         #    return self._cube[None]
-        return self._cube._evaluate(self._row_mask, self._measure,  self._op)
+        return self._cube._evaluate(self._row_mask, self._measure, self._op)
 
     @value.setter
     def value(self, value):
@@ -111,7 +111,6 @@ class CubeAggregationFunction(SupportsFloat):
             return float(value)
         else:
             return 0.0
-
 
     # region operator overloading and float behaviour
     def __float__(self) -> float:  # type conversion to float

@@ -1,5 +1,6 @@
-from typing import Literal
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
+from typing import Literal
 import numpy as np
 import pandas as pd
 
@@ -42,7 +43,8 @@ class DimensionStatistics:
             data = self._dimension.cube._df[measure].value_counts(dropna=False, ascending=False)
             data.plot(kind='hist', bins=20, title=f'{measure} Histogram')
 
-    def outliers(self, measure, method: Literal["iqr", "zscore", "mahalanobis", "lof", "isolation_forest", "oneclass_svm"] = "iqr"):
+    def outliers(self, measure,
+                 method: Literal["iqr", "zscore", "mahalanobis", "lof", "isolation_forest", "oneclass_svm"] = "iqr"):
         """
         Returns:
             Return a list of members that are considered outliers.
@@ -120,14 +122,14 @@ class DimensionStatistics:
         cov_matrix = np.cov(normalized_data, rowvar=False)
         mahalanobis_distances = [mahalanobis(point, mean, np.linalg.inv(cov_matrix)) for point in normalized_data]
         mahalanobis_distances_zscores = [(x - np.mean(mahalanobis_distances)) / np.std(mahalanobis_distances)
-        for x in mahalanobis_distances]
+                                         for x in mahalanobis_distances]
         outliers_multivariate = [i for i, distance in enumerate(mahalanobis_distances) if
                                  mahalanobis_distances_zscores[i] > threshold]
         dhr = df.reset_index()
-        dhr.rename(columns={"index": "DatetimeIndex"}, inplace = True)
+        dhr.rename(columns={"index": "DatetimeIndex"}, inplace=True)
         dhr = dhr[dhr.index.isin(outliers_multivariate)]
         dhr["Unnamed: 0"] = pd.to_datetime(dhr["Unnamed: 0"])
-        dhr.set_index("Unnamed: 0", inplace = True)
+        dhr.set_index("Unnamed: 0", inplace=True)
         dhr = dhr[dhr["deltae"] != 0]
         return dhr[["tsp", "deltae"]]
 
@@ -151,9 +153,9 @@ class DimensionStatistics:
         critical_value = f.ppf(1 - alpha, df1, df2)
         outliers = np.where(t_squared > critical_value)[0]
         dhr = df.reset_index()
-        dhr.rename(columns={"index": "DatetimeIndex"}, inplace = True)
+        dhr.rename(columns={"index": "DatetimeIndex"}, inplace=True)
         dhr = dhr[dhr.index.isin(outliers)]
         dhr["Unnamed: 0"] = pd.to_datetime(dhr["Unnamed: 0"])
-        dhr.set_index("Unnamed: 0", inplace = True)
+        dhr.set_index("Unnamed: 0", inplace=True)
         dhr = dhr[dhr["deltae"] != 0]
         return dhr

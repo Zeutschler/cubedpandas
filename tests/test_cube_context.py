@@ -1,8 +1,8 @@
-
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 import pandas as pd
 from unittest import TestCase
-from cubedpandas.cube import Cube
+from cubedpandas import Cube
 
 
 class TestCubeContext(TestCase):
@@ -39,7 +39,7 @@ class TestCubeContext(TestCase):
         self.assertEqual(c.product.A.B.channel.Online.sales, 100 + 150)
 
         self.assertEqual(c.sales, 100 + 150 + 300 + 200 + 250 + 350)
-        self.assertEqual(c.product, 100 + 150 + 300 + 200 + 250+ 350)
+        self.assertEqual(c.product, 100 + 150 + 300 + 200 + 250 + 350)
         self.assertEqual(c.product.A, 100 + 200)
         self.assertEqual(c.A, 100 + 200)
         self.assertEqual(c.A.Online, 100)
@@ -67,9 +67,9 @@ class TestCubeContext(TestCase):
 
         self.assertEqual(c[{"product": "A"}], 100 + 200)
         self.assertEqual(c[{"product": ["A", "B"]}], 100 + 150 + 200 + 250)
-        self.assertEqual(c[{"product": "A", "channel": "Online"}], 100 )
-        self.assertEqual(c[{"product": "A", "channel": ["Online", "Retail"]}], 100 + 200 )
-        self.assertEqual(c[{"product": ["A", "B"], "channel": ["Online", "Retail"]}], 100 + 150 + 200 + 250 )
+        self.assertEqual(c[{"product": "A", "channel": "Online"}], 100)
+        self.assertEqual(c[{"product": "A", "channel": ["Online", "Retail"]}], 100 + 200)
+        self.assertEqual(c[{"product": ["A", "B"], "channel": ["Online", "Retail"]}], 100 + 150 + 200 + 250)
 
     def test_cube_context_dimension_list_methods(self):
         c = Cube(self.df, schema=self.schema)
@@ -85,13 +85,13 @@ class TestCubeContext(TestCase):
         self.assertEqual(c.product[["A", "B"]], 100 + 150 + 200 + 250)
 
         # special case, non-existing members like 'XXX' will be ignored.
-        self.assertEqual(c.product["A", "XXX"], 100 + 200 )
+        self.assertEqual(c.product["A", "XXX"], 100 + 200)
         self.assertEqual(c.product[["A", "B", "XXX"]], 100 + 150 + 200 + 250)
 
         # special case, member list containing unhashable objects will raise ValueError
         if not c.ignore_key_errors:
             with self.assertRaises(ValueError):
-                a = c.product["A", {"not-exists":"XXX"}]  # unhashable object
+                a = c.product["A", {"not-exists": "XXX"}]  # unhashable object
 
     def test_cube_context_cube_list_methods(self):
         c = Cube(self.df, schema=self.schema)
@@ -100,13 +100,12 @@ class TestCubeContext(TestCase):
         self.assertEqual(c["A", "B", "C"], 100 + 150 + 300 + 200 + 250 + 350)
         self.assertEqual(c["A", "B"], 100 + 150 + 200 + 250)
 
-        self.assertEqual(c["A", "Online"], 100 )
+        self.assertEqual(c["A", "Online"], 100)
         self.assertEqual(c["A", "B", "Online"], 100 + 150)
 
         # special case: dimension content switch from 'product' to 'channel' to 'product'
-        self.assertEqual(c["A", "Online", "B"], 0) # no data, as intersection of 'A' and 'B' is always empty
-        self.assertEqual(c["A", "Online", "A"], 100) # intersection of 'A' and 'A' does not change the result
-
+        self.assertEqual(c["A", "Online", "B"], 0)  # no data, as intersection of 'A' and 'B' is always empty
+        self.assertEqual(c["A", "Online", "A"], 100)  # intersection of 'A' and 'A' does not change the result
 
     def test_cube_context_with_dim_hints_methods(self):
         c = Cube(self.df, schema=self.schema)
@@ -121,14 +120,14 @@ class TestCubeContext(TestCase):
     def test_cube_context_with_context_arguments(self):
         c = Cube(self.df, schema=self.schema)
 
-
         filter = c.A.Online
         self.assertEqual(c[filter, "cost"], 50)
 
         # define a context filter
         filter = c.A
 
-        self.assertEqual(c[filter, "B", "Online"], 100 + 150) # filter and 'B' are from the same dimension, so they get joined
+        self.assertEqual(c[filter, "B", "Online"],
+                         100 + 150)  # filter and 'B' are from the same dimension, so they get joined
 
         self.assertEqual(c[filter], 100 + 200)
         self.assertEqual(c[filter, "Online"], 100)
@@ -136,44 +135,42 @@ class TestCubeContext(TestCase):
 
         self.assertEqual(c["B", filter, "Online"], 250)
 
-
     def test_cube_boolean_context_operations(self):
         c = Cube(self.df, schema=self.schema)
 
         left = c.A
         right = c.B
-        self.assertEqual(c[left | right], 100 + 150 + 200 + 250)   # OR > union
-        self.assertEqual(c[left & right], 0)               # AND > intersection
-        self.assertEqual(c[left ^ right], 100 + 150 + 200 + 250)   # XOR > symmetric difference
-        self.assertEqual(c[~ left], 150 + 300 + 250 + 350)         # NOT > inversion
+        self.assertEqual(c[left | right], 100 + 150 + 200 + 250)  # OR > union
+        self.assertEqual(c[left & right], 0)  # AND > intersection
+        self.assertEqual(c[left ^ right], 100 + 150 + 200 + 250)  # XOR > symmetric difference
+        self.assertEqual(c[~ left], 150 + 300 + 250 + 350)  # NOT > inversion
 
         result = left | right
-        self.assertEqual(c[result], 100 + 150 + 200 + 250)   # OR > union
+        self.assertEqual(c[result], 100 + 150 + 200 + 250)  # OR > union
 
         left = c.A
         right = c.Online
         self.assertEqual(c[left | right], (100 + 150 + 300) + 200)  # OR > union
-        self.assertEqual(c[left & right], 100)              # AND > intersection
-        self.assertEqual(c[left ^ right], 150 + 300 + 200)          # XOR > symmetric difference
+        self.assertEqual(c[left & right], 100)  # AND > intersection
+        self.assertEqual(c[left ^ right], 150 + 300 + 200)  # XOR > symmetric difference
 
         self.assertEqual(c[right | left], (100 + 150 + 300) + 200)  # OR > union
-        self.assertEqual(c[right & left], 100)              # AND > intersection
-        self.assertEqual(c[right ^ left], 150 + 300 + 200)          # XOR > symmetric difference
+        self.assertEqual(c[right & left], 100)  # AND > intersection
+        self.assertEqual(c[right ^ left], 150 + 300 + 200)  # XOR > symmetric difference
 
-
-    def context_equality(self, a,b):
+    def context_equality(self, a, b):
         if not (a == b):
-            self.failureException(f"Contexts are not equal: {a} ({a.__class__.__name__}) != {b} ({a.__class__.__name__})")
+            self.failureException(
+                f"Contexts are not equal: {a} ({a.__class__.__name__}) != {b} ({a.__class__.__name__})")
 
     def test_cube_comparison_operations(self):
         c = Cube(self.df, schema=self.schema)
 
-        #self.addTypeEqualityFunc(Context, TestCubeContext.context_equality)
-        #self.addTypeEqualityFunc(MeasureContext, TestCubeContext.context_equality)
+        # self.addTypeEqualityFunc(Context, TestCubeContext.context_equality)
+        # self.addTypeEqualityFunc(MeasureContext, TestCubeContext.context_equality)
 
         # Note: adding an underscore to any context will turn the context into a filter
         # and allow row-wise comparison operations in the underlying DataFrame
-
 
         # chained operations
         self.assertEqual(100 < c.sales_ < 200, 150)
@@ -218,7 +215,7 @@ class TestCubeContext(TestCase):
     def test_cube_comparison_operations_as_arguments(self):
         c = Cube(self.df, schema=self.schema)
 
-        a = c.sales_ > 100  #  150, 300, 200, 250, 350
+        a = c.sales_ > 100  # 150, 300, 200, 250, 350
         b = c.sales_ < 200  # 100, 150
 
         self.assertEqual(c.Online[a], 150 + 300)
