@@ -15,6 +15,7 @@ from cubedpandas.pandas_extension import CubedPandasAccessor, EAGER_CACHING_THRE
 from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.common import cubed
 
+import cubedpandas.context as context
 from cubedpandas.context.context import Context
 from cubedpandas.context.compound_context import CompoundContext
 from cubedpandas.context.context_context import ContextContext
@@ -25,12 +26,13 @@ from cubedpandas.context.member_context import MemberContext
 from cubedpandas.context.member_not_found_context import MemberNotFoundContext
 
 
-__version__ = "0.2.6"
+__version__ = "0.2.7"
 VERSION = __version__
 
 __all__ = [
     "Ambiguities",
     "CachingStrategy",
+    "context",
     "Context",
     "ContextContext",
     "CompoundContext",
