@@ -26,7 +26,7 @@ from cubedpandas.context.member_context import MemberContext
 from cubedpandas.context.member_not_found_context import MemberNotFoundContext
 
 
-__version__ = "0.2.8"
+__version__ = "0.2.9"
 VERSION = __version__
 
 __all__ = [

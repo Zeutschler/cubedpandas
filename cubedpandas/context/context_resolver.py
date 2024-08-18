@@ -1,12 +1,16 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from collections.abc import Iterable
 import datetime
 import pandas as pd
 import numpy as np
 
+from cubedpandas.context.measure_context import MeasureContext
+from cubedpandas.context.filter_context import FilterContext
+from cubedpandas.context.dimension_context import DimensionContext
+from cubedpandas.context.member_context import MemberContext
 from cubedpandas.context.datetime_resolver import resolve_datetime
 from cubedpandas.context.context import Context
 from cubedpandas.context.expression import Expression
@@ -14,6 +18,7 @@ from cubedpandas.context.expression import Expression
 if TYPE_CHECKING:
     from cubedpandas.dimension import Dimension
     from cubedpandas.member import Member, MemberSet
+    from cubedpandas.measure import Measure
 
 
 class ContextResolver:
@@ -73,7 +78,16 @@ class ContextResolver:
             # 3.3. Check if the address contains a list of members, e.g. "A, B, C"
             address = ContextResolver.string_address_to_list(cube, address)
 
-        # 4. Check for members of all data types over all dimensions in the cube
+        # 4. Check for callable objects, e.g. lambda functions
+        if callable(address):
+            success, row_mask = ContextResolver._resolve_callable(parent=parent, row_mask=row_mask,
+                                                           measure=measure, dimension=dimension,
+                                                           function=address)
+            if success:
+                return FilterContext(parent=parent, filter_expression=address, row_mask=row_mask,
+                                     measure=measure, dimension=dimension, resolve=False, is_comparison=False)
+
+        # 5. Check for members of all data types over all dimensions in the cube
         #    Let's try start with a dimension that was handed in,
         #    if a dimension was handed in from the parent context.
         if not isinstance(address, list):
@@ -106,7 +120,7 @@ class ContextResolver:
                     # same dimension, then `cube.A.B.C` will require to join the member rows of A, B and C
                     # before we filter the rows from a previous context addressing another or no dimension.
                     if ContextResolver.matching_data_type(address, dim):
-                        parent_row_mask = parent.get_row_mask(before_dimension=dimension)
+                        parent_row_mask = parent._get_row_mask(before_dimension=dimension)
                         exists, new_row_mask, member_mask = (
                             dimension._check_exists_and_resolve_member(address, parent_row_mask, member_mask,
                                                                        skip_checks=skip_checks))
@@ -146,7 +160,7 @@ class ContextResolver:
 
                 raise ValueError(new_context_ref.message)
 
-        # 4. If we've not yet resolved anything meaningful, then we need to raise an error...
+        # 6. If we've not yet resolved anything meaningful, then we need to raise an error...
         raise ValueError(f"Invalid member name or address '{address}'. "
                          f"Tip: check for typos and upper/lower case issues.")
 
@@ -177,7 +191,7 @@ class ContextResolver:
 
                     if match_found:
                         member_mask = None
-                        parent_row_mask = context.get_row_mask(before_dimension=context.dimension)
+                        parent_row_mask = context._get_row_mask(before_dimension=context.dimension)
                         exists, new_row_mask, member_mask = (
                             dim._check_exists_and_resolve_member(member=members, row_mask=parent_row_mask,
                                                                  parent_member_mask=member_mask,
@@ -200,7 +214,7 @@ class ContextResolver:
 
                     # We have a valid date or data range, let's resolve it
                     from_dt, to_dt = np.datetime64(from_dt), np.datetime64(to_dt)
-                    parent_row_mask = context.get_row_mask(before_dimension=context.dimension)
+                    parent_row_mask = context._get_row_mask(before_dimension=context.dimension)
                     exists, new_row_mask, member_mask = dimension._check_exists_and_resolve_member(
                         member=(from_dt, to_dt), row_mask=parent_row_mask, parent_member_mask=context.member_mask,
                         skip_checks=True, evaluate_as_range=True)
@@ -287,7 +301,7 @@ class ContextResolver:
                 # For increased performance, no individual upfront member checks will be made.
                 # Instead, we the list as a whole will processed by numpy.
                 member_mask = None
-                parent_row_mask = context.get_row_mask(before_dimension=context.dimension)
+                parent_row_mask = context._get_row_mask(before_dimension=context.dimension)
                 exists, new_row_mask, member_mask = (
                     context.dimension._check_exists_and_resolve_member(member=address, row_mask=parent_row_mask,
                                                                        parent_member_mask=member_mask,
@@ -324,6 +338,25 @@ class ContextResolver:
         return False, context
 
     @staticmethod
+    def _resolve_callable(parent: Context, row_mask: np.ndarray | None,
+                          measure:Measure | None, dimension: Dimension | None,
+                          function: Any | None = None)   -> (bool, np.ndarray):
+        if not callable(function):
+            return False, row_mask
+
+        df = parent.cube.df
+        if row_mask is None:
+            row_mask = parent.row_mask
+        try:
+            if row_mask is None:
+               new_row_mask =  df[df.apply(function, axis=1)].index.to_numpy()
+            else:
+               new_row_mask = df.loc[row_mask].apply(function, axis=1).index.to_numpy
+        except Exception as e:
+            raise ValueError(f"Failed to apply filter function to dataframe. {e}")
+        return True, new_row_mask
+
+    @staticmethod
     def string_address_to_list(cube, address: str):
         delimiter = cube.settings.list_delimiter
         if not delimiter in address:
@@ -336,7 +369,7 @@ class ContextResolver:
         """Merges the rows of two contexts."""
 
         if parent.dimension == child.dimension:
-            parent_row_mask = parent.get_row_mask(before_dimension=parent.dimension)
+            parent_row_mask = parent._get_row_mask(before_dimension=parent.dimension)
             child._member_mask = np.union1d(parent.member_mask, child.member_mask)
             child._row_mask = np.intersect1d(parent_row_mask, child._member_mask, assume_unique=True)
 

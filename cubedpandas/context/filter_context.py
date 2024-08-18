@@ -3,6 +3,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 import numpy as np
+from numpy.ma.extras import row_stack
 
 from cubedpandas.context.context import Context
 
@@ -19,8 +20,10 @@ class FilterContext(Context):
     """
 
     def __init__(self, parent: Context | None, filter_expression: Any = None, row_mask: np.ndarray | None = None,
-                 measure: Measure | None = None, dimension: Dimension | None = None, resolve: bool = True):
+                 measure: Measure | None = None, dimension: Dimension | None = None,
+                 resolve: bool = True, is_comparison: bool = True):
         self._expression = filter_expression
+        self._is_comparison: bool = is_comparison
 
         if row_mask is None:
             row_mask = parent.row_mask
@@ -33,7 +36,6 @@ class FilterContext(Context):
             match operator:
                 case "<":
                     row_mask = self._df[self._df[self.measure.column] < other].index.to_numpy()
-                    # print(f"{self.measure.column} < {other} := {row_mask}, {self._row_mask}")
                 case "<=":
                     row_mask = self._df[self._df[self.measure.column] <= other].index.to_numpy()
                 case ">":
@@ -63,19 +65,37 @@ class FilterContext(Context):
         return self._expression
 
     def __lt__(self, other) -> MeasureContext:  # < (less than) operator
-        return self._compare("<", other)
+        if self._is_comparison:
+            return self._compare("<", other)
+        else:
+            return self.numeric_value < other
 
     def __gt__(self, other) -> MeasureContext:  # > (greater than) operator
-        return self._compare(">", other)
+        if self._is_comparison:
+            return self._compare(">", other)
+        else:
+            return self.numeric_value > other
 
     def __le__(self, other) -> MeasureContext:  # <= (less than or equal to) operator
-        return self._compare("<=", other)
+        if self._is_comparison:
+            return self._compare("<=", other)
+        else:
+            return self.numeric_value <= other
 
     def __ge__(self, other) -> MeasureContext:  # >= (greater than or equal to) operator
-        return self._compare(">=", other)
+        if self._is_comparison:
+            return self._compare(">=", other)
+        else:
+            return self.numeric_value >= other
 
     def __eq__(self, other) -> MeasureContext:  # == (equal to) operator
-        return self._compare("==", other)
+        if self._is_comparison:
+            return self._compare("==", other)
+        else:
+            return self.numeric_value == other
 
     def __ne__(self, other) -> MeasureContext:  # != (not equal to) operator
-        return self._compare("!=", other)
+        if self._is_comparison:
+            return self._compare("!=", other)
+        else:
+            return self.numeric_value != other

@@ -20,7 +20,7 @@ class ContextContext(Context):
 
         # merge the row masks of the parent and the nested context, e.g. parent[nested]
         if parent.dimension == nested.dimension:
-            parent_row_mask = parent.get_row_mask(before_dimension=parent.dimension)
+            parent_row_mask = parent._get_row_mask(before_dimension=parent.dimension)
             member_mask = np.union1d(parent.member_mask, nested.member_mask)
             if parent_row_mask is None:
                 row_mask = member_mask
