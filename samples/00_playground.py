@@ -10,25 +10,9 @@ df = pd.DataFrame({"product": ["Apple", "Pear", "Banana", "Apple", "Pear", "Bana
 
 cdf = cubed(df)  # That's it! You now have multi-dimensional access to your dataframe. Let's see...
 
-con = cdf.sales.MeasureContext
-print(cdf.sales)
-print(type(con))
-
-con2 = Context(cdf, "sales")
-print(type(con2))
-
-cub_con = CubeContext(cdf)
-a = cub_con + 2
-
-m_con = MeasureContext(cdf, "sales")
-print(type(m_con))
-
-
-
-
-
-
-
+context = cdf.product["Apple", "Pear"].sales
+print(context.address)
+print(context.cube_address)
 
 
 

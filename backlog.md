@@ -5,18 +5,18 @@
 ### Reimplementation of the core functionality
 
 #### Writeback and Data Manipulation
-- [ ] Check, adapt and activate the existing writeback functionality.
+- [x] Check, adapt and activate the existing writeback functionality.
 
 #### Analytical Features for Dimensions and Members
 - [ ] All member related functions should return a list of the member keys as defined in the dataframe. 
       Not wrapped into a `Member` object.
 - [ ] Implement `cdf.product.members` property to return a list of all members for a dimension.
-- [ ] `top(n)`, `bottom(n)` and `median(n)` functions for dimensions, e.g. `cdf.product.top(2)`.
+- [x] `top(n)` and `bottom(n)` functions for dimensions, e.g. `cdf.product.top(2)`.
 - [ ] `count` property for dimensions, e.g. `cdf.Online.product.count`, to count the number of distinct members.
       The current implementation counts the records for the default measure.
 
 #### ... as related to new context based addressing
-- [ ] Implement `Context.full_address` property returning a dictionary. 
+- [x] Implement `Context.full_address` property returning a dictionary. 
 - [ ] Support callable function to filter Context objects, e.g. `cdf.product.filter(lambda x: x.startswith("A"))`.
 - [ ] 'any', 'is_nan', 'is_null', 'is_not_nan', 'is_not_null' functions for measures.
 - [ ] implement 'by(rows, colums)' feature for `Context` objects to mimic GroupBy functionality over 2 axis.

@@ -26,16 +26,16 @@ class TestCube(TestCase):
         self.assertTrue(df.equals(cdf["*"].df))
         self.assertFalse(df.equals(cdf["product:A"].df))
 
-    def test_property_mask(self):
+    def test_property_row_mask(self):
         cdf = cubed(self.df, schema=self.schema)
-        self.assertEqual(list(cdf.A.mask), [0, 3])
-        self.assertEqual(list(cdf.Online.mask), [0, 1, 2])
-        self.assertEqual(list(cdf.A.Online.mask), [0])
-        self.assertEqual(list(cdf.Retail.mask), [3, 4, 5])
+        self.assertEqual(list(cdf.A.row_mask), [0, 3])
+        self.assertEqual(list(cdf.Online.row_mask), [0, 1, 2])
+        self.assertEqual(list(cdf.A.Online.row_mask), [0])
+        self.assertEqual(list(cdf.Retail.row_mask), [3, 4, 5])
 
     def test_property_mask_inv(self):
         cdf = cubed(self.df, schema=self.schema)
-        self.assertEqual(list(cdf.A.mask_inverse), [1, 2, 4, 5])
-        self.assertEqual(list(cdf.Online.mask_inverse), [3, 4, 5])
-        self.assertEqual(list(cdf.A.Online.mask_inverse), [1, 2, 3, 4, 5])
-        self.assertEqual(list(cdf.Retail.mask_inverse), [0, 1, 2])
+        self.assertEqual(list(cdf.A.row_mask_inverse), [1, 2, 4, 5])
+        self.assertEqual(list(cdf.Online.row_mask_inverse), [3, 4, 5])
+        self.assertEqual(list(cdf.A.Online.row_mask_inverse), [1, 2, 3, 4, 5])
+        self.assertEqual(list(cdf.Retail.row_mask_inverse), [0, 1, 2])

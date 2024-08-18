@@ -7,6 +7,7 @@ from typing import SupportsFloat, TYPE_CHECKING, Any
 import numpy as np
 import pandas as pd
 
+
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
     from cubedpandas.cube import Cube
@@ -15,6 +16,8 @@ if TYPE_CHECKING:
     from cubedpandas.dimension import Dimension
 
     # all subclasses of Context listed here:
+    from cubedpandas.context.cube_context import CubeContext
+    from cubedpandas.context.dimension_context import DimensionContext
     from cubedpandas.context.compound_context import CompoundContext
     from cubedpandas.context.boolean_operation_context import BooleanOperationContext, BooleanOperationContextEnum
     from cubedpandas.context.filter_context import FilterContext
@@ -66,7 +69,7 @@ class Context(SupportsFloat):
         self._measure: Measure | None = measure
         self._dimension: Dimension | None = dimension
         self._convert_values_to_python_data_types: bool = True
-        self._filtered: bool = filtered
+        self._is_filtered: bool = filtered
         self._dynamic_attribute: bool = dynamic_attribute
 
         if resolve and cube.eager_evaluation:
@@ -93,13 +96,26 @@ class Context(SupportsFloat):
     @value.setter
     def value(self, value):
         """
-        Writes a value of the current context to the underlying cube.
+        Writes a value to the current context of the cube down to the underlying dataframe.
         """
         allocation_function = CubeAllocationFunctionType.DISTRIBUTE
-        if self._row_mask is None:
-            self._cube[self._address] = value
-        else:
-            self._cube._allocate(self.mask, self.measure, value, allocation_function)
+        self._cube._allocate(self._row_mask, self.measure.column, value, allocation_function)
+
+    def set_value(self, value, allocation_function: CubeAllocationFunctionType = CubeAllocationFunctionType.DISTRIBUTE):
+        """
+        Writes a value to the current context of the cube down to the underlying dataframe.
+        The allocation method can be chosen.
+
+        Args:
+            value:
+                The value to be written to the cube.
+            allocation_function:
+                The allocation function to be used for writing the value to the cube.
+        Returns:
+            The new value of the current context from the underlying cube.
+        """
+        self._cube._allocate(self._row_mask, self.measure.column, value, allocation_function)
+        return self.value
 
     @property
     def numeric_value(self) -> float:
@@ -170,15 +186,36 @@ class Context(SupportsFloat):
         """
         return self._address
 
-    def cube_address(self) -> any:
+    @property
+    def cube_address(self) -> str:
         """
         Returns:
             The full address of the context, including all predecessor
             cells down to the cube.
         """
-        if self._parent is not None:
-            return f"{self._parent.cube_address}:{self._address}"
-        return self._address
+        # todo: requires rework. Best move to a separate class or function for address formatting: text, dict, json
+        token = self._address
+        if isinstance(token, Context):
+            token = token.address
+        if isinstance(token, str):
+            if not token.isidentifier():
+                token = [token,]
+        elif isinstance(token, tuple):
+            token = list(token)
+        elif token is None:
+            token = ""
+            return token
+
+        if self.parent is None:
+            parent_token = ""
+        else:
+            parent_token = self.parent.cube_address
+
+        if isinstance(token, list):
+            return f"{parent_token}{token}"
+        else:
+            return f"{parent_token}.{token}"
+
 
     @property
     def measure(self) -> Measure:
@@ -195,18 +232,9 @@ class Context(SupportsFloat):
         self._measure = value
 
     @property
-    def filtered(self) -> bool:
-        return self._filtered
+    def is_filtered(self) -> bool:
+        return self._is_filtered
 
-    @property
-    def mask(self) -> np.ndarray | None:
-        """
-        Returns:
-            The row mask of the context. The row mask is represented by a Numpy ndarray
-            of the indexes of the rows represented by the current context. The row mask can be used
-            for subsequent processing of the underlying dataframe outside the cube.
-        """
-        return self._row_mask
 
     @property
     def row_mask(self) -> np.ndarray | None:
@@ -229,16 +257,8 @@ class Context(SupportsFloat):
         """
         return self._member_mask
 
-    def get_row_mask(self, before_dimension: Dimension | None) -> np.ndarray | None:
-        if self._dimension != before_dimension:
-            return self._row_mask
-        if self._parent is not None:
-            return self._parent.get_row_mask(before_dimension)
-        else:
-            return None
-
     @property
-    def mask_inverse(self) -> np.ndarray:
+    def row_mask_inverse(self) -> np.ndarray:
         """
         Returns:
             The inverted row mask of the context. The inverted row mask is represented by a Numpy ndarray
@@ -248,6 +268,54 @@ class Context(SupportsFloat):
         return np.setdiff1d(self._cube._df.index.to_numpy(), self._row_mask)
 
     # endregion
+
+    # region Member related methods and properties
+    def top(self, n: int) -> list:
+        """
+        Returns the top n members of the current context.
+        Args:
+            n:
+                The number of top members to be returned.
+        Returns:
+            A list of the top n members of the current context.
+        """
+        return self._get_top_bottom_member(n, return_bottom=False)
+
+    def bottom(self, n: int) -> list:
+        """
+        Returns the bottom n members of the current context.
+        Args:
+            n:
+                The number of bottom members to be returned.
+        Returns:
+            A list of the bottom n members of the current context.
+        """
+        return self._get_top_bottom_member(n, return_bottom=True)
+
+    def _get_top_bottom_member(self, n: int, return_bottom: bool=False) -> list:
+        """Returns the top or bottom n members of the current context."""
+        if n < 1:
+            raise ValueError(f"Invalid value for argument 'n'. Expected a positive integer, but got '{n}'.")
+
+        if self._dimension is None:
+            raise ValueError(f"Current context does not contain any DimensionContext to derive members from.")
+
+        col_dim = self._dimension.column
+        col_msr = self._measure.column
+        if self._row_mask is None:
+            top_members = (self._df[[col_dim,col_msr]]
+                           .groupby(col_dim).agg('sum')
+                           .sort_values([col_dim,col_msr],ascending = return_bottom)
+                           .head(n))
+        else:
+            top_members = (self._df[self._row_mask][[col_dim,col_msr]]
+                           .groupby(col_dim).agg('sum')
+                           .sort_values([col_dim,col_msr],ascending = return_bottom)
+                           .head(n))
+        top_members = top_members[col_msr].index.tolist()
+        return top_members
+
+
 
     # region - Dynamic attribute resolving
     def __getattr__(self, name) -> Context:
@@ -328,7 +396,7 @@ class Context(SupportsFloat):
             PermissionError:
                 If write back is attempted on a read-only Cube.
         """
-        row_mask, measure = self._cube._resolve_address(address, self.mask, self.measure)
+        row_mask, measure = self._cube._resolve_address(address, self._row_mask, self.measure)
         self._cube._delete(row_mask, measure)
 
     def slice(self, rows=None, columns=None, filters=None, config=None) -> Slice:
@@ -372,24 +440,29 @@ class Context(SupportsFloat):
         """
         return Slice(self, rows=rows, columns=columns, filters=filters, config=config)
 
-    def filter(self, expression: Any) -> Context:
+    def filter(self, filter: Any) -> Context:
         """
-        Filters the current context by a given expression.
+        Filters the current context by a given filter expression, criteria or callable function.
         Args:
-            expression:
-                The expression to be used for filtering the context.
+            filter:
+                The filter expression, criteria or callable function to be used for filtering the context.
         Returns:
             A new context with the filtered data.
         """
-        raise NotImplementedError("Filtering is not yet implemented.")
-        # if isinstance(expression, str):
-        #     expression = Expression(expression)
-        # row_mask = expression.evaluate(self._df)
-        # return Context(self._cube, self._address, self, row_mask=row_mask)
+        from cubedpandas.context.context_resolver import ContextResolver
+        return ContextResolver.resolve(parent=self, address=filter, dynamic_attribute=False)
 
     # endregion
 
     # region Evaluation functions
+    def _get_row_mask(self, before_dimension: Dimension | None) -> np.ndarray | None:
+        if self._dimension != before_dimension:
+            return self._row_mask
+        if self._parent is not None:
+            return self._parent._get_row_mask(before_dimension)
+        else:
+            return None
+
     def _resolve_measure(self) -> Measure:
         """
         Resolves the measure for the current context.
@@ -503,7 +576,12 @@ class Context(SupportsFloat):
         return self.numeric_value + other
 
     def __iadd__(self, other):  # += operator
-        return self.numeric_value + other.numeric_value
+        if isinstance(other, Context):
+            other = other.numeric_value
+        elif not isinstance(other, (int, float)):
+            raise ValueError(f"'+=' operator is not supported for values of type '{type(other)}', but only for numeric values.")
+        self.value = self.numeric_value + other
+        return self
 
     def __radd__(self, other):  # + operator
         return other + self.numeric_value
@@ -512,7 +590,12 @@ class Context(SupportsFloat):
         return self.numeric_value - other
 
     def __isub__(self, other):  # -= operator
-        return self.numeric_value - other
+        if isinstance(other, Context):
+            other = other.numeric_value
+        elif not isinstance(other, (int, float)):
+            raise ValueError(f"'-=' operator is not supported for values of type '{type(other)}', but only for numeric values.")
+        self.value = self.numeric_value - other
+        return self
 
     def __rsub__(self, other):  # - operator
         return other - self.numeric_value
@@ -521,7 +604,12 @@ class Context(SupportsFloat):
         return self.numeric_value * other
 
     def __imul__(self, other):  # *= operator
-        return self.numeric_value * other
+        if isinstance(other, Context):
+            other = other.numeric_value
+        elif not isinstance(other, (int, float)):
+            raise ValueError(f"'*=' operator is not supported for values of type '{type(other)}', but only for numeric values.")
+        self.value = self.numeric_value * other
+        return self
 
     def __rmul__(self, other):  # * operator
         return self.numeric_value * other
@@ -530,7 +618,12 @@ class Context(SupportsFloat):
         return self.numeric_value // other
 
     def __ifloordiv__(self, other):  # //= operator (returns an integer)
-        return self.numeric_value // other
+        if isinstance(other, Context):
+            other = other.numeric_value
+        elif not isinstance(other, (int, float)):
+            raise ValueError(f"'//' operator is not supported for values of type '{type(other)}', but only for numeric values.")
+        self.value = self.numeric_value // other
+        return self
 
     def __rfloordiv__(self, other):  # // operator (returns an integer)
         return other // self.numeric_value
@@ -538,8 +631,21 @@ class Context(SupportsFloat):
     def __truediv__(self, other):  # / operator (returns a float)
         return self.numeric_value / other
 
+    def __itruediv__(self, other):  # /= operator (returns a float)
+        if isinstance(other, Context):
+            other = other.numeric_value
+        elif not isinstance(other, (int, float)):
+            raise ValueError(f"'/=' operator is not supported for values of type '{type(other)}', but only for numeric values.")
+        self.value = self.numeric_value / other
+        return self
+
     def __idiv__(self, other):  # /= operator (returns a float)
-        return self.numeric_value / other
+        if isinstance(other, Context):
+            other = other.numeric_value
+        elif not isinstance(other, (int, float)):
+            raise ValueError(f"'/=' operator is not supported for values of type '{type(other)}', but only for numeric values.")
+        self.value = self.numeric_value / other
+        return self
 
     def __rtruediv__(self, other):  # / operator (returns a float)
         return other / self.numeric_value
@@ -548,7 +654,13 @@ class Context(SupportsFloat):
         return self.numeric_value % other
 
     def __imod__(self, other):  # %= operator (returns a tuple)
-        return self.numeric_value % other
+        if isinstance(other, Context):
+            other = other.numeric_value
+        elif not isinstance(other, (int, float)):
+            raise ValueError(f"'%=' operator is not supported for values of type '{type(other)}', but only for numeric values.")
+        new_value = self.numeric_value % other
+        self.value = new_value
+        return self
 
     def __rmod__(self, other):  # % operator (returns a tuple)
         return other % self.numeric_value
@@ -563,20 +675,25 @@ class Context(SupportsFloat):
         return self.numeric_value ** other
 
     def __ipow__(self, other, modulo=None):  # **= operator
-        return self.numeric_value ** other
+        if isinstance(other, Context):
+            other = other.numeric_value
+        elif not isinstance(other, (int, float)):
+            raise ValueError(f"'**=' operator is not supported for values of type '{type(other)}', but only for numeric values.")
+        self.value = self.numeric_value ** other
+        return self
 
     def __rpow__(self, other, modulo=None):  # ** operator
         return other ** self.numeric_value
 
     def __lt__(self, other):  # < (less than) operator
-        if isinstance(self, MeasureContext) and self.filtered:
+        if isinstance(self, MeasureContext) and self.is_filtered:
             from cubedpandas.context.filter_context import FilterContext
             context = FilterContext(self)
             return context < other
         return self.numeric_value < other
 
     def __gt__(self, other):  # > (greater than) operator
-        if isinstance(self, MeasureContext) and self.filtered:
+        if isinstance(self, MeasureContext) and self.is_filtered:
             from cubedpandas.context.filter_context import FilterContext
             context = FilterContext(self)
             return context > other
@@ -584,7 +701,7 @@ class Context(SupportsFloat):
 
     def __le__(self, other):  # <= (less than or equal to) operator
         from cubedpandas.context.measure_context import MeasureContext
-        if isinstance(self, MeasureContext) and self.filtered:
+        if isinstance(self, MeasureContext) and self.is_filtered:
             from cubedpandas.context.filter_context import FilterContext
             context = FilterContext(self)
             return context <= other
@@ -592,7 +709,7 @@ class Context(SupportsFloat):
 
     def __ge__(self, other):  # >= (greater than or equal to) operator
         from cubedpandas.context.measure_context import MeasureContext
-        if isinstance(self, MeasureContext) and self.filtered:
+        if isinstance(self, MeasureContext) and self.is_filtered:
             from cubedpandas.context.filter_context import FilterContext
             context = FilterContext(self)
             return context >= other
@@ -600,7 +717,7 @@ class Context(SupportsFloat):
 
     def __eq__(self, other):  # == (equal to) operator
         from cubedpandas.context.measure_context import MeasureContext
-        if isinstance(self, MeasureContext) and self.filtered:
+        if isinstance(self, MeasureContext) and self.is_filtered:
             from cubedpandas.context.filter_context import FilterContext
             context = FilterContext(self)
             return context == other
@@ -608,7 +725,7 @@ class Context(SupportsFloat):
 
     def __ne__(self, other):  # != (not equal to) operator
         from cubedpandas.context.measure_context import MeasureContext
-        if isinstance(self, MeasureContext) and self.filtered:
+        if isinstance(self, MeasureContext) and self.is_filtered:
             from cubedpandas.context.filter_context import FilterContext
             context = FilterContext(self)
             return context != other
@@ -823,4 +940,5 @@ class Context(SupportsFloat):
             The number of non-zero values for a given address. 'an' stands for 'a number'.
         """
         return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.NZERO)
+
     # endregion

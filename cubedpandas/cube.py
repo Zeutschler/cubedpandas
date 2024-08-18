@@ -432,11 +432,11 @@ class Cube:
             PermissionError:
                 If write back is attempted on a read-only Cube.
         """
-        raise NotImplementedError("Not implemented yet")
-        # if self._read_only:
-        #    raise PermissionError("Write back is not permitted on a read-only cube.")
-        # dest_slice: Cell = Cell(cube=self, address=address)
-        # dest_slice.value = value
+        if self._read_only:
+           raise PermissionError("Write back is not permitted on a read-only cube.")
+
+        context = CubeContext(self)
+        context[address].value = value
 
     def __delitem__(self, address):
         """
@@ -483,23 +483,33 @@ class Cube:
         """Writes back a value for a given address in the cube."""
         raise NotImplementedError("Not implemented yet")
 
-    def _allocate(self, row_mask: np.ndarray | None = None, measure: Any = None, value: Any = None,
+    def _allocate(self, row_mask: np.ndarray | None = None, column: str = None, value: Any = None,
                   operation: CubeAllocationFunctionType = CubeAllocationFunctionType.DISTRIBUTE):
         """Allocates a value for a given address in the cube."""
 
         if self._read_only:
-            raise PermissionError("Write back is not permitted on a read-only cube.")
+            raise PermissionError("Write back is not permitted on a read-only cube. "
+                                  "Set attribute `read_only` to `False`. "
+                                  "Please not that values in the underlying dataframe will be changed.")
 
-        # Get values to updates or delete
-        value_series = self._df[measure.column].to_numpy()
-        values: np.ndarray = value_series[row_mask]
+        if column is None or column == "":
+            column = self.measures.default.column
+
+        # Get values to update or delete
+        value_series = self._df[column].to_numpy()
+        if row_mask is None:
+            row_mask = self._df.index.to_numpy()
+            values: np.ndarray = value_series
+        else:
+            values: np.ndarray = value_series[row_mask]
 
         # update values based on the requested operation
         match operation:
             case CubeAllocationFunctionType.DISTRIBUTE:
                 current = sum(values)
                 if current != 0:
-                    values = values / current * value
+                    factor = value / current
+                    values = values * factor
             case CubeAllocationFunctionType.SET:
                 values = np.full_like(values, value)
             case CubeAllocationFunctionType.DELTA:
@@ -511,13 +521,14 @@ class Cube:
             case CubeAllocationFunctionType.NAN:
                 values = np.full_like(values, np.nan)
             case CubeAllocationFunctionType.DEL:
-                raise NotImplementedError("Not implemented yet")
+                raise NotImplementedError("Not yet implemented.")
             case _:
                 raise ValueError(f"Allocation operation {operation} not supported.")
 
         # update the values in the dataframe
-        updated_values = pd.DataFrame({measure.column: values}, index=row_mask)
+        updated_values = pd.DataFrame({column: values}, index=row_mask)
         self._df.update(updated_values)
+        return True
 
     def _delete(self, row_mask: np.ndarray | None = None, measure: Any = None):
         """Deletes all rows for a given address."""

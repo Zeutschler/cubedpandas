@@ -46,8 +46,8 @@ class TestCubeContext(TestCase):
         self.assertEqual(c.A.Online.cost, 50)
 
         self.assertEqual(tuple(c.A.members.row_mask), tuple([0, 3]))
-        self.assertEqual(tuple(c.A.mask), tuple([0, 3]))
-        self.assertEqual(tuple(c.A.Online.mask), tuple([0]))
+        self.assertEqual(tuple(c.A.row_mask), tuple([0, 3]))
+        self.assertEqual(tuple(c.A.Online.row_mask), tuple([0]))
 
     def test_cube_context_slicer_methods(self):
         c = Cube(self.df, schema=self.schema)

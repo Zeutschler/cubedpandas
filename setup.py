@@ -68,7 +68,7 @@ setup(
     license='BSD 3-clause',
     platforms=['any'],
     zip_safe=True,
-    python_requires='>=3.10',
+    python_requires='>= 3.10',
     install_requires=[
         'numpy',
         'pandas',
