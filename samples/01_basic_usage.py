@@ -1,7 +1,7 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 import pandas as pd
-from cubedpandas.common import cubed
+from cubedpandas import cubed
 
 df = pd.DataFrame({"product": ["Apple", "Pear", "Banana", "Apple", "Pear", "Banana"],
                    "channel": ["Online", "Online", "Online", "Retail", "Retail", "Retail"],
@@ -10,6 +10,8 @@ df = pd.DataFrame({"product": ["Apple", "Pear", "Banana", "Apple", "Pear", "Bana
                    "cost": [50, 90, 150, 100, 150, 175]})
 
 cdf = cubed(df)  # That's it! You now have multi-dimensional access to your dataframe. Let's see...
+
+
 
 # CubedPandas automatically infers the schema from the dataframe. (By default) numeric columns are considered as
 # measures, all other columns are considered as dimensions. But you can also provide your own schema.

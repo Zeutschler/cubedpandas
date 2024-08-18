@@ -1,22 +1,21 @@
 # CubedPandas 
-<picture align="center"><img alt="Pandas Logo" src="https://raw.githubusercontent.com/Zeutschler/cubedpandas/master/pages/assets/cpd_logo.jpg"></picture>
 
-## Multi-dimensional data analysis for Pandas dataframes
+## Multi-dimensional data analysis for Pandas dataframes.
 
 ![PyPI version](https://badge.fury.io/py/cubedpandas.svg)
 ![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?label=PyPI%20downloads)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Zeutschler/cubedpandas)
 ![CI - Test](https://github.com/pandas-dev/pandas/actions/workflows/unit-tests.yml/badge.svg)
 ![build](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/python-package.yml)
-![codecov](https://codecov.io/gh/Zeutschler/cubedpandas/branch/master/graph/badge.svg?token=3ZQZQ2ZQ2Z)
-![GitHub issues](https://img.shields.io/github/issues/Zeutschler/cubedpandas)
+![codecov](https://codecov.io/github/Zeutschler/cubedpandas/graph/badge.svg?token=B12O0B6F10)
+![Python versions](https://img.shields.io/pypi/pyversions/cubedpandas)
 ![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas)
 ![sponsor](https://img.shields.io/github/sponsors/zeutschler)
 
 -----------------
 
 ***Remark:*** *CubedPandas is in an early stage of its development. Features are likely subject to change. 
-But it's worth an early try. Your [Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
+But it's maybe worth a try. Your [Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
 [Feedback](https://github.com/Zeutschler/cubedpandas/discussions) are very welcome!*
 
 CubedPandas aims to provide an ***easy, fast & fun*** approach to access and analyse data in Pandas dataframes. 
@@ -49,7 +48,7 @@ pip install cubedpandas
 
 ```python
 import pandas as pd
-from common import cubed
+from cubedpandas import cubed
 
 # Create a dataframe with some sales data
 df = pd.DataFrame({"product":  ["Apple",  "Pear",   "Banana", "Apple",  "Pear",   "Banana"],

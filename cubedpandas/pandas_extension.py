@@ -22,6 +22,9 @@ class CubedPandasAccessor:
         if len(df) == 0:
             raise AttributeError("Method 'cubed' not provided for empty dataframe objects.")
 
+    def __getattr__(self, item) -> Context:
+        return Cube(self._df)[item]
+
     def __getitem__(self, address) -> Context:
         return Cube(self._df)[address]
 

@@ -2,7 +2,7 @@
 # setup.py for cubedpandas
 
 from setuptools import setup
-from cubedpandas import *
+from setuptools import find_packages
 from cubedpandas import VERSION as CUBEDPANDAS_VERSION
 
 
@@ -33,6 +33,7 @@ Just give it a try...
 """
 
 setup(
+
     name="cubedpandas",
     version=VERSION,
     description=DESCRIPTION,
@@ -43,7 +44,7 @@ setup(
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Scientific/Engineering :: Mathematics",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 2 - Pre-Alpha",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Environment :: Console",
@@ -51,6 +52,7 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
 
@@ -66,14 +68,14 @@ setup(
     license='BSD 3-clause',
     platforms=['any'],
     zip_safe=True,
-    python_requires='>=3.11',
+    python_requires='>=3.10',
     install_requires=[
         'numpy',
         'pandas',
         'python-dateutil',
     ],
     test_suite="cubedpandas.tests",
-    packages=['cubedpandas', 'tests'],
+    packages=['cubedpandas', 'cubedpandas.context', 'tests'],
     project_urls={
         'Homepage': 'https://zeutschler.github.io/cubedpandas/',
         'Documentation': 'https://zeutschler.github.io/cubedpandas/',
