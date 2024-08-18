@@ -74,7 +74,7 @@ setup(
         'python-dateutil',
     ],
     test_suite="cubedpandas.tests",
-    packages=['cubedpandas', 'tests'],
+    packages=['cubedpandas', 'cubedpandas.context', 'tests'],
     project_urls={
         'Homepage': 'https://zeutschler.github.io/cubedpandas/',
         'Documentation': 'https://zeutschler.github.io/cubedpandas/',
