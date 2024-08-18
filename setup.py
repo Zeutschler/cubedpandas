@@ -2,7 +2,7 @@
 # setup.py for cubedpandas
 
 from setuptools import setup
-from cubedpandas import *
+from setuptools import find_packages
 from cubedpandas import VERSION as CUBEDPANDAS_VERSION
 
 
@@ -33,6 +33,7 @@ Just give it a try...
 """
 
 setup(
+
     name="cubedpandas",
     version=VERSION,
     description=DESCRIPTION,
