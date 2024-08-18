@@ -15,7 +15,7 @@
 -----------------
 
 ***Remark:*** *CubedPandas is in an early stage of its development. Features are likely subject to change. 
-But it's worth an early try. Your [Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
+But it's maybe worth a try. Your [Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
 [Feedback](https://github.com/Zeutschler/cubedpandas/discussions) are very welcome!*
 
 CubedPandas aims to provide an ***easy, fast & fun*** approach to access and analyse data in Pandas dataframes. 
@@ -48,7 +48,7 @@ pip install cubedpandas
 
 ```python
 import pandas as pd
-from common import cubed
+from cubedpandas import cubed
 
 # Create a dataframe with some sales data
 df = pd.DataFrame({"product":  ["Apple",  "Pear",   "Banana", "Apple",  "Pear",   "Banana"],

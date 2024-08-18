@@ -1,7 +1,7 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 import pandas as pd
-from cubedpandas.common import cubed
+from cubedpandas import cubed
 
 df = pd.DataFrame({"product": ["Apple", "Pear", "Banana", "Apple", "Pear", "Banana"],
                    "channel": ["Online", "Online", "Online", "Retail", "Retail", "Retail"],
