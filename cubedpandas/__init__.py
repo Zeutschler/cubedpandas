@@ -17,6 +17,7 @@ from cubedpandas.common import cubed
 
 from cubedpandas.context.context import Context
 from cubedpandas.context.compound_context import CompoundContext
+from cubedpandas.context.context_context import ContextContext
 from cubedpandas.context.cube_context import CubeContext
 from cubedpandas.context.filter_context import FilterContext
 from cubedpandas.context.measure_context import MeasureContext
@@ -24,13 +25,14 @@ from cubedpandas.context.member_context import MemberContext
 from cubedpandas.context.member_not_found_context import MemberNotFoundContext
 
 
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 VERSION = __version__
 
 __all__ = [
     "Ambiguities",
     "CachingStrategy",
     "Context",
+    "ContextContext",
     "CompoundContext",
     "CubeContext",
     "Cube",

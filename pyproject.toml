@@ -3,7 +3,7 @@ name = "cubedpandas"
 description = "Multi-dimensional data analysis for Pandas dataframes."
 keywords = ['pandas', 'analysis', 'database', 'olap', 'planning', 'reporting', 'forecasting', 'multidimensional', 'cube', 'data', 'dataframe', 'pivot', 'table']
 classifiers = [
-  "Development Status :: 2 - Pre-alpha",
+  "Development Status :: 2 - Pre-Alpha",
   "Programming Language :: Python"
 ]
 readme = "README.md"

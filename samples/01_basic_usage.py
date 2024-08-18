@@ -11,6 +11,8 @@ df = pd.DataFrame({"product": ["Apple", "Pear", "Banana", "Apple", "Pear", "Bana
 
 cdf = cubed(df)  # That's it! You now have multi-dimensional access to your dataframe. Let's see...
 
+
+
 # CubedPandas automatically infers the schema from the dataframe. (By default) numeric columns are considered as
 # measures, all other columns are considered as dimensions. But you can also provide your own schema.
 
