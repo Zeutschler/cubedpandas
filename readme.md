@@ -2,7 +2,7 @@
 
 ## Multi-dimensional data analysis for Pandas dataframes.
 
-![PyPI version](https://badge.fury.io/py/cubedpandas.svg)
+![PyPI version](https://img.shields.io/pypi/v/cubedpandas)
 ![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?label=PyPI%20downloads)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Zeutschler/cubedpandas)
 ![CI - Test](https://github.com/pandas-dev/pandas/actions/workflows/unit-tests.yml/badge.svg)
