@@ -15,7 +15,7 @@
 -----------------
 
 ***Remark:*** *CubedPandas is in an early stage of its development. Features are likely subject to change. 
-But it's maybe worth a try. Your [Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
+But it's maybe already worth a try. Your [Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and 
 [Feedback](https://github.com/Zeutschler/cubedpandas/discussions) are very welcome!*
 
 CubedPandas aims to provide an ***easy, fast & fun*** approach to access and analyse data in Pandas dataframes. 

@@ -1,5 +1,14 @@
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from cubedpandas import Dimension, Measure, Cube, Member
+    from cubedpandas.context import (Context, FilterContext, MemberContext, MeasureContext, DimensionContext,
+                                     CubeContext, BooleanOperationContext, BooleanOperationContextEnum,
+                                     CompoundContext, MemberNotFoundContext)
+
 
 class Filter:
     """
@@ -10,4 +19,9 @@ class Filter:
     Block are independent of each other and can contain and reference different members
     from different dimensions or measures.
     """
-    pass
+    def __init__(self, context: 'Context' | Any):
+        self._context: 'Context' = context
+
+    @property
+    def context(self) -> 'Context':
+        return self._context

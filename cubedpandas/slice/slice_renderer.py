@@ -1,7 +1,8 @@
+# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+
 from enum_tools import IntEnum
 
 from cubedpandas.slice.slice import Slice
-
 from cubedpandas.slice.table import Table
 from cubedpandas.slice.html_table import HtmlTable
 from cubedpandas.slice.text_table import TextTable

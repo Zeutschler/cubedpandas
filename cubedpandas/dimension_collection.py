@@ -31,6 +31,8 @@ class DimensionCollection(Iterable[Dimension]):
         return len(self._dims)
 
     def __getitem__(self, item) -> Dimension:
+        if isinstance(item, int):
+            return list(self._dims.values())[item]
         return self._dims[item]
 
     def __contains__(self, key):
@@ -38,6 +40,7 @@ class DimensionCollection(Iterable[Dimension]):
 
     def add(self, dimension: Dimension):
         self._dims[dimension.column] = dimension
+
 
     def to_set(self):
         return set(self._dims.values())
