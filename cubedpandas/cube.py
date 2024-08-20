@@ -58,6 +58,7 @@ class Cube:
 
     def __init__(self, df: pd.DataFrame, schema=None,
                  infer_schema: bool = True,
+                 exclude: str | list | tuple | None = None,
                  read_only: bool = True,
                  ignore_member_key_errors: bool = True,
                  ignore_case: bool = True,
@@ -87,6 +88,11 @@ class Cube:
                 be treated as measures, all other columns as dimensions. If this behaviour is not
                 desired, a schema must be provided.
                 Default value is `True`.
+
+            exclude:
+                (optional) Defines the columns that should be excluded from the cube if no schema is provied.
+                If a column is excluded, it will not be part of the schema and can not be accessed through the cube.
+                Excluded columns will be ignored during schema inference. Default value is `None`.
 
             read_only:
                 (optional) Defines if write backs to the underlying dataframe are permitted.
@@ -147,10 +153,13 @@ class Cube:
             2
         """
         self._settings = CubeSettings()
+        if not read_only is None:
+            self._settings.read_only = read_only
+
         self._convert_values_to_python_data_types: bool = True
         self._df: pd.DataFrame = df
         self._infer_schema: bool = infer_schema
-        self._read_only: bool = read_only
+        self._exclude: str | list | tuple | None = exclude
         self._caching: CachingStrategy = caching
         self._caching_threshold: int = caching_threshold
         self._member_cache: dict = {}
@@ -159,10 +168,11 @@ class Cube:
         self._ignore_key_errors: bool = ignore_key_errors
         self._eager_evaluation: bool = eager_evaluation
         self._cube_links = CubeLinks(self)
+        self._runs_in_jupyter = Cube.runs_in_jupyter()
 
         # get or prepare the cube schema and setup dimensions and measures
         if (schema is None) and infer_schema:
-            schema = Schema(df).infer_schema()
+            schema = Schema(df).infer_schema(exclude=self._exclude)
         else:
             schema = Schema(df, schema, caching=caching)
         self._schema: Schema = schema
@@ -173,9 +183,6 @@ class Cube:
         # warm up cache, if required
         if self._caching >= CachingStrategy.EAGER:
             self._warm_up_cache()
-
-        # setup default context for the cube
-        self._context: Context | None = None
 
     # region Properties
 
@@ -214,21 +221,7 @@ class Cube:
         # todo: implement a proper linked cubes collection object
         return self._cube_links
 
-    @property
-    def read_only(self) -> bool:
-        """
-        Returns:
-            True if the Cube is read-only, otherwise False.
-        """
-        return self._read_only
 
-    @read_only.setter
-    def read_only(self, value: bool):
-        """
-        Sets the read-only status of the Cube.
-        """
-        raise NotImplementedError("Not implemented yet")
-        # self._read_only = value
 
     @property
     def ignore_member_key_errors(self) -> bool:
@@ -391,6 +384,9 @@ class Cube:
             >>> cdf.Online.Apple.cost
             50
         """
+        if name == "_ipython_canary_method_should_not_exist": # pragma: no cover
+            raise AttributeError("cubedpandas")
+
         context = CubeContext(self, dynamic_attribute=True)
 
         if str(name).endswith("_"):
@@ -432,7 +428,7 @@ class Cube:
             PermissionError:
                 If write back is attempted on a read-only Cube.
         """
-        if self._read_only:
+        if self.settings.read_only:
            raise PermissionError("Write back is not permitted on a read-only cube.")
 
         context = CubeContext(self)
@@ -456,7 +452,7 @@ class Cube:
         # dest_slice: Cell = Cell(self, address=address)
         # self._delete(dest_slice._row_mask)
 
-    def slice(self, rows=None, columns=None, filters=None) -> Slice:
+    def slice(self, rows=None, columns=None, config=None) -> Slice:
         """
         Returns a new slice for the cube. A slice represents a table-alike view to data in the cube.
         Typically, a slice has rows, columns and filters, comparable to an Excel PivotTable.
@@ -477,7 +473,7 @@ class Cube:
             | Apple   |   200 |   100 |   100 |
             | Banana  |   350 |   200 |   150 |
         """
-        raise NotImplementedError("Not implemented yet. Sorry...")
+        return CubeContext(self).slice(rows=rows, columns=columns, config=config)
 
     def _write_back(self, row_mask: np.ndarray | None = None, measure: Any = None, value: Any = None):
         """Writes back a value for a given address in the cube."""
@@ -487,7 +483,7 @@ class Cube:
                   operation: CubeAllocationFunctionType = CubeAllocationFunctionType.DISTRIBUTE):
         """Allocates a value for a given address in the cube."""
 
-        if self._read_only:
+        if self.settings.read_only:
             raise PermissionError("Write back is not permitted on a read-only cube. "
                                   "Set attribute `read_only` to `False`. "
                                   "Please not that values in the underlying dataframe will be changed.")
@@ -537,3 +533,26 @@ class Cube:
         pass
 
     # endregion
+
+    # region Magic Methods
+    def __str__(self):
+        if self._runs_in_jupyter:
+            return f"Jupyter Cube({len(self._df)} records, {len(self._dimensions)} dimensions, {len(self._measures)} measures)"
+        else:
+            return f"Cube({len(self._df)} records, {len(self._dimensions)} dimensions, {len(self._measures)} measures)"
+
+    def __repr__(self):
+        if self._runs_in_jupyter:
+            from IPython.display import display
+            display(f"Cube({len(self._df)} records, {len(self._dimensions)} dimensions, {len(self._measures)} measures)")
+            display(self._df)
+            return ""
+        else:
+            return f"Cube({len(self._df)} records, {len(self._dimensions)} dimensions, {len(self._measures)} measures)"
+
+    # endregion
+
+    # region Helper Methods
+    @staticmethod
+    def runs_in_jupyter():
+        return 'ipykernel' in sys.modules

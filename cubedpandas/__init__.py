@@ -10,7 +10,6 @@ from cubedpandas.cube import Cube
 from cubedpandas.cube_aggregation import CubeAggregationFunctionType, CubeAggregationFunction
 from cubedpandas.member import Member, MemberSet
 
-from cubedpandas.slice import Slice
 from cubedpandas.pandas_extension import CubedPandasAccessor, EAGER_CACHING_THRESHOLD
 from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.common import cubed
@@ -25,8 +24,9 @@ from cubedpandas.context.measure_context import MeasureContext
 from cubedpandas.context.member_context import MemberContext
 from cubedpandas.context.member_not_found_context import MemberNotFoundContext
 
+from cubedpandas.slice.slice import Slice
 
-__version__ = "0.2.10"
+__version__ = "0.2.13"
 VERSION = __version__
 
 __all__ = [
