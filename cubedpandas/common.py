@@ -3,10 +3,12 @@
 import pandas as pd
 from cubedpandas.cube import Cube
 from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
+import sys
 
 
 def cubed(df: pd.DataFrame, schema=None,
           infer_schema: bool = True,
+          exclude: str | list | tuple | None = None,
           caching: CachingStrategy = CachingStrategy.LAZY,
           caching_threshold: int = EAGER_CACHING_THRESHOLD,
           read_only: bool = True):
@@ -31,6 +33,11 @@ def cubed(df: pd.DataFrame, schema=None,
             be treated as measures, all other columns as dimensions. If this behaviour is not
             desired, a schema must be provided.
             Default value is `True`.
+
+        exclude:
+            (optional) Defines the columns that should be excluded from the cube if no schema is provied.
+            If a column is excluded, it will not be part of the schema and can not be accessed through the cube.
+            Excluded columns will be ignored during schema inference. Default value is `None`.
 
         caching:
             (optional) A caching strategy to be applied for accessing the cube. recommended
@@ -72,8 +79,9 @@ def cubed(df: pd.DataFrame, schema=None,
         >>> cdf["product:B"]
         2
     """
-    return Cube(df=df, schema=schema, infer_schema=infer_schema, caching=caching,
-                caching_threshold=caching_threshold, read_only=read_only)
+    return Cube(df=df, schema=schema, infer_schema=infer_schema, exclude=exclude,
+                caching=caching, caching_threshold=caching_threshold,
+                read_only=read_only)
 
 
 def pythonize(name: str, lowered: bool = False) -> str:

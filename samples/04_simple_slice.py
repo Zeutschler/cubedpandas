@@ -1,4 +1,5 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+from datetime import datetime
 
 import pandas as pd
 from cubedpandas import cubed
@@ -15,9 +16,11 @@ cdf = cubed(df)
 # defined slice
 slice = Slice(cdf, rows=cdf.dimensions, columns=cdf.measures)
 slice.show()
+print(slice.to_html())
 
-
-# default slice
-slice = Slice(cdf)
+slice = Slice(cdf.Online, rows=cdf.dimensions, columns=cdf.measures)
 slice.show()
+
+#slice = Slice(cdf)
+#slice.show()
 

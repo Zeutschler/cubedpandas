@@ -28,7 +28,7 @@ class Block:
             self._block_items.append(block_item)
 
     @property
-    def block_sets(self) -> BlockItems:
+    def block_items(self) -> BlockItems:
         return self._block_items
 
     def contains_any(self, data_type) -> bool:
@@ -70,3 +70,6 @@ class BlockItems(Iterable[BlockItem]):
     def append(self, item: BlockItem):
         self._items.append(item)
         return self
+
+    def to_list(self) -> list:
+        return self._items

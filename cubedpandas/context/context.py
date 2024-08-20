@@ -320,7 +320,11 @@ class Context(SupportsFloat):
     # region - Dynamic attribute resolving
     def __getattr__(self, name) -> Context:
         """Dynamically resolves member from the cube and predecessor cells."""
-        # remark: This pseudo-semaphore is not threadsafe but needed to prevent infinite __getattr__ loops.
+        # remark: This pseudo-semaphore is not threadsafe. Needed to prevent infinite __getattr__ loops.
+
+        if name == "_ipython_canary_method_should_not_exist": # pragma: no cover
+            raise AttributeError("cubedpandas")
+
         from cubedpandas.context.filter_context import FilterContext
 
         if self._semaphore:
@@ -328,6 +332,9 @@ class Context(SupportsFloat):
             # return super().__getattr__(name)
             # raise AttributeError(f"Unexpected fatal error while trying to resolve the context for '{name}'."
             #                     f"Likely due to multithreading issues. Please report this issue to the developer.")
+
+        if name == "_ipython_canary_method_should_not_exist": # pragma: no cover
+            raise AttributeError("cubedpandas")
 
         from cubedpandas.context.context_resolver import ContextResolver
         self._semaphore = True
@@ -364,6 +371,10 @@ class Context(SupportsFloat):
             ValueError:
                 If the address is not valid or can not be resolved.
         """
+        # special case, Cube is called from within a Jupyter Notebook, that requests the context
+        if isinstance(address, str) and address.startswith("_ipython_"):
+            raise AttributeError("cubedpandas")
+
         from cubedpandas.context.context_resolver import ContextResolver
         return ContextResolver.resolve(parent=self, address=address)
 
@@ -399,7 +410,7 @@ class Context(SupportsFloat):
         row_mask, measure = self._cube._resolve_address(address, self._row_mask, self.measure)
         self._cube._delete(row_mask, measure)
 
-    def slice(self, rows=None, columns=None, filters=None, config=None) -> Slice:
+    def slice(self, rows=None, columns=None, config=None) -> Slice:
         """
         Returns a new slice for the context. A slice represents a table-alike view to data in the cube.
         Typically, a slice has rows, columns and filters, comparable to an Excel PivotTable.
@@ -438,7 +449,8 @@ class Context(SupportsFloat):
             | Apple   |   200 |   100 |   100 |
             | Banana  |   350 |   200 |   150 |
         """
-        return Slice(self, rows=rows, columns=columns, filters=filters, config=config)
+        from cubedpandas import Slice
+        return Slice(self, rows=rows, columns=columns, config=config)
 
     def filter(self, filter: Any) -> Context:
         """
@@ -686,6 +698,7 @@ class Context(SupportsFloat):
         return other ** self.numeric_value
 
     def __lt__(self, other):  # < (less than) operator
+        from cubedpandas.context.measure_context import MeasureContext
         if isinstance(self, MeasureContext) and self.is_filtered:
             from cubedpandas.context.filter_context import FilterContext
             context = FilterContext(self)
@@ -693,6 +706,7 @@ class Context(SupportsFloat):
         return self.numeric_value < other
 
     def __gt__(self, other):  # > (greater than) operator
+        from cubedpandas.context.measure_context import MeasureContext
         if isinstance(self, MeasureContext) and self.is_filtered:
             from cubedpandas.context.filter_context import FilterContext
             context = FilterContext(self)

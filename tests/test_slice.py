@@ -19,5 +19,5 @@ class TestSlice(TestCase):
     def test_default_slice(self):
         c = cubed(self.df)
 
-        s = Slice(c, "product", "channel", "sales")
+        s = Slice(c)
         print(s)

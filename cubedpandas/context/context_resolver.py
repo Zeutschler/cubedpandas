@@ -50,6 +50,9 @@ class ContextResolver:
         # 3. String addresses are resolved by checking for measures, dimensions and members.
         if isinstance(address, str):
 
+            if cube.settings.auto_whitespace and ("_" in address):
+                address = address.replace("_", " ")
+
             # 3.1. Check for names of measures
             if address in cube.measures:
                 from cubedpandas.context.measure_context import MeasureContext
@@ -333,8 +336,36 @@ class ContextResolver:
                                    f"supported for contexts representing members, measures or referenced contexts.")
                 return False, context
 
-        context.message = (f"Invalid member name or address '{address}'. "
-                           f"Tip: check for typos and upper/lower case issues.")
+        else:
+            # for all other data types, wwe simply check if the value exists in the current dimension
+            # and if so, we return a member context
+            if dimension is not None:
+                parent_row_mask = context._get_row_mask(before_dimension=dimension)
+                exists, new_row_mask, member_mask = dimension._check_exists_and_resolve_member(address, parent_row_mask)
+                if exists:
+                    from cubedpandas.member import Member, MemberSet
+                    member = Member(dimension, address)
+                    members = MemberSet(dimension=dimension, address=address, row_mask=new_row_mask,
+                                        members=[member])
+                    from cubedpandas.context.member_context import MemberContext
+                    resolved_context = MemberContext(cube=context.cube, parent=context, address=address,
+                                                     row_mask=new_row_mask, member_mask=member_mask,
+                                                     measure=context.measure, dimension=dimension,
+                                                     members=members, resolve=False)
+                    return True, resolved_context
+
+        if isinstance(address, bool):
+            # This can happen if user wants to filter a context, but forgets to add an underscore
+            # to the referenced context , e.g. `cube.A > 5` instead of `cube.A_ > 5` or `cube.A._ > 5`.
+
+            context.message = (f"'{address}'(bool) is not a valid member, dimension or measure name. "
+                               f"Tip: If you want to filter a context, ensure to add an underscore member name, "
+                               f"e.g., as in 'cdf.sales[cdf.cost_ > 100]', otherwise just would just try to filter for "
+                               f"the boolean result of a value comparison 'cdf.cost_ > 100'.")
+        else:
+            # 7. If we've not yet resolved anything meaningful, then we need to raise an error...
+            context.message = (f"'{address}' is not a valid member, dimension or measure name. "
+                               f"Check for typos and correct case.")
         return False, context
 
     @staticmethod

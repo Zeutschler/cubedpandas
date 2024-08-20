@@ -4,6 +4,10 @@
 ## Release 0.3.0
 ### Reimplementation of the core functionality
 
+#### Jupyter Integration
+- [ ] check string representations for all objects when in running in Jupyter
+- [ ] implement `.head`  and `.tail`methods
+
 #### Writeback and Data Manipulation
 - [x] Check, adapt and activate the existing writeback functionality.
 

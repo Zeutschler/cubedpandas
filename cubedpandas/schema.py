@@ -110,7 +110,7 @@ class Schema:
         """ Returns the measures of the schema."""
         return self._measures
 
-    def infer_schema(self, df: pd.DataFrame | None = None, columns: Any = None, sample_records: bool = False) -> Self:
+    def infer_schema(self, exclude: str | list | tuple | None = None) -> Self:
         """
         Infers a multidimensional schema from the Pandas dataframe of the Schema or another Pandas dataframe by
         analyzing the columns of the table and their contents.
@@ -132,32 +132,30 @@ class Schema:
         expectations or requirements. For such cases, you will need to build your schema manually.
         Please refer the documentation for further details on how to build a schema manually.
 
-        :param df: (optional) the Pandas dataframe to infer the schema from. If not provided, the schema
-            is inferred from the Pandas dataframe the Schema object was initialized with.
-
-        :param columns: (optional) a list of either column names or ordinal column ids to infer the schema from.
-
-        :param sample_records: (optional) if True, the schema is inferred from a sample of records only.
-            Setting 'sample_records' to True can be useful for large tables to speed up the inference process.
-            By default, the schema is inferred from all records of the table.
+        :param exclude: (optional) a list of either column names or ordinal column ids to exclude when
+            inferring the schema.
 
         :return: Returns the inferred schema.
         """
-        if df is None:
-            df = self._df
-        if df is None:
-            return None
-
+        df = self._df
         schema = {"dimensions": [], "measures": []}
         self._dimensions = DimensionCollection()
         self._measures = MeasureCollection()
+
+        if exclude is not None:
+            if isinstance(exclude, str) or isinstance(exclude, int):
+                exclude = [exclude,]
+        else:
+            exclude = []
+
         for column_name, dtype in df.dtypes.items():
-            if is_numeric_dtype(df[column_name]):
-                schema["measures"].append({"column": column_name})
-                self._measures.add(Measure(df, column_name))
-            else:
-                schema["dimensions"].append({"column": column_name})
-                self._dimensions.add(Dimension(df, column_name, self._caching))
+            if column_name not in exclude:
+                if is_numeric_dtype(df[column_name]):
+                    schema["measures"].append({"column": column_name})
+                    self._measures.add(Measure(df, column_name))
+                else:
+                    schema["dimensions"].append({"column": column_name})
+                    self._dimensions.add(Dimension(df, column_name, self._caching))
 
         return self
 
@@ -229,3 +227,4 @@ class Schema:
     def __len__(self):
         """ Returns the number of dimensions of the schema."""
         return len(self.dimensions)
+

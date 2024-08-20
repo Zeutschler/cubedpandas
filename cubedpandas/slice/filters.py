@@ -20,6 +20,8 @@ class Filters(list[Filter]):
         """
         Returns the row mask of all combined filters.
         """
+        if len(self) == 0:
+            return None
         return self[-1].context.row_mask
 
     def append(self, __object):

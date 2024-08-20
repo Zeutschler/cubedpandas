@@ -10,6 +10,9 @@ scipy
 scikit-learn
 
 
+# for server sample
+fastapi
+uvicorn
 
 
 # for deployment

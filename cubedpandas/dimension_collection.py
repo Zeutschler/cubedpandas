@@ -39,7 +39,26 @@ class DimensionCollection(Iterable[Dimension]):
         return key in self._dims
 
     def add(self, dimension: Dimension):
-        self._dims[dimension.column] = dimension
+        name = dimension.column
+        if name in self._dims:
+            raise ValueError(f"A dimension '{name}' already exists.")
+
+        self._dims[name] = dimension
+
+        # For future use...
+        # # Add all name variants to the collection "List Price" >>> "list price", "List_Price", "list_price"
+        # lcase_name = name.lower()
+        # if not lcase_name in self._dims:
+        #     self._dims[lcase_name] = dimension
+        #
+        # underscored_name = name.replace(" ", "_")
+        # if not underscored_name in self._dims:
+        #     self._dims[underscored_name] = dimension
+        #
+        # lcase_underscored_name = lcase_name.replace(" ", "_")
+        # if not lcase_underscored_name in self._dims:
+        #     self._dims[lcase_underscored_name] = dimension
+
 
 
     def to_set(self):
