@@ -1,19 +1,19 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+# CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
-from collections.abc import Iterable
-import datetime
-import pandas as pd
-import numpy as np
 
-from cubedpandas.context.measure_context import MeasureContext
-from cubedpandas.context.filter_context import FilterContext
-from cubedpandas.context.dimension_context import DimensionContext
-from cubedpandas.context.member_context import MemberContext
-from cubedpandas.context.datetime_resolver import resolve_datetime
+import datetime
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any
+
+import numpy as np
+import pandas as pd
+
 from cubedpandas.context.context import Context
+from cubedpandas.context.datetime_resolver import resolve_datetime
 from cubedpandas.context.expression import Expression
+from cubedpandas.context.filter_context import FilterContext
+from cubedpandas.context.function_context import FunctionContext
 
 if TYPE_CHECKING:
     from cubedpandas.dimension import Dimension
@@ -53,6 +53,11 @@ class ContextResolver:
             if cube.settings.auto_whitespace and ("_" in address):
                 address = address.replace("_", " ")
 
+            # 3.1. Check for function keywords like SUM, AVG, MIN, MAX, etc.
+            if address.upper() in FunctionContext.KEYWORDS:
+                function = FunctionContext(parent=parent, function=address)
+                return function
+
             # 3.1. Check for names of measures
             if address in cube.measures:
                 from cubedpandas.context.measure_context import MeasureContext
@@ -73,6 +78,16 @@ class ContextResolver:
                 resolved_context = DimensionContext(cube=cube, parent=parent, address=address,
                                                     row_mask=row_mask,
                                                     measure=measure, dimension=dimension, resolve=False)
+                if pd.api.types.is_bool_dtype(dimension.dtype):
+                    # special case: for boolean dimensions, we assume that the user wants to filter for True values if
+                    # the dimension is referenced without a member name: `cube.online` instead of `cube.online[True]`
+                    # In this case, we will return a MemberContext with the member mask set to the boolean mask.
+                    from cubedpandas.context.member_context import MemberContext
+                    exists, new_row_mask, member_mask = dimension._check_exists_and_resolve_member(True, row_mask)
+                    resolved_context = MemberContext(cube=cube, parent=resolved_context, address=True,
+                                                   row_mask=new_row_mask, member_mask=member_mask,
+                                                   measure=measure, dimension=dimension, resolve=False)
+
                 return resolved_context
                 # ref = ContextReference(context=resolved_context, address=address, row_mask=row_mask,
                 #                       measure=measure, dimension=dimension)
@@ -155,7 +170,7 @@ class ContextResolver:
             if is_valid_context:
                 return new_context_ref
             else:
-                if parent.cube.ignore_member_key_errors and not dynamic_attribute:
+                if parent.cube.settings.ignore_member_key_errors and not dynamic_attribute:
                     if dimension is not None:
                         if cube.df[dimension.column].dtype == pd.DataFrame([address, ])[0].dtype:
                             from cubedpandas.context.member_not_found_context import MemberNotFoundContext

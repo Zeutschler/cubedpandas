@@ -1,4 +1,4 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+# CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import random
 import sys
@@ -11,7 +11,7 @@ import pandas as pd
 from pandas.api.types import (is_string_dtype, is_numeric_dtype, is_bool_dtype,
                               is_datetime64_any_dtype)
 
-from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.settings import CachingStrategy, EAGER_CACHING_THRESHOLD
 from cubedpandas.context.datetime_resolver import resolve_datetime
 from cubedpandas.statistics import DimensionStatistics
 

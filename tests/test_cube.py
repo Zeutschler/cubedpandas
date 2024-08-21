@@ -1,4 +1,4 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+# CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import pandas as pd
 from unittest import TestCase
@@ -78,6 +78,11 @@ class TestCube(TestCase):
         self.assertEqual(cdf[("A", "B")], 100 + 200 + 150 + 250)
         self.assertEqual(cdf["A", "B"], 100 + 200 + 150 + 250)
 
+
+    def test_cubed_methods(self):
+        df = self.df
+
+        self.assertEqual(df.cubed.A, 100 + 200)
 
 
     def test_scalar_member_access(self):

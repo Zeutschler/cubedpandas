@@ -1,4 +1,4 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+# CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ from typing import SupportsFloat, TYPE_CHECKING, Any
 import numpy as np
 import pandas as pd
 
+from cubedpandas.context.enums import ContextFunction, ContextAllocation
 
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
@@ -16,17 +17,13 @@ if TYPE_CHECKING:
     from cubedpandas.dimension import Dimension
 
     # all subclasses of Context listed here:
-    from cubedpandas.context.cube_context import CubeContext
-    from cubedpandas.context.dimension_context import DimensionContext
-    from cubedpandas.context.compound_context import CompoundContext
-    from cubedpandas.context.boolean_operation_context import BooleanOperationContext, BooleanOperationContextEnum
+    from cubedpandas.context.boolean_operation_context import BooleanOperationContext
+    from cubedpandas.context import BooleanOperation
     from cubedpandas.context.filter_context import FilterContext
     from cubedpandas.context.measure_context import MeasureContext
     from cubedpandas.context.context_resolver import ContextResolver
 
-from cubedpandas.cube_aggregation import (CubeAggregationFunctionType,
-                                          CubeAllocationFunctionType)
-from cubedpandas.measure import Measure
+
 
 
 class Context(SupportsFloat):
@@ -48,6 +45,7 @@ class Context(SupportsFloat):
     def __init__(self, cube: 'Cube', address: Any, parent: Context | None = None,
                  row_mask: np.ndarray | None = None, member_mask: np.ndarray | None = None,
                  measure: str | None | Measure = None, dimension: str | None | Dimension = None,
+                 function: ContextFunction = ContextFunction.SUM,
                  resolve: bool = True, filtered: bool = False, dynamic_attribute: bool = False):
         """
         Initializes a new Context object. For internal use only.
@@ -68,11 +66,13 @@ class Context(SupportsFloat):
         self._member_mask: np.ndarray | None = member_mask
         self._measure: Measure | None = measure
         self._dimension: Dimension | None = dimension
+        self._function: ContextFunction = function
+
         self._convert_values_to_python_data_types: bool = True
         self._is_filtered: bool = filtered
         self._dynamic_attribute: bool = dynamic_attribute
 
-        if resolve and cube.eager_evaluation:
+        if resolve and cube.settings.eager_evaluation:
             from cubedpandas.context.context_resolver import ContextResolver
             resolved = ContextResolver.resolve(parent=self, address=address, dynamic_attribute=False)
             self._row_mask = resolved.row_mask
@@ -86,22 +86,30 @@ class Context(SupportsFloat):
 
     # region Public properties and methods
     @property
+    def function(self) -> ContextFunction:
+        """
+        Returns:
+            The aggregation function that will be applied to the current context.
+        """
+        return self._function
+
+    @property
     def value(self):
         """
         Returns:
              The sum value of the current context from the underlying cube.
         """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.SUM)
+        return self._evaluate(self._row_mask, self._measure, self._function)
 
     @value.setter
     def value(self, value):
         """
         Writes a value to the current context of the cube down to the underlying dataframe.
         """
-        allocation_function = CubeAllocationFunctionType.DISTRIBUTE
-        self._cube._allocate(self._row_mask, self.measure.column, value, allocation_function)
+        allocation_function = ContextAllocation.DISTRIBUTE
+        self._allocate(self._row_mask, self.measure, value, allocation_function)
 
-    def set_value(self, value, allocation_function: CubeAllocationFunctionType = CubeAllocationFunctionType.DISTRIBUTE):
+    def set_value(self, value, allocation_function: ContextAllocation = ContextAllocation.DISTRIBUTE):
         """
         Writes a value to the current context of the cube down to the underlying dataframe.
         The allocation method can be chosen.
@@ -114,7 +122,7 @@ class Context(SupportsFloat):
         Returns:
             The new value of the current context from the underlying cube.
         """
-        self._cube._allocate(self._row_mask, self.measure.column, value, allocation_function)
+        self._allocate(self._row_mask, self.measure, value, allocation_function)
         return self.value
 
     @property
@@ -123,7 +131,7 @@ class Context(SupportsFloat):
         Returns:
              The numerical value of the current context from the underlying cube.
         """
-        value = self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.SUM)
+        value = self._evaluate(self._row_mask, self._measure, self._function)
         if isinstance(value, (float, np.floating)):
             return float(value)
         if isinstance(value, (int, np.integer, bool)):
@@ -170,11 +178,6 @@ class Context(SupportsFloat):
         if self._row_mask is None:
             return self._cube.df  #
         return self._cube.df.iloc[self._row_mask]
-
-    def by(self, rows: Any, columns: Any | None = None) -> 'CompoundContext':
-        """Returns """
-        from cubedpandas.context.compound_context import CompoundContext
-        return CompoundContext(self, self[rows, columns])
 
     @property
     def address(self) -> any:
@@ -488,7 +491,7 @@ class Context(SupportsFloat):
                 self._measure = self._parent._resolve_measure()
         return self._measure
 
-    def _evaluate(self, row_mask, measure, operation: CubeAggregationFunctionType = CubeAggregationFunctionType.SUM):
+    def _evaluate(self, row_mask, measure, operation: ContextFunction = ContextFunction.SUM):
         # Evaluates the value of the current context.
         # Note: This method uses and operates directly on internal Numpy ndarray used by the
         # underlying Pandas dataframe. Therefore, no expensive data copying is required.
@@ -505,7 +508,7 @@ class Context(SupportsFloat):
                 return len(row_mask)
 
         if row_mask is not None and row_mask.size == 0:  # no records found
-            if ((operation >= CubeAggregationFunctionType.COUNT) or
+            if ((operation >= ContextFunction.COUNT) or
                     pd.api.types.is_integer_dtype(self._df[measure.column])):
                 return 0  # return default value
             else:
@@ -518,31 +521,31 @@ class Context(SupportsFloat):
 
         # Evaluate the final value based on the aggregation operation.
         match operation:
-            case CubeAggregationFunctionType.SUM:
+            case ContextFunction.SUM:
                 value = np.nansum(values)
-            case CubeAggregationFunctionType.AVG:
+            case ContextFunction.AVG:
                 value = np.nanmean(values)
-            case CubeAggregationFunctionType.MEDIAN:
+            case ContextFunction.MEDIAN:
                 value = np.nanmedian(values)
-            case CubeAggregationFunctionType.MIN:
+            case ContextFunction.MIN:
                 value = np.nanmin(values)
-            case CubeAggregationFunctionType.MAX:
+            case ContextFunction.MAX:
                 value = np.nanmax(values)
-            case CubeAggregationFunctionType.COUNT:
+            case ContextFunction.COUNT:
                 value = len(values)
-            case CubeAggregationFunctionType.STD:
+            case ContextFunction.STD:
                 value = np.nanstd(values)
-            case CubeAggregationFunctionType.VAR:
+            case ContextFunction.VAR:
                 value = np.nanvar(values)
-            case CubeAggregationFunctionType.POF:
+            case ContextFunction.POF:
                 value = float(np.nansum(values)) / float(self.cube.df[str(measure)].sum())
-            case CubeAggregationFunctionType.NAN:
+            case ContextFunction.NAN:
                 value = np.count_nonzero(np.isnan(values))
-            case CubeAggregationFunctionType.AN:
+            case ContextFunction.AN:
                 value = np.count_nonzero(~np.isnan(values))
-            case CubeAggregationFunctionType.ZERO:
+            case ContextFunction.ZERO:
                 value = np.count_nonzero(values == 0)
-            case CubeAggregationFunctionType.NZERO:
+            case ContextFunction.NZERO:
                 value = np.count_nonzero(values)
             case _:
                 value = np.nansum(values)  # default operation is SUM
@@ -551,6 +554,66 @@ class Context(SupportsFloat):
         if self._convert_values_to_python_data_types:
             value = self._convert_to_python_type(value)
         return value
+
+    def _allocate(self, row_mask: np.ndarray | None = None, measure: Measure | None = None, value: Any = None,
+                  operation: ContextAllocation = ContextAllocation.DISTRIBUTE):
+        """Allocates a value to the underlying dataframe to support write back operations."""
+
+        if self.cube.settings.read_only:
+            raise PermissionError("Write back is not permitted on a read-only cube. "
+                                  "Set attribute `read_only` to `False`. "
+                                  "Please not that values in the underlying dataframe will be changed.")
+
+        if measure is None:
+            # Resolve the measure if not provided.
+            measure = self._resolve_measure()
+            if measure is None:
+                # The cube has no measures defined
+                # So we simply count the number of records.
+                if row_mask is None:
+                    return len(self._df.index)
+                return len(row_mask)
+
+        # Get values to update or delete
+        value_series = self._df[measure.column].to_numpy()
+        if row_mask is None:
+            row_mask = self._df.index.to_numpy()
+            values: np.ndarray = value_series
+        else:
+            values: np.ndarray = value_series[row_mask]
+
+        # update values based on the requested operation
+        match operation:
+            case ContextAllocation.DISTRIBUTE:
+                current = sum(values)
+                if current != 0:
+                    factor = value / current
+                    values = values * factor
+            case ContextAllocation.SET:
+                values = np.full_like(values, value)
+            case ContextAllocation.DELTA:
+                values = values + value
+            case ContextAllocation.MULTIPLY:
+                values = values * value
+            case ContextAllocation.ZERO:
+                values = np.zeros_like(values)
+            case ContextAllocation.NAN:
+                values = np.full_like(values, np.nan)
+            case ContextAllocation.DEL:
+                raise NotImplementedError("Not yet implemented.")
+            case _:
+                raise ValueError(f"Allocation operation {operation} not supported.")
+
+        # update the values in the dataframe
+        updated_values = pd.DataFrame({measure.column: values}, index=row_mask)
+        self._df.update(updated_values)
+        return True
+
+    def _delete(self, row_mask: np.ndarray | None = None, measure: Any = None):
+        """Deletes all rows defined by the row_mask from the dataframe."""
+        self._df.drop(index=row_mask, inplace=True, errors="ignore")
+        # not yet required:  self._df.reset_index(drop=True, inplace=True)
+        pass
 
     @staticmethod
     def _convert_to_python_type(value):
@@ -571,7 +634,7 @@ class Context(SupportsFloat):
 
     # endregion
 
-    # region Operator overloading and float behaviour
+    # region Dunder methods, operator overloading, float behaviour etc.
     def __float__(self) -> float:  # type conversion to float
         return self.numeric_value
 
@@ -748,60 +811,57 @@ class Context(SupportsFloat):
     def __and__(self, other):  # AND operator (A & B)
         if isinstance(other, Context):
             from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
-                BooleanOperationContextEnum
-            return BooleanOperationContext(self, other, BooleanOperationContextEnum.AND)
+                BooleanOperation
+            return BooleanOperationContext(self, other, BooleanOperation.AND)
         return self.numeric_value and other
 
     def __iand__(self, other):  # inplace AND operator (a &= b)
         if isinstance(other, Context):
             from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
-                BooleanOperationContextEnum
-            return BooleanOperationContext(self, other, BooleanOperationContextEnum.AND)
+                BooleanOperation
+            return BooleanOperationContext(self, other, BooleanOperation.AND)
         return self.numeric_value and other
 
     def __rand__(self, other):  # and operator
         if isinstance(other, Context):
             from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
-                BooleanOperationContextEnum
-            return BooleanOperationContext(self, other, BooleanOperationContextEnum.AND)
+                BooleanOperation
+            return BooleanOperationContext(self, other, BooleanOperation.AND)
         return self.numeric_value and other
 
     def __or__(self, other):  # OR operator (A | B)
         if isinstance(other, Context):
             from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
-                BooleanOperationContextEnum
-            return BooleanOperationContext(self, other, BooleanOperationContextEnum.OR)
+                BooleanOperation
+            return BooleanOperationContext(self, other, BooleanOperation.OR)
         return self.numeric_value or other
 
     def __ior__(self, other):  # inplace OR operator (A |= B)
         if isinstance(other, Context):
             from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
-                BooleanOperationContextEnum
-            return BooleanOperationContext(self, other, BooleanOperationContextEnum.OR)
+                BooleanOperation
+            return BooleanOperationContext(self, other, BooleanOperation.OR)
         return self.numeric_value or other
 
     def __ror__(self, other):  # or operator
         if isinstance(other, Context):
             from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
-                BooleanOperationContextEnum
-            return BooleanOperationContext(self, other, BooleanOperationContextEnum.OR)
+                BooleanOperation
+            return BooleanOperationContext(self, other, BooleanOperation.OR)
         return other or self.numeric_value
 
     def __xor__(self, other):  # xor operator
         if isinstance(other, Context):
             from cubedpandas.context.boolean_operation_context import BooleanOperationContext, \
-                BooleanOperationContextEnum
-            return BooleanOperationContext(self, other, BooleanOperationContextEnum.XOR)
+                BooleanOperation
+            return BooleanOperationContext(self, other, BooleanOperation.XOR)
         return self._value ^ other
 
     def __invert__(self):  # ~ operator
         # Special case: NOT operation > inverts the row mask
-        from cubedpandas.context.boolean_operation_context import BooleanOperationContext, BooleanOperationContextEnum
-        return BooleanOperationContext(self, operation=BooleanOperationContextEnum.NOT)
+        from cubedpandas.context.boolean_operation_context import BooleanOperationContext, BooleanOperation
+        return BooleanOperationContext(self, operation=BooleanOperation.NOT)
 
-    # endregion
-
-    # region conversion function
     def __abs__(self):
         return self.numeric_value.__abs__()
 
@@ -813,22 +873,6 @@ class Context(SupportsFloat):
 
     def __repr__(self):
         return self.value.__str__()
-
-        # t = ""
-        # if self._dimension is not None:
-        #     t += f"{self.dimension}:{self.address}"
-        # elif self._address is not None:
-        #     t += f"{self._address}"
-        # else:
-        #     t += f"*"
-        # if not self.value is None:
-        #     t += f" = {self.value.__str__()}"
-        # else:
-        #     t += f" = None"
-        #
-        # if isinstance(self._parent, Context):
-        #     t += f" <<< {self.parent.__repr__()}"
-        # return t
 
     def __round__(self, n=None):
         return self.numeric_value.__round__(n)
@@ -847,112 +891,5 @@ class Context(SupportsFloat):
 
     def __format__(self, format_spec):
         return self.value.__format__(format_spec)
-
-    # endregion
-
-    # region Aggregation functions
-    @property
-    def sum(self):
-        """
-        Returns:
-            The sum of the values for a given address.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.SUM)
-
-    @property
-    def avg(self):
-        """
-        Returns:
-            The average of the values for a given address.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.AVG)
-
-    @property
-    def median(self):
-        """
-        Returns:
-             The median of the values for a given address.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.MEDIAN)
-
-    @property
-    def min(self):
-        """
-        Returns:
-            The minimum value for a given address.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.MIN)
-
-    @property
-    def max(self):
-        """
-        Returns:
-             The maximum value for a given address.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.MAX)
-
-    @property
-    def count(self):
-        """
-        Returns:
-             The number of the records matching a given address.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.COUNT)
-
-    @property
-    def std(self):
-        """
-        Returns:
-            The standard deviation of the values for a given address.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.STD)
-
-    @property
-    def var(self):
-        """
-        Returns:
-            The variance of the values for a given address.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.VAR)
-
-    @property
-    def pof(self):
-        """
-        Returns:
-            The percentage of the sum of values for a given address related to all values in the data frame.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.POF)
-
-    @property
-    def nan(self):
-        """
-        Returns:
-            The number of non-numeric values for a given address. 'nan' stands for 'not a number'.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.NAN)
-
-    @property
-    def an(self):
-        """
-        Returns:
-            The number of numeric values for a given address. 'an' stands for 'a number'.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.AN)
-
-    @property
-    def zero(self):
-        """
-        Returns:
-            The number of zero values for a given address. 'nan' stands for 'not a number'.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.ZERO)
-
-    @property
-    def nzero(self):
-        """
-        Returns:
-            The number of non-zero values for a given address. 'an' stands for 'a number'.
-        """
-        return self._evaluate(self._row_mask, self._measure, CubeAggregationFunctionType.NZERO)
 
     # endregion

@@ -65,7 +65,7 @@ setup(
               'multidimensional', 'cube', ],
     author_email="cubedpandas@gmail.com",
     url="https://github.com/Zeutschler/cubedpandas",
-    license='BSD 3-clause',
+    license='MIT',
     platforms=['any'],
     zip_safe=True,
     python_requires='>= 3.10',

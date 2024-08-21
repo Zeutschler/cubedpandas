@@ -1,4 +1,4 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+# CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import pandas as pd
 from unittest import TestCase
@@ -52,7 +52,7 @@ class TestCubeContext(TestCase):
     def test_cube_context_slicer_methods(self):
         c = Cube(self.df, schema=self.schema)
 
-        if not c.ignore_key_errors:
+        if not c.settings.ignore_key_errors:
             with self.assertRaises(ValueError):
                 a = c["XXX"]
         with self.assertRaises(ValueError):
@@ -89,7 +89,7 @@ class TestCubeContext(TestCase):
         self.assertEqual(c.product[["A", "B", "XXX"]], 100 + 150 + 200 + 250)
 
         # special case, member list containing unhashable objects will raise ValueError
-        if not c.ignore_key_errors:
+        if not c.settings.ignore_key_errors:
             with self.assertRaises(ValueError):
                 a = c.product["A", {"not-exists": "XXX"}]  # unhashable object
 

@@ -1,9 +1,9 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+# CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import pandas as pd
 from cubedpandas.cube import Cube
 from cubedpandas.context.context import Context
-from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.settings import CachingStrategy, EAGER_CACHING_THRESHOLD
 
 
 @pd.api.extensions.register_dataframe_accessor("cubed")

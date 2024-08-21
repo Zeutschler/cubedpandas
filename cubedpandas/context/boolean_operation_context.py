@@ -1,46 +1,38 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+# CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
 
-from enum import IntEnum
 from typing import TYPE_CHECKING
 
 import numpy as np
 
 from cubedpandas.context.context import Context
+from cubedpandas.context.enums import BooleanOperation
 
 if TYPE_CHECKING:
     pass
-
-
-class BooleanOperationContextEnum(IntEnum):
-    AND = 1
-    OR = 2
-    XOR = 3
-    NOT = 4
-
 
 class BooleanOperationContext(Context):
     """ A context representing a boolean operation between two Context objects."""
 
     def __init__(self, left: Context, right: Context | None = None,
-                 operation: BooleanOperationContextEnum = BooleanOperationContextEnum.AND):
+                 operation: BooleanOperation = BooleanOperation.AND):
         self._left: Context = left
         self._right: Context | None = right
-        self._operation: BooleanOperationContextEnum = operation
+        self._operation: BooleanOperation = operation
         match self._operation:
-            case BooleanOperationContextEnum.AND:
+            case BooleanOperation.AND:
                 row_mask = np.intersect1d(left.row_mask, right.row_mask, assume_unique=True)
-            case BooleanOperationContextEnum.OR:
+            case BooleanOperation.OR:
                 row_mask = np.union1d(left.row_mask, right.row_mask)
-            case BooleanOperationContextEnum.XOR:
+            case BooleanOperation.XOR:
                 row_mask = np.setxor1d(left.row_mask, right.row_mask, assume_unique=True)
-            case BooleanOperationContextEnum.NOT:
+            case BooleanOperation.NOT:
                 row_mask = np.setdiff1d(left._df.index.to_numpy(), left.row_mask, assume_unique=True)
             case _:
                 raise ValueError(f"Invalid boolean operation '{operation}'. Only 'AND', 'OR' and 'XOR' are supported.")
 
-        if self._operation == BooleanOperationContextEnum.NOT:
+        if self._operation == BooleanOperation.NOT:
             # unary operation
             super().__init__(cube=left.cube, address=None, parent=left.parent,
                              row_mask=row_mask, member_mask=None,
@@ -60,5 +52,5 @@ class BooleanOperationContext(Context):
         return self._right
 
     @property
-    def operation(self) -> BooleanOperationContextEnum:
+    def operation(self) -> BooleanOperation:
         return self._operation

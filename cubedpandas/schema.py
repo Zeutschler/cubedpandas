@@ -1,4 +1,4 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+# CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import json
 from typing import Self, Any
@@ -6,7 +6,7 @@ from typing import Self, Any
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 
-from cubedpandas.caching_strategy import CachingStrategy
+from cubedpandas.settings import CachingStrategy
 from cubedpandas.dimension import Dimension
 from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.measure import Measure

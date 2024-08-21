@@ -1,20 +1,18 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+# CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
 import sys
 from types import ModuleType, FunctionType
 from gc import get_referents
 from typing import Any
-import numpy as np
 import pandas as pd
 
-from cubedpandas.cube_aggregation import (CubeAllocationFunctionType)
-from cubedpandas.cube_settings import CubeSettings
+from cubedpandas.settings import CubeSettings
 from cubedpandas.schema import Schema
 from cubedpandas.measure_collection import MeasureCollection
 from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.ambiguities import Ambiguities
-from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.settings import CachingStrategy, EAGER_CACHING_THRESHOLD
 from cubedpandas.context import Context, CubeContext, FilterContext
 from cubedpandas.slice import Slice
 
@@ -155,6 +153,11 @@ class Cube:
         self._settings = CubeSettings()
         if not read_only is None:
             self._settings.read_only = read_only
+            self._settings.ignore_member_key_errors = ignore_member_key_errors
+            self._settings.ignore_case = ignore_case
+            self._settings.ignore_key_errors = ignore_key_errors
+            self._settings.eager_evaluation = eager_evaluation
+
 
         self._convert_values_to_python_data_types: bool = True
         self._df: pd.DataFrame = df
@@ -163,12 +166,8 @@ class Cube:
         self._caching: CachingStrategy = caching
         self._caching_threshold: int = caching_threshold
         self._member_cache: dict = {}
-        self._ignore_member_key_errors: bool = ignore_member_key_errors
-        self._ignore_case: bool = ignore_case
-        self._ignore_key_errors: bool = ignore_key_errors
-        self._eager_evaluation: bool = eager_evaluation
         self._cube_links = CubeLinks(self)
-        self._runs_in_jupyter = Cube.runs_in_jupyter()
+        self._runs_in_jupyter = Cube._runs_in_jupyter()
 
         # get or prepare the cube schema and setup dimensions and measures
         if (schema is None) and infer_schema:
@@ -220,66 +219,6 @@ class Cube:
         """
         # todo: implement a proper linked cubes collection object
         return self._cube_links
-
-
-
-    @property
-    def ignore_member_key_errors(self) -> bool:
-        """
-        Returns:
-            True if the Cube is ignoring member key errors, otherwise False.
-        """
-        return self._ignore_member_key_errors
-
-    @ignore_member_key_errors.setter
-    def ignore_member_key_errors(self, value: bool):
-        """
-        Sets the member key error handling of the Cube.
-        """
-        self._ignore_member_key_errors = value
-
-    @property
-    def ignore_case(self) -> bool:
-        """
-        Returns:
-            True if the Cube is ignoring case, otherwise False.
-        """
-        return self._ignore_case
-
-    @ignore_case.setter
-    def ignore_case(self, value: bool):
-        """
-        Sets the case sensitivity of the Cube.
-        """
-        raise NotImplementedError("Not implemented yet")
-        # self._ignore_case = value
-
-    @property
-    def ignore_key_errors(self) -> bool:
-        """
-        Returns:
-            True if the Cube is ignoring key errors, otherwise False.
-        """
-        return self._ignore_key_errors
-
-    @ignore_key_errors.setter
-    def ignore_key_errors(self, value: bool):
-        """
-        Sets the key error handling of the Cube.
-        """
-        raise NotImplementedError("Not implemented yet")
-        # self._ignore_key_errors = value
-
-    @property
-    def eager_evaluation(self) -> bool:
-        """
-        Returns:
-            Returns `True` if the cube will evaluate the context eagerly, i.e. when the context is created.
-            Eager evaluation is recommended for most use cases, as it simplifies debugging and error handling.
-            Returns `False` if the cube will evaluate the context lazily, i.e. only when the value of a context
-            is accessed/requested.
-        """
-        return self._eager_evaluation
 
     @property
     def schema(self) -> Schema:
@@ -475,66 +414,9 @@ class Cube:
         """
         return CubeContext(self).slice(rows=rows, columns=columns, config=config)
 
-    def _write_back(self, row_mask: np.ndarray | None = None, measure: Any = None, value: Any = None):
-        """Writes back a value for a given address in the cube."""
-        raise NotImplementedError("Not implemented yet")
-
-    def _allocate(self, row_mask: np.ndarray | None = None, column: str = None, value: Any = None,
-                  operation: CubeAllocationFunctionType = CubeAllocationFunctionType.DISTRIBUTE):
-        """Allocates a value for a given address in the cube."""
-
-        if self.settings.read_only:
-            raise PermissionError("Write back is not permitted on a read-only cube. "
-                                  "Set attribute `read_only` to `False`. "
-                                  "Please not that values in the underlying dataframe will be changed.")
-
-        if column is None or column == "":
-            column = self.measures.default.column
-
-        # Get values to update or delete
-        value_series = self._df[column].to_numpy()
-        if row_mask is None:
-            row_mask = self._df.index.to_numpy()
-            values: np.ndarray = value_series
-        else:
-            values: np.ndarray = value_series[row_mask]
-
-        # update values based on the requested operation
-        match operation:
-            case CubeAllocationFunctionType.DISTRIBUTE:
-                current = sum(values)
-                if current != 0:
-                    factor = value / current
-                    values = values * factor
-            case CubeAllocationFunctionType.SET:
-                values = np.full_like(values, value)
-            case CubeAllocationFunctionType.DELTA:
-                values = values + value
-            case CubeAllocationFunctionType.MULTIPLY:
-                values = values * value
-            case CubeAllocationFunctionType.ZERO:
-                values = np.zeros_like(values)
-            case CubeAllocationFunctionType.NAN:
-                values = np.full_like(values, np.nan)
-            case CubeAllocationFunctionType.DEL:
-                raise NotImplementedError("Not yet implemented.")
-            case _:
-                raise ValueError(f"Allocation operation {operation} not supported.")
-
-        # update the values in the dataframe
-        updated_values = pd.DataFrame({column: values}, index=row_mask)
-        self._df.update(updated_values)
-        return True
-
-    def _delete(self, row_mask: np.ndarray | None = None, measure: Any = None):
-        """Deletes all rows for a given address."""
-        self._df.drop(index=row_mask, inplace=True, errors="ignore")
-        # not yet required:  self._df.reset_index(drop=True, inplace=True)
-        pass
-
     # endregion
 
-    # region Magic Methods
+    # region Dunder Methods
     def __str__(self):
         if self._runs_in_jupyter:
             return f"Jupyter Cube({len(self._df)} records, {len(self._dimensions)} dimensions, {len(self._measures)} measures)"
@@ -549,10 +431,11 @@ class Cube:
             return ""
         else:
             return f"Cube({len(self._df)} records, {len(self._dimensions)} dimensions, {len(self._measures)} measures)"
-
     # endregion
 
     # region Helper Methods
     @staticmethod
-    def runs_in_jupyter():
+    def _runs_in_jupyter():
+        """Returns True if the code runs in a Jupyter notebook, otherwise False."""
         return 'ipykernel' in sys.modules
+    # endregion
