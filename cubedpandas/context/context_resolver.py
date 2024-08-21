@@ -1,21 +1,19 @@
-# CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
+# CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
-from collections.abc import Iterable
-import datetime
-import pandas as pd
-import numpy as np
 
-from cubedpandas.context.enums import ContextFunction
-from cubedpandas.context.measure_context import MeasureContext
+import datetime
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any
+
+import numpy as np
+import pandas as pd
+
+from cubedpandas.context.context import Context
+from cubedpandas.context.datetime_resolver import resolve_datetime
+from cubedpandas.context.expression import Expression
 from cubedpandas.context.filter_context import FilterContext
 from cubedpandas.context.function_context import FunctionContext
-from cubedpandas.context.dimension_context import DimensionContext
-from cubedpandas.context.member_context import MemberContext
-from cubedpandas.context.datetime_resolver import resolve_datetime
-from cubedpandas.context.context import Context
-from cubedpandas.context.expression import Expression
 
 if TYPE_CHECKING:
     from cubedpandas.dimension import Dimension

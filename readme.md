@@ -1,6 +1,6 @@
 # CubedPandas 
 
-## OLAP comfort meets Pandas power.
+## OLAP comfort meets Pandas power!
 
 ![PyPI version](https://img.shields.io/pypi/v/cubedpandas)
 ![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?label=PyPI%20downloads)
