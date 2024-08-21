@@ -106,3 +106,13 @@ def pythonize(name: str, lowered: bool = False) -> str:
         return "_"
 
     return "".join([c if c.isalnum() or c == "_" else "_" for c in name])
+
+
+def auto_round(value: float, small_value_precision: int = 4, high_value_precision: int = 2, high_value_threshold: float = 100) -> float | int:
+    """Rounds a floating point number to a given precision."""
+    if isinstance(value, int):
+        return value
+    if value < high_value_threshold:
+        return round(value, small_value_precision)
+    else:
+        return round(value, high_value_precision)

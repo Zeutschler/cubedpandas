@@ -45,6 +45,7 @@ class CubeSettings:
         self._read_only: bool = True
         self._convert_values_to_python_data_types: bool = True
 
+        self._auto_rounding: bool = False
         self._ignore_member_key_errors: bool = False
         self._ignore_case: bool = False
         self._ignore_key_errors: bool = False
@@ -203,3 +204,18 @@ class CubeSettings:
         Sets the caching strategy for the cube.
         """
         self._caching_strategy = value
+
+    # disabled for now
+    # @property
+    # def auto_rounding(self) -> bool:
+    #     """
+    #     Sets the auto rounding strategy for the cube.
+    #     """
+    #     return self._auto_rounding
+    #
+    # @auto_rounding.setter
+    # def auto_rounding(self, value: bool):
+    #     """
+    #     Sets the auto rounding strategy for the cube.
+    #     """
+    #     self._auto_rounding = value
