@@ -1,9 +1,8 @@
 # CubedPandas - Copyright (c)2024 by Thomas Zeutschler, BSD 3-clause license, see LICENSE file.
 
 from cubedpandas.context.enums import BooleanOperation, ContextFunction, ContextAllocation
-from context.enums import BooleanOperation
+from cubedpandas.context.enums import BooleanOperation
 from cubedpandas.context.boolean_operation_context import BooleanOperationContext
-# from cubedpandas.context.compound_context import CompoundContext
 from cubedpandas.context.context import Context
 from cubedpandas.context.context_context import ContextContext
 from cubedpandas.context.context_resolver import ContextResolver
@@ -19,7 +18,6 @@ from cubedpandas.context.datetime_resolver import resolve_datetime
 __all__ = [
     "BooleanOperation",
     "BooleanOperationContext",
-     # "CompoundContext",
     "Context",
     "ContextAllocation",
     "ContextContext",

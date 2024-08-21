@@ -79,6 +79,11 @@ class TestCube(TestCase):
         self.assertEqual(cdf["A", "B"], 100 + 200 + 150 + 250)
 
 
+    def test_cubed_methods(self):
+        df = self.df
+
+        self.assertEqual(df.cubed.A, 100 + 200)
+
 
     def test_scalar_member_access(self):
         cube = Cube(self.df, schema=self.schema)

@@ -6,12 +6,11 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from cubedpandas.context.enums import BooleanOperation
 from cubedpandas.context.context import Context
+from cubedpandas.context.enums import BooleanOperation
 
 if TYPE_CHECKING:
     pass
-
 
 class BooleanOperationContext(Context):
     """ A context representing a boolean operation between two Context objects."""

@@ -80,6 +80,16 @@ class ContextResolver:
                 resolved_context = DimensionContext(cube=cube, parent=parent, address=address,
                                                     row_mask=row_mask,
                                                     measure=measure, dimension=dimension, resolve=False)
+                if pd.api.types.is_bool_dtype(dimension.dtype):
+                    # special case: for boolean dimensions, we assume that the user wants to filter for True values if
+                    # the dimension is referenced without a member name: `cube.online` instead of `cube.online[True]`
+                    # In this case, we will return a MemberContext with the member mask set to the boolean mask.
+                    from cubedpandas.context.member_context import MemberContext
+                    exists, new_row_mask, member_mask = dimension._check_exists_and_resolve_member(True, row_mask)
+                    resolved_context = MemberContext(cube=cube, parent=resolved_context, address=True,
+                                                   row_mask=new_row_mask, member_mask=member_mask,
+                                                   measure=measure, dimension=dimension, resolve=False)
+
                 return resolved_context
                 # ref = ContextReference(context=resolved_context, address=address, row_mask=row_mask,
                 #                       measure=measure, dimension=dimension)

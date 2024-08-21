@@ -7,6 +7,7 @@ from typing import SupportsFloat, TYPE_CHECKING, Any
 import numpy as np
 import pandas as pd
 
+from cubedpandas.context.enums import ContextFunction, ContextAllocation
 
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
@@ -22,9 +23,7 @@ if TYPE_CHECKING:
     from cubedpandas.context.measure_context import MeasureContext
     from cubedpandas.context.context_resolver import ContextResolver
 
-from context.enums import (ContextFunction,
-                           ContextAllocation)
-from cubedpandas.measure import Measure
+
 
 
 class Context(SupportsFloat):
