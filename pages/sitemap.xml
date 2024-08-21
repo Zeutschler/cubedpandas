@@ -2,117 +2,122 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/404/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/advanced-usage/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/basic-usage/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/become-a-sponsor/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/best-practises/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/blog001_why_cpd/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://zeutschler.github.io/cubedpandas/class-cell/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <loc>https://zeutschler.github.io/cubedpandas/class-context/</loc>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/class-cube/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/class-dimension/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/class-measure/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/class-pandas-ext/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/class-schema/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/class-slice/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/contributing/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/faq/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/installation/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/license/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/method-cubed/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/readme_mkdocs/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/release-notes/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/thomas/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://zeutschler.github.io/cubedpandas/use-cases/</loc>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/blog/</loc>
-         <lastmod>2024-06-16</lastmod>
+         <lastmod>2024-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

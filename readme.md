@@ -15,7 +15,7 @@
 -----------------
 
 ***Remark:*** *CubedPandas is in an early stage of development. Features are likely subject to change. 
-[Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and [Feedback](https://github.com/Zeutschler/cubedpandas/discussions) are very welcome!*
+Anyhow, your [Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and [Feedback](https://github.com/Zeutschler/cubedpandas/discussions) are very welcome!
 
 CubedPandas aims to offer an ***easy, fast & natural approach to work with Pandas dataframes***. 
 To achieve this, CubedPandas wraps your dataframe into a lightweight, virtual multi-dimensional OLAP cube, 
@@ -48,7 +48,7 @@ start to shine. For further information, please visit the
 ### Installation and Getting Started
 
 After installing CubedPandas using `pip install cubedpandas`, you are ready to go. 
-*'Cubin'* a Pandas dataframe is as simple as this:
+*'Cubing'* a Pandas dataframe is as simple as this:
 
 ```python
 import pandas as pd
@@ -67,9 +67,9 @@ cdf = cubed(df)  # Wrapp your dataframe into a cube and start cubing!
 
 CubedPandas **automatically infers a multi-dimensional schema** from your Pandas dataframe which 
 defines a virtual **Cube** over the dataframe. By default, numeric columns of the dataframe 
-are considered as **measures** - *the numeric values to analyse & aggregate* - all other columns are 
-considered as **dimensions** - *to filter, navigate and view the data*. The individual values in a 
-dimension column are called the **members** of the dimension. In the example above, column `channel` 
+are considered as **Measures** - *the numeric values to analyse & aggregate* - all other columns are 
+considered as **Dimensions** - *to filter, navigate and view the data*. The individual values in a 
+dimension column are called the **Members** of the dimension. In the example above, column `channel` 
 becomes a dimension with the two members `Online` and `Retail`, revenue and cost are the measures.
 
 Although rarely required, you can also define your own schema. Schemas are quite powerful and flexible, 

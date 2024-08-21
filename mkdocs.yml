@@ -117,14 +117,13 @@ nav:
     - 'Advanced Usage': 'advanced-usage.md'
     - 'Best Practises': 'best-practises.md'
     - 'Documentation':
-      - 'cubed method': 'method-cubed.md'
+      - '`cubed method': 'method-cubed.md'
       - 'Schema': 'class-schema.md'
       - 'Cube': 'class-cube.md'
-      - 'Cell': 'class-cell.md'
+      - 'Context': 'class-context.md'
       - 'Slice': 'class-slice.md'
       - 'Dimension': 'class-dimension.md'
       - 'Measure': 'class-measure.md'
-      - 'Dataframe extension': 'class-pandas-ext.md'
   - 'Blog':
     - blog/index.md
   - 'About':

@@ -1,10 +1,15 @@
-## Sorry, we'll add that later...
+## CubedPandas Installation
 
-The current focus of development is on the core features of CubedPandas. 
-Once finished I'll work on this documention...
+As always with Python packages, the easiest way to install CubedPandas is by using `pip`.
 
-!!! Note:
-    To stay tuned for updates and new releases of CubePandas, 
-    please add a watch to the [CubedPandas GitHub repo](https://github.com/Zeutschler/cubedpandas).         
+```shell
+pip install cubedpandas
+```
 
-Thomas
+After installing CubedPandas, you are ready to go.
+
+You will find the latest version of CubedPandas on [PyPi](https://pypi.org/project/cubedpandas/). 
+Alternatively, you can clone the [CubedPandas GitHub repo](https://github.com/Zeutschler/cubedpandas) and 
+build it on your own or integrate somehow it in your own source code. Please check the 
+[requirements.txt](https://github.com/Zeutschler/cubedpandas/blob/master/requirements.txt) file
+for the necessary dependencies.

@@ -54,7 +54,8 @@ class Cube:
     inferred automatically from the underlying dataframe (default) or defined explicitly.
     """
 
-    def __init__(self, df: pd.DataFrame, schema=None,
+    def __init__(self, df: pd.DataFrame,
+                 schema=None,
                  infer_schema: bool = True,
                  exclude: str | list | tuple | None = None,
                  read_only: bool = True,
