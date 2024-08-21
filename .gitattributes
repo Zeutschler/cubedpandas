@@ -1,3 +1,3 @@
 # Apply override to all files in the directory
-docs/* linguist-documentation
-pages/* linguist-documentation
+docs/* linguist-generated=true
+pages/* linguist-generated=true
