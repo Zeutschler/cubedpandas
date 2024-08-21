@@ -3,7 +3,7 @@
 import pandas as pd
 from unittest import TestCase
 
-from context.enums import ContextAllocation
+from cubedpandas.context.enums import ContextAllocation
 from cubedpandas import cubed
 
 
