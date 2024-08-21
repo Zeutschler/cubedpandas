@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     # all subclasses of Context listed here:
     from cubedpandas.context.boolean_operation_context import BooleanOperationContext
-    from context import BooleanOperation
+    from cubedpandas.context import BooleanOperation
     from cubedpandas.context.filter_context import FilterContext
     from cubedpandas.context.measure_context import MeasureContext
     from cubedpandas.context.context_resolver import ContextResolver
