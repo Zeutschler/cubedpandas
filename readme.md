@@ -14,7 +14,7 @@
 
 -----------------
 
-***Remark:*** *CubedPandas is in an early stage of its development. Features are still subject to change. 
+***Remark:*** *CubedPandas is in an early stage of development. Features are likely subject to change. 
 [Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and [Feedback](https://github.com/Zeutschler/cubedpandas/discussions) are very welcome!*
 
 CubedPandas aims to offer an ***easy, fast & natural approach to work with Pandas dataframes***. 
