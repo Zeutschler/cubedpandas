@@ -7,8 +7,10 @@ import datetime
 import pandas as pd
 import numpy as np
 
+from cubedpandas.context.enums import ContextFunction
 from cubedpandas.context.measure_context import MeasureContext
 from cubedpandas.context.filter_context import FilterContext
+from cubedpandas.context.function_context import FunctionContext
 from cubedpandas.context.dimension_context import DimensionContext
 from cubedpandas.context.member_context import MemberContext
 from cubedpandas.context.datetime_resolver import resolve_datetime
@@ -52,6 +54,11 @@ class ContextResolver:
 
             if cube.settings.auto_whitespace and ("_" in address):
                 address = address.replace("_", " ")
+
+            # 3.1. Check for function keywords like SUM, AVG, MIN, MAX, etc.
+            if address.upper() in FunctionContext.KEYWORDS:
+                function = FunctionContext(parent=parent, function=address)
+                return function
 
             # 3.1. Check for names of measures
             if address in cube.measures:
@@ -155,7 +162,7 @@ class ContextResolver:
             if is_valid_context:
                 return new_context_ref
             else:
-                if parent.cube.ignore_member_key_errors and not dynamic_attribute:
+                if parent.cube.settings.ignore_member_key_errors and not dynamic_attribute:
                     if dimension is not None:
                         if cube.df[dimension.column].dtype == pd.DataFrame([address, ])[0].dtype:
                             from cubedpandas.context.member_not_found_context import MemberNotFoundContext

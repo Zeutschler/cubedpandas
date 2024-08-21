@@ -3,8 +3,7 @@
 import pandas as pd
 from unittest import TestCase
 
-from cubedpandas.cube_aggregation import CubeAllocationFunctionType
-from cubedpandas import Cube
+from context.enums import ContextAllocation
 from cubedpandas import cubed
 
 
@@ -38,29 +37,29 @@ class TestCubeWriteback(TestCase):
     def test_set_value_writeback(self):
         c = cubed(self.df, read_only=False)
 
-        c.A.set_value(20, CubeAllocationFunctionType.SET)
+        c.A.set_value(20, ContextAllocation.SET)
         self.assertEqual(c.A, 20 + 20)
 
     def test_delta_writeback(self):
         c = cubed(self.df, read_only=False)
 
-        c.A.set_value(20, CubeAllocationFunctionType.DELTA)
+        c.A.set_value(20, ContextAllocation.DELTA)
         self.assertEqual(c.A, 100 + 20 + 800 + 20)
 
     def test_set_multiply_writeback(self):
         c = cubed(self.df, read_only=False)
 
-        c.A.set_value(2, CubeAllocationFunctionType.MULTIPLY)
+        c.A.set_value(2, ContextAllocation.MULTIPLY)
         self.assertEqual(c.A, (100 + 800) * 2)
 
     def test_set_zero_out_writeback(self):
         c = cubed(self.df, read_only=False)
 
-        c.A.set_value(0, CubeAllocationFunctionType.ZERO)
+        c.A.set_value(0, ContextAllocation.ZERO)
         self.assertEqual(c.A, 0)
 
     def test_set_nan_writeback(self):
         c = cubed(self.df, read_only=False)
 
-        c.A.set_value(0, CubeAllocationFunctionType.NAN)
+        c.A.set_value(0, ContextAllocation.NAN)
         self.assertEqual(c.A, 0)

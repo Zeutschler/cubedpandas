@@ -2,7 +2,7 @@
 
 import pandas as pd
 from cubedpandas.cube import Cube
-from cubedpandas.caching_strategy import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.settings import CachingStrategy, EAGER_CACHING_THRESHOLD
 import sys
 
 

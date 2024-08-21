@@ -6,7 +6,7 @@ from typing import Self, Any
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 
-from cubedpandas.caching_strategy import CachingStrategy
+from cubedpandas.settings import CachingStrategy
 from cubedpandas.dimension import Dimension
 from cubedpandas.dimension_collection import DimensionCollection
 from cubedpandas.measure import Measure

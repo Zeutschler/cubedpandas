@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from cubedpandas import Dimension, Measure, Cube, Member
     from cubedpandas.context import (Context, FilterContext, MemberContext, MeasureContext, DimensionContext,
-                                     CubeContext, BooleanOperationContext, BooleanOperationContextEnum,
-                                     CompoundContext, MemberNotFoundContext)
+                                     CubeContext, BooleanOperationContext, CompoundContext, MemberNotFoundContext)
+    from context import BooleanOperation
 
 
 class Filter:
