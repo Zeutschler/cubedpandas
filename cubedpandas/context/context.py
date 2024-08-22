@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from typing import SupportsFloat, TYPE_CHECKING, Any
+from typing import SupportsFloat, TYPE_CHECKING, Any, Type
 
 import numpy as np
 import pandas as pd
 
-from cubedpandas.context.enums import ContextFunction, ContextAllocation
+from cubedpandas.context.enums import ContextFunction, ContextAllocation, BooleanOperation
 
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
@@ -17,13 +17,15 @@ if TYPE_CHECKING:
     from cubedpandas.dimension import Dimension
 
     # all subclasses of Context listed here:
-    from cubedpandas.context.boolean_operation_context import BooleanOperationContext
-    from cubedpandas.context import BooleanOperation
-    from cubedpandas.context.filter_context import FilterContext
     from cubedpandas.context.measure_context import MeasureContext
-    from cubedpandas.context.context_resolver import ContextResolver
-
-
+    from cubedpandas.context.dimension_context import DimensionContext
+    from cubedpandas.context.member_context import MemberContext
+    from cubedpandas.context.context_context import ContextContext
+    from cubedpandas.context.function_context import FunctionContext
+    from cubedpandas.context.filter_context import FilterContext
+    from cubedpandas.context.member_not_found_context import MemberNotFoundContext
+    from cubedpandas.context.cube_context import CubeContext
+    from cubedpandas.context.boolean_operation_context import BooleanOperationContext
 
 
 class Context(SupportsFloat):
@@ -321,14 +323,16 @@ class Context(SupportsFloat):
 
 
     # region - Dynamic attribute resolving
-    def __getattr__(self, name) -> Context:
+    def __getattr__(self, name) -> (Context | 'MeasureContext' | 'DimensionContext' | 'MemberContext'
+                                    | 'FilterContext' | 'BooleanOperationContext' | 'ContextContext'
+                                    | 'FunctionContext' | 'MemberNotFoundContext' | 'CubeContext'):
         """Dynamically resolves member from the cube and predecessor cells."""
         # remark: This pseudo-semaphore is not threadsafe. Needed to prevent infinite __getattr__ loops.
 
         if name == "_ipython_canary_method_should_not_exist": # pragma: no cover
             raise AttributeError("cubedpandas")
 
-        from cubedpandas.context.filter_context import FilterContext
+
 
         if self._semaphore:
             raise AttributeError(f"Unexpected fatal error while trying to resolve the context for '{name}'.")
@@ -343,6 +347,7 @@ class Context(SupportsFloat):
         self._semaphore = True
         if str(name).endswith("_"):
             name = str(name)[:-1]
+            from cubedpandas.context.filter_context import FilterContext
             if name != "":
                 context = ContextResolver.resolve(parent=self, address=name, dynamic_attribute=True)
                 resolved = FilterContext(context)
@@ -598,7 +603,14 @@ class Context(SupportsFloat):
             case ContextAllocation.ZERO:
                 values = np.zeros_like(values)
             case ContextAllocation.NAN:
-                values = np.full_like(values, np.nan)
+                # todo: this raises the following Numpy warning, but works as expected. What to do?
+                # /opt/hostedtoolcache/Python/3.11.9/x64/lib/python3.11/site-packages/numpy/_core/numeric.py:457:
+                # RuntimeWarning: invalid value encountered in cast multiarray.copyto(res, fill_value, casting='unsafe')
+                # Is this the fix?
+                if np.issubdtype(values.dtype, np.integer):
+                    values = np.zeros_like(values)
+                else:
+                    values = np.full_like(values, np.nan)
             case ContextAllocation.DEL:
                 raise NotImplementedError("Not yet implemented.")
             case _:

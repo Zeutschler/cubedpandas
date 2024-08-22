@@ -117,7 +117,7 @@ nav:
     - 'Advanced Usage': 'advanced-usage.md'
     - 'Best Practises': 'best-practises.md'
     - 'Documentation':
-      - '`cubed method': 'method-cubed.md'
+      - 'cubed methods': 'method-cubed.md'
       - 'Schema': 'class-schema.md'
       - 'Cube': 'class-cube.md'
       - 'Context': 'class-context.md'
