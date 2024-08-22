@@ -303,7 +303,7 @@ class Cube:
         context = CubeContext(self)
         return context
 
-    def __getattr__(self, name) -> Context:
+    def __getattr__(self, name) -> Context | CubeContext:
         """
         Dynamically resolves dimensions, measure or member from the cube.
         This enables a more natural access to the cube data using the Python dot notation.

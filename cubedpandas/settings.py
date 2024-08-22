@@ -46,6 +46,7 @@ class CubeSettings:
         self._convert_values_to_python_data_types: bool = True
 
         self._auto_rounding: bool = False
+        self._populate_members: bool = False
         self._ignore_member_key_errors: bool = False
         self._ignore_case: bool = False
         self._ignore_key_errors: bool = False
@@ -204,6 +205,21 @@ class CubeSettings:
         Sets the caching strategy for the cube.
         """
         self._caching_strategy = value
+
+    @property
+    def populate_members(self) -> bool:
+        """
+        Returns:
+            True if the Cube is populating members, otherwise False.
+        """
+        return self._populate_members
+
+    @populate_members.setter
+    def populate_members(self, value: bool):
+        """
+        Sets the member population strategy for the cube.
+        """
+        self._populate_members = value
 
     # disabled for now
     # @property

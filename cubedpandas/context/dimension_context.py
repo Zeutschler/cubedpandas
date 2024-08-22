@@ -22,6 +22,13 @@ class DimensionContext(Context):
         super().__init__(cube=cube, address=address, parent=parent, row_mask=row_mask,
                          measure=measure, dimension=dimension, resolve=resolve)
 
+        # First Test for dynamic attribute creation
+        if cube.settings.populate_members:
+            for member in dimension.members:
+                member = member.replace(" ", "_")
+                if member not in self.__dict__:
+                    setattr(self, member, self)
+
     @property
     def members(self) -> list:
         return self._dimension.members

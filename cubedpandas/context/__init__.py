@@ -1,9 +1,9 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from cubedpandas.context.enums import BooleanOperation, ContextFunction, ContextAllocation
-from cubedpandas.context.enums import BooleanOperation
+
+from cubedpandas.context.context import Context # load base class first
 from cubedpandas.context.boolean_operation_context import BooleanOperationContext
-from cubedpandas.context.context import Context
 from cubedpandas.context.context_context import ContextContext
 from cubedpandas.context.context_resolver import ContextResolver
 from cubedpandas.context.cube_context import CubeContext
