@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from cubedpandas.cube import Cube
     from cubedpandas.measure import Measure
     from cubedpandas.dimension import Dimension
+    from cubedpandas.context.member_context import MemberContext
 
 
 class DimensionContext(Context):
@@ -22,12 +23,15 @@ class DimensionContext(Context):
         super().__init__(cube=cube, address=address, parent=parent, row_mask=row_mask,
                          measure=measure, dimension=dimension, resolve=resolve)
 
-        # First Test for dynamic attribute creation
         if cube.settings.populate_members:
+            # Support for dynamic attributes
             for member in dimension.members:
                 member = member.replace(" ", "_")
                 if member not in self.__dict__:
-                    setattr(self, member, self)
+                    from cubedpandas.context.context_resolver import ContextResolver
+                    member_context = ContextResolver.resolve(parent=self, address=member,
+                                                             dynamic_attribute=True, target_dimension=dimension)
+                    setattr(self, member, member_context)
 
     @property
     def members(self) -> list:

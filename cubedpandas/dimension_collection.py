@@ -1,6 +1,7 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
+from __future__ import annotations
 
-from typing import Iterable, Self
+from typing import Iterable
 from cubedpandas.dimension import Dimension
 
 
@@ -15,7 +16,7 @@ class DimensionCollection(Iterable[Dimension]):
         self._dims_list: list = []
         pass
 
-    def __iter__(self) -> Self:
+    def __iter__(self) -> DimensionCollection:
         self._counter = 0
         self._dims_list = list(self._dims.values())
         return self

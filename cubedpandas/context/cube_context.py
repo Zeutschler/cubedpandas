@@ -18,3 +18,22 @@ class CubeContext(Context):
         super().__init__(cube=cube, address=None, parent=None, row_mask=None, measure=None,
                          dynamic_attribute=dynamic_attribute)
         self._measure = cube.measures.default
+
+        if cube.settings.populate_members:
+            # Support for dynamic attributes
+            for measure in cube.measures:
+                measure_name = measure.column.replace(" ", "_")
+                if measure_name not in self.__dict__:
+                    from cubedpandas.context.context_resolver import ContextResolver
+                    context = ContextResolver.resolve(parent=self, address=measure_name,
+                                                             dynamic_attribute=True)
+                    setattr(self, measure_name, context)
+
+            for dimension in cube.dimensions:
+                dim_name = dimension.column.replace(" ", "_")
+                if dim_name not in self.__dict__:
+                    from cubedpandas.context.context_resolver import ContextResolver
+                    context = ContextResolver.resolve(parent=self, address=dim_name,
+                                                             dynamic_attribute=True)
+                    setattr(self, dim_name, context)
+

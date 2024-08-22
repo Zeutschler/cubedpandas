@@ -1,6 +1,7 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
+from __future__ import annotations
 
-from typing import Iterable, Self
+from typing import Iterable
 from cubedpandas.measure import Measure
 
 
@@ -17,7 +18,7 @@ class MeasureCollection(Iterable[Measure]):
         self._default_measure = None
         pass
 
-    def __iter__(self) -> Self:
+    def __iter__(self) -> MeasureCollection:
         self._counter = 0
         self._measure_list = list(self._measures.values())
         return self

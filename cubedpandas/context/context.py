@@ -73,6 +73,7 @@ class Context(SupportsFloat):
         self._convert_values_to_python_data_types: bool = True
         self._is_filtered: bool = filtered
         self._dynamic_attribute: bool = dynamic_attribute
+        self._resolved: bool = False
 
         if resolve and cube.settings.eager_evaluation:
             from cubedpandas.context.context_resolver import ContextResolver
@@ -80,6 +81,7 @@ class Context(SupportsFloat):
             self._row_mask = resolved.row_mask
             self._measure = resolved.measure
             self._dimension = resolved.dimension
+            self._resolved: bool = True
 
     def __new__(cls, *args, **kwargs):
         return SupportsFloat.__new__(cls)
@@ -133,7 +135,8 @@ class Context(SupportsFloat):
         Returns:
              The numerical value of the current context from the underlying cube.
         """
-        value = self._evaluate(self._row_mask, self._measure, self._function)
+        # value = self._evaluate(self._row_mask, self._measure, self._function)
+        value = self.value
         if isinstance(value, (float, np.floating)):
             return float(value)
         if isinstance(value, (int, np.integer, bool)):
@@ -329,33 +332,41 @@ class Context(SupportsFloat):
         """Dynamically resolves member from the cube and predecessor cells."""
         # remark: This pseudo-semaphore is not threadsafe. Needed to prevent infinite __getattr__ loops.
 
-        if name == "_ipython_canary_method_should_not_exist": # pragma: no cover
-            raise AttributeError("cubedpandas")
-
-
-
-        if self._semaphore:
-            raise AttributeError(f"Unexpected fatal error while trying to resolve the context for '{name}'.")
-            # return super().__getattr__(name)
-            # raise AttributeError(f"Unexpected fatal error while trying to resolve the context for '{name}'."
-            #                     f"Likely due to multithreading issues. Please report this issue to the developer.")
+        # special case, If we are called from within a Jupyter Notebook,
+        # we need to ignore certain attributes.
+        if self._cube._runs_in_jupyter:
+            if name == "_ipython_canary_method_should_not_exist_" or name == "shape":
+                raise AttributeError()
+            if "_repr_" in name or "_ipython_" in name:
+                raise AttributeError()
+        else:
+            if self._semaphore:
+                raise AttributeError(f"Unexpected fatal error while trying to resolve the context for '{name}'.")
 
         if name == "_ipython_canary_method_should_not_exist": # pragma: no cover
             raise AttributeError("cubedpandas")
 
         from cubedpandas.context.context_resolver import ContextResolver
         self._semaphore = True
+        #print(f"semaphore set to '{self._semaphore}'")
+
         if str(name).endswith("_"):
             name = str(name)[:-1]
             from cubedpandas.context.filter_context import FilterContext
             if name != "":
+                #print(f"Before resolving context for '{name}'")
                 context = ContextResolver.resolve(parent=self, address=name, dynamic_attribute=True)
+                #print(f"After resolving context for '{name}'")
                 resolved = FilterContext(context)
             else:
                 resolved = FilterContext(self)
         else:
+            #print(f"Before resolving context for '{name}'")
             resolved = ContextResolver.resolve(parent=self, address=name, dynamic_attribute=True)
+        #print(f"After resolving context for '{name}'")
+        #print(f"...before trying to set semaphore to '{False}'")
         self._semaphore = False
+        #print(f"semaphore set to '{self._semaphore}'")
         return resolved
 
     # endregion
@@ -482,6 +493,17 @@ class Context(SupportsFloat):
             return self._parent._get_row_mask(before_dimension)
         else:
             return None
+
+    def _resolve(self):
+        from cubedpandas.context.context_resolver import ContextResolver
+        if self._parent is not None and not self._parent._resolved:
+            self._parent._resolve()  # recursive resolve parents, if required
+        resolved = ContextResolver.resolve(parent=self, address=self.address, dynamic_attribute=self._dynamic_attribute)
+        self._row_mask = resolved.row_mask
+        self._measure = resolved.measure
+        self._dimension = resolved.dimension
+        self._resolved: bool = True
+
 
     def _resolve_measure(self) -> Measure:
         """
@@ -904,4 +926,6 @@ class Context(SupportsFloat):
     def __format__(self, format_spec):
         return self.value.__format__(format_spec)
 
-    # endregion
+    # end region
+
+

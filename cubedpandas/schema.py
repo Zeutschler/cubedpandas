@@ -1,7 +1,7 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
-
+from __future__ import annotations
 import json
-from typing import Self, Any
+from typing import Any
 
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
@@ -22,7 +22,7 @@ class Schema:
     to ensure the schema is valid for the table.
     """
 
-    def __init__(self, df: pd.DataFrame | None = None, schema: Self | Any = None,
+    def __init__(self, df: pd.DataFrame | None = None, schema: Any = None,
                  caching: CachingStrategy = CachingStrategy.LAZY):
         """
         Initializes a new schema for a Cube upon a given Pandas dataframe. If the dataframe is not provided,
@@ -110,7 +110,7 @@ class Schema:
         """ Returns the measures of the schema."""
         return self._measures
 
-    def infer_schema(self, exclude: str | list | tuple | None = None) -> Self:
+    def infer_schema(self, exclude: str | list | tuple | None = None) -> Schema:
         """
         Infers a multidimensional schema from the Pandas dataframe of the Schema or another Pandas dataframe by
         analyzing the columns of the table and their contents.
@@ -161,7 +161,7 @@ class Schema:
 
     # region Serialization
     @classmethod
-    def from_dict(cls, dictionary: dict) -> Self:
+    def from_dict(cls, dictionary: dict) -> Schema:
         """
         Creates a new schema from a dictionary containing schema information for a Cube.
         Please refer to the documentation for further details on valid schema definitions.
@@ -173,7 +173,7 @@ class Schema:
         return cls(schema=dictionary)
 
     @classmethod
-    def from_json(cls, json_string: str) -> Self:
+    def from_json(cls, json_string: str) -> Schema:
         """
         Creates a new schema from a json string containing schema information for a Cube.
         If the json string is not valid and does refer to a file that contains a valid schema in json format,
