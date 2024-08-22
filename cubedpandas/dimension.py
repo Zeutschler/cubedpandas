@@ -4,7 +4,7 @@ import random
 import sys
 import re
 from abc import ABC
-from typing import Iterable, Self
+from typing import Iterable
 import datetime
 import numpy as np
 import pandas as pd
@@ -370,7 +370,7 @@ class Dimension(Iterable, ABC):
 
         return mask
 
-    def __iter__(self) -> Self:
+    def __iter__(self):
         self._load_members()
         self._counter = 0
 
