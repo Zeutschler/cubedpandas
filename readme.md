@@ -2,14 +2,16 @@
 
 ## OLAP comfort meets Pandas power!
 
-![PyPI version](https://img.shields.io/pypi/v/cubedpandas)
-![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?label=PyPI%20downloads)
-![GitHub last commit](https://img.shields.io/github/last-commit/Zeutschler/cubedpandas)
-![CI - Test](https://github.com/pandas-dev/pandas/actions/workflows/unit-tests.yml/badge.svg)
-![build](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/python-package.yml)
+![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas?color=A1C547)
+![PyPI version](https://img.shields.io/pypi/v/cubedpandas?logo=pypi&logoColor=979DA4&color=A1C547)
+![Python versions](https://img.shields.io/pypi/pyversions/cubedpandas?logo=pypi&logoColor=979DA4&color=A1C547)
+![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?logo=pypi&logoColor=979DA4&label=PyPI%20downloads&color=A1C547)
+![GitHub last commit](https://img.shields.io/github/last-commit/Zeutschler/cubedpandas?logo=github&logoColor=979DA4&color=A1C547)
+![unit tests](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/python-package.yml?logo=GitHub&logoColor=979DA4&label=unit%20tests&color=A1C547)
+![build](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/python-package.yml?logo=GitHub&logoColor=979DA4&color=A1C547)
+![documentation](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/website.yml?logo=GitHub&logoColor=979DA4&label=docs&color=A1C547&link=https%3A%2F%2Fzeutschler.github.io%2Fcubedpandas%2F
+)
 ![codecov](https://codecov.io/github/Zeutschler/cubedpandas/graph/badge.svg?token=B12O0B6F10)
-![Python versions](https://img.shields.io/pypi/pyversions/cubedpandas)
-![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas)
 ![sponsor](https://img.shields.io/github/sponsors/zeutschler)
 
 -----------------
