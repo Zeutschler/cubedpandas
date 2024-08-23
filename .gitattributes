@@ -2,7 +2,7 @@
 # docs/* linguist-generated=true
 # pages/* linguist-generated=true
 
-docs/* linguist-vendored
-pages/* linguist-vendored
-samples/* linguist-vendored
-research/* linguist-vendored
+docs/** linguist-vendored
+pages/** linguist-vendored
+samples/** linguist-vendored
+research/** linguist-vendored
