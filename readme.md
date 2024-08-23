@@ -4,7 +4,7 @@
 
 ![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas?color=A1C547)
 ![PyPI version](https://img.shields.io/pypi/v/cubedpandas?logo=pypi&logoColor=979DA4&color=A1C547)
-![Python versions](https://img.shields.io/pypi/pyversions/cubedpandas?logo=pypi&logoColor=979DA4&color=A1C547)
+![Python versions](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FZeutschler%2Fcubedpandas%2Fmaster%2Fpyproject.toml&query=%24%5B'project'%5D%5B'requires-python'%5D&color=A1C547)
 ![PyPI Downloads](https://img.shields.io/pypi/dm/cubedpandas.svg?logo=pypi&logoColor=979DA4&label=PyPI%20downloads&color=A1C547)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Zeutschler/cubedpandas?logo=github&logoColor=979DA4&color=A1C547)
 ![unit tests](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/python-package.yml?logo=GitHub&logoColor=979DA4&label=unit%20tests&color=A1C547)
