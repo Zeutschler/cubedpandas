@@ -1,8 +1,6 @@
 name: Publish CubedPandas to PyPI and TestPyPI
 
-on:
-  push:
-    branches: [ "master" ]
+on: workflow_dispatch
 
 jobs:
   build:
