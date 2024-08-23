@@ -9,8 +9,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/Zeutschler/cubedpandas?logo=github&logoColor=979DA4&color=A1C547)
 ![unit tests](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/python-package.yml?logo=GitHub&logoColor=979DA4&label=unit%20tests&color=A1C547)
 ![build](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/python-package.yml?logo=GitHub&logoColor=979DA4&color=A1C547)
-![documentation](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/website.yml?logo=GitHub&logoColor=979DA4&label=docs&color=A1C547&link=https%3A%2F%2Fzeutschler.github.io%2Fcubedpandas%2F
-)
+![documentation](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/website.yml?logo=GitHub&logoColor=979DA4&label=docs&color=A1C547&link=https%3A%2F%2Fzeutschler.github.io%2Fcubedpandas%2F)
 ![codecov](https://codecov.io/github/Zeutschler/cubedpandas/graph/badge.svg?token=B12O0B6F10)
 ![sponsor](https://img.shields.io/github/sponsors/zeutschler)
 
