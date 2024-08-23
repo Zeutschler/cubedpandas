@@ -50,7 +50,7 @@ class ContextResolver:
         # 3. String addresses are resolved by checking for measures, dimensions and members.
         if isinstance(address, str):
 
-            if cube.settings.auto_whitespace and ("_" in address):
+            if cube.settings.auto_whitespace and ("_" in address) and (not address.startswith("_")):
                 address = address.replace("_", " ")
 
             # 3.1. Check for function keywords like SUM, AVG, MIN, MAX, etc.

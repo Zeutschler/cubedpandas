@@ -11,6 +11,8 @@ import random
 import uvicorn
 import socket
 from pathlib import Path
+
+from docutils.parsers.rst.directives import choice
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.responses import FileResponse
@@ -18,25 +20,29 @@ from fastapi.responses import FileResponse
 import pandas as pd
 from cubedpandas import cubed
 
+# (1) load a sample datasets
+dataset = pd.read_csv("data.csv")
 html_template = Path("template.html").read_text()
-df: pd.DataFrame = pd.read_csv("data.csv")
 
 app = FastAPI()
 
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
-    # Create a cube and a random slice form the dataframe
-    cdf = cubed(df, exclude=["Invoice ID", "Date", "Time"])
-    rows = random.sample(cdf.dimensions.to_list(), k=random.randint(1, 4 ))
+    # (2) turn the dataset into a CubedPandas `Cube`
+    cube = cubed(dataset, exclude = ["Invoice ID", "Date", "Time"])
+
+    # (3) create a randomly generated CubedPandas `Slice`
+    rows = random.sample(cube.dimensions.to_list(), k=random.randint(1, 4 ))
     columns = None
     if len(rows) >= 3:
         columns = rows[len(rows)-1]
         rows = rows[:len(rows)-1]
-    slice = cdf.slice(rows=rows, columns=columns)
+    slice = cube.slice(rows=rows, columns=columns)
 
-    # Return the HTML from the slice
-    return html_template.format(table=slice.to_html(classes=["table", "table-sm"]))
+    # (4) turn the slice into html using the `slice.to_html()` method
+    # (5) serve the result to the user.
+    return html_template.format(table=slice.to_html(classes=["table", "table-sm"], style='style="white-space:nowrap;"'))
 
 
 @app.get("/logo.png", response_class=FileResponse)

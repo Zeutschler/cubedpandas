@@ -146,11 +146,19 @@ class Slice:
         """Prints the slice to the console."""
         print(self._pivot_table)
 
-    def to_html(self, classes: str | list | tuple | None = None) -> str | None:
+    def to_html(self, classes: str | list | tuple | None = None, style:str= None) -> str | None:
         """Returns the slice as an HTML table."""
         if self._pivot_table is None:
             return None
-        return self._pivot_table.to_html(classes=classes)
+        html = self._pivot_table.to_html(classes=classes, float_format=self._float_formatter, justify="justify-all")
+        if style is not None:
+            html = html.replace("<table", f"<table style='{style}'")
+        return html
+
+    @staticmethod
+    def _float_formatter(x: float) -> str:
+        """Formats a float value."""
+        return f"{x:,.2f}"
 
     # endregion
 
@@ -302,14 +310,43 @@ class Slice:
                              fill_value=0, dropna=True, margins=False, margins_name='(all)')
 
         # subtotal of the rows
-        if len(row_items) > 1:
+        row_items_count = len(row_items)
+        if row_items_count > 1:
             subtotal_rows = pvt.groupby(level=0).sum()
-
             # rename the index in order to concatenate  with pvt
             subtotal_rows.index = pd.MultiIndex.from_tuples([(item, '(all)', "") for item in subtotal_rows.index])
-
             # add the subtotals rows to pvt
             pvt = pd.concat([pvt, subtotal_rows], join="outer").sort_index()
+
+            # index = pvt.index
+            # names = pvt.index.names
+            # new_names = ["#ordinal",].extend(names)
+            # new_tuples = [tuple([r*10]) + item for r, item in enumerate(index)]
+            # new_index = pd.MultiIndex.from_tuples(new_tuples, names=new_names)
+            #
+            # pvt.set_index(new_index, inplace=True)
+            #
+            # for level in range(1, row_items_count):
+            #
+            #     subtotal_rows = pvt.groupby(level=level).sum()
+            #     values = subtotal_rows.index.values.tolist()
+            #     pvt.index.searchsorted() .searchsorted('a', side='right')
+            #
+            #     sub_total_tuples = [(t[0]) + (t[level]) for t in new_tuples if (t[level] in values) ]
+            #
+            #     # rename the index in order to concatenate  with pvt
+            #     subtotal_label = ["" for i in range(row_items_count + 1)]
+            #     subtotal_tuples = []
+            #     for item in subtotal_rows.index:
+            #         subtotal_label[level] = item
+            #         subtotal_label[level + 1] = "(all)"
+            #         subtotal_tuples.append(tuple(subtotal_label))
+            #     subtotal_rows.index = pd.MultiIndex.from_tuples(subtotal_tuples)
+            #
+            #     # add the subtotals rows to pvt
+            #     df = pd.concat([pvt, subtotal_rows], join="outer")
+            #
+            # pvt = df.sort_index(level=0)
 
         if False:
             # subtotal of the columns

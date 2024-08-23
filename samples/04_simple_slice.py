@@ -14,13 +14,10 @@ df = pd.DataFrame({"product": ["Apple", "Pear", "Banana", "Apple", "Pear", "Bana
 cdf = cubed(df)
 
 # defined slice
-slice = Slice(cdf, rows=cdf.dimensions, columns=cdf.measures)
+slice = Slice(cdf, rows=[dim for dim in cdf.dimensions], columns=cdf.measures)
 slice.show()
 print(slice.to_html())
 
 slice = Slice(cdf.Online, rows=cdf.dimensions, columns=cdf.measures)
 slice.show()
-
-#slice = Slice(cdf)
-#slice.show()
 

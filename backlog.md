@@ -5,8 +5,7 @@
 ### Reimplementation of the core functionality
 
 #### Jupyter Integration
-- [ ] check string representations for all objects when in running in Jupyter
-- [ ] implement `.head`  and `.tail`methods
+- [x] check string representations for all objects when in running in Jupyter
 
 #### Writeback and Data Manipulation
 - [x] Check, adapt and activate the existing writeback functionality.
@@ -23,7 +22,7 @@
 - [x] Implement `Context.full_address` property returning a dictionary. 
 - [ ] Support callable function to filter Context objects, e.g. `cdf.product.filter(lambda x: x.startswith("A"))`.
 - [ ] 'any', 'is_nan', 'is_null', 'is_not_nan', 'is_not_null' functions for measures.
-- [ ] implement 'by(rows, colums)' feature for `Context` objects to mimic GroupBy functionality over 2 axis.
+- [x] ~~implement 'by(rows, colums)' feature for `Context` objects to mimic GroupBy functionality over 2 axis.~~
 - [ ] Rewrite documentation based on new syntax
 - [ ] Extend Expression Parser to support basic filtering and mathematical operations on `Context` objects.
 - [x] Boolean logic for `Contex` objects for advanced filtering. `and` and `or` operators 
@@ -41,7 +40,10 @@
 
 
 #### ... as related to `Slices`
-- [ ] Implement basic slicing functionality.
+- [x] Implement basic slicing functionality.
+
+
+
 
 
 ## Future Releases
