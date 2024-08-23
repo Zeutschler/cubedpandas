@@ -9,7 +9,7 @@ The template uses [Boostrap](https://getbootstrap.com), a great tool for creatin
 > **Tip:**  You can easily extend this example to create a more complex web app with more features,  
 >           e.g. add a dropdown to provide different datasets or different views/slices upon the data.
 
-Here's the most relevant code from file `app.py`:
+Here's the most relevant code from the main app file `app.py`:
 
 ```python
 # (1) load a sample dataset
