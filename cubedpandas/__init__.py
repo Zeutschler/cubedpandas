@@ -27,7 +27,7 @@ from cubedpandas.context.member_not_found_context import MemberNotFoundContext
 
 from cubedpandas.slice.slice import Slice
 
-__version__ = "0.2.23"
+__version__ = "0.2.24"
 VERSION = __version__
 
 __all__ = [
