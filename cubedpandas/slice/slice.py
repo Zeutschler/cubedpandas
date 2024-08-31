@@ -12,7 +12,7 @@ from cubedpandas.slice.filter import Filter
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
     from cubedpandas.cube import Cube
-    from schema.measure_collection import MeasureCollection
+    from cubedpandas.schema.measure_collection import MeasureCollection
     from cubedpandas.schema.measure import Measure
     from cubedpandas.schema.dimension import Dimension
     from cubedpandas.schema.dimension_collection import DimensionCollection
@@ -179,7 +179,7 @@ class Slice:
     def _prepare(self) -> bool:
         """Validates the slice definition and prepares the slice for data retrieval through the `refresh()`method."""
 
-        from schema.measure_collection import MeasureCollection
+        from cubedpandas.schema.measure_collection import MeasureCollection
         from cubedpandas.schema.measure import Measure
 
         # 1. setup filters based on the context
