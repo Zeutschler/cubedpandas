@@ -2,7 +2,7 @@
 
 import pandas as pd
 from cubedpandas.schema.dimension_collection import DimensionCollection
-from schema.measure_collection import MeasureCollection
+from cubedpandas.schema.measure_collection import MeasureCollection
 
 
 class Ambiguities:

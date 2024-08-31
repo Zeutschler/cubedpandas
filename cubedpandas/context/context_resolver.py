@@ -8,8 +8,6 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_datetime64_any_dtype, is_bool_dtype, is_numeric_dtype, is_string_dtype
-from passlib.exc import type_name
 
 from cubedpandas.context.context import Context
 from cubedpandas.context.datetime_resolver import resolve_datetime
