@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from typing import Iterable
-from cubedpandas.measure import Measure
+from cubedpandas.schema.measure import Measure
 
 
 class MeasureCollection(Iterable[Measure]):
@@ -45,6 +45,8 @@ class MeasureCollection(Iterable[Measure]):
 
     def add(self, measure: Measure):
         self._measures[measure.column] = measure
+        if measure.alias is not None:
+            self._measures[measure.alias] = measure
         self._measure_list = list(self._measures.values())
 
     @property

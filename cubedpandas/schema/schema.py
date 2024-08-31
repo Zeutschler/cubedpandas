@@ -5,64 +5,75 @@ from typing import Any
 
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
+from setuptools.command.alias import alias
 
 from cubedpandas.settings import CachingStrategy
-from cubedpandas.dimension import Dimension
-from cubedpandas.dimension_collection import DimensionCollection
-from cubedpandas.measure import Measure
-from cubedpandas.measure_collection import MeasureCollection
-
+from cubedpandas.schema.dimension import Dimension
+from cubedpandas.schema.dimension_collection import DimensionCollection
+from cubedpandas.schema.measure import Measure
+from cubedpandas.schema.measure_collection import MeasureCollection
+from cubedpandas.common import pythonize
 
 class Schema:
     """
-    Defines a multidimensional schema, for cell-based data access to a Pandas dataframe using an Cube.
+    Defines a schema for multi-dimensional data access through a CubedPandas cube upon an
+    underlying Pandas dataframe.
 
-    The schema defines the dimensions and measures of the cube and can be either inferred from the underlying
-    Pandas dataframe automatically or defined explicitly. The schema can be validated against the Pandas dataframe
-    to ensure the schema is valid for the table.
+    A schema defines the dimensions and measures of the cube and can be either automatically inferred
+    from the underlying Pandas dataframe or defined explicitly.
     """
 
     def __init__(self, df: pd.DataFrame | None = None, schema: Any = None,
                  caching: CachingStrategy = CachingStrategy.LAZY):
         """
-        Initializes a new schema for a Cube upon a given Pandas dataframe. If the dataframe is not provided,
-        the schema needs to be built manually and can also not be validated against the Pandas dataframe.
+        Initializes a schema for a CubedPandas cube upon a given Pandas dataframe. If the argument `schema`,
+        either a JSON string or a python dictionary or a file name containing valid schema information,
+        is not provided, a default schema will be inferred from the Pandas dataframe.
 
-        For building a schema manually, you can either create a new schema from scratch or you can load, extend
-        and modify an existing schema as defined by parameter `schema`. The parameter `schema` can either be
-        another Schema object, a Python dictionary containing valid schema information, a json string containing
-        valid schema information or a file name or path to a json file containing valid schema information.
+         Args:
+            df: (optional) the Pandas dataframe to build the schema from or for.
 
-        :param df: (optional) the Pandas dataframe to build the schema from or for.
-        :param schema: (optional) a schema to initialize the Schema with. The parameter `schema` can either be
+            schema: (optional) a schema to initialize the Schema with. The parameter `schema` can either be
                 another Schema object, a Python dictionary containing valid schema information, a json string
                 containing valid schema information or a file name or path to a json file containing valid schema
                 information.
-        :param caching: The caching strategy to be used for the Cube. Default is `CachingStrategy.LAZY`. Please refer to
-                the documentation of 'CachingStrategy' for more information.
         """
         self._df: pd.DataFrame | None = df
-        self._schema: Schema | Any = schema
+        self._schema: dict = self._load_schema(schema)
         self._dimensions: DimensionCollection = DimensionCollection()
         self._measures: MeasureCollection = MeasureCollection()
-        self._validation_message: str = ""
         self._caching: CachingStrategy = caching
+        self._validation_message: str = ""
 
         if schema is not None:
-            if not self.validate(self._df):
+            if not self.validate():
                 raise ValueError(self._validation_message)
 
-    def validate(self, df: pd.DataFrame) -> bool:
+    def _load_schema(self, schema: Any) -> dict:
+        if schema is None:
+            return {"dimensions": [], "measures": []}
+        if isinstance(schema, dict):
+            return schema
+        if isinstance(schema, str):
+            try:
+                schema_dict = json.loads(schema)
+            except ValueError as err:
+                try:
+                    with open(schema, 'r') as file:
+                        return json.load(file)
+                except FileNotFoundError:
+                    raise ValueError("Invalid schema information.")
+
+    def validate(self) -> bool:
         """
-        Validates the schema against an existing Pandas dataframe.
+        Validates the schema against the given Pandas dataframe.
 
         If returned True, the schema is valid for the given Pandas dataframe and can be used to access its data.
         Otherwise, the schema is not valid and will or may lead to errors when accessing its data.
 
-        :param df: The Pandas dataframe to validate the schema against.
-
         :return: Returns True if the schema is valid for the given Pandas dataframe, otherwise False.
         """
+        df = self._df
         self._dimensions = DimensionCollection()
         for dimension in self._schema["dimensions"]:
             if "column" in dimension:
@@ -70,13 +81,16 @@ class Schema:
                 if column not in df.columns:
                     self._validation_message = f"Dimension column '{column}' not found in dataframe."
                     return False
-                self._dimensions.add(Dimension(df, column, self._caching))
+                alias_name = None
+                if "alias" in dimension:
+                    alias_name = dimension["alias"]
+                self._dimensions.add(Dimension(df, column=column, alias=alias_name, caching=self._caching))
             else:
                 if isinstance(dimension, str) or isinstance(dimension, int):
                     if dimension not in df.columns:
                         self._validation_message = f"Dimension column '{dimension}' not found in dataframe."
                         return False
-                    self._dimensions.add(Dimension(df, dimension, self._caching))
+                    self._dimensions.add(Dimension(df, column=dimension, alias=None, caching=self._caching))
                 else:
                     self._validation_message = "Dimension column not found in schema."
                     return False
@@ -88,13 +102,20 @@ class Schema:
                 if column not in df.columns:
                     self._validation_message = f"Measure column '{column}' not found in dataframe."
                     return False
-                self._measures.add(Measure(df, column))
+                alias_name = None
+                if "alias" in measure:
+                    alias_name = measure["alias"]
+                self._measures.add(Measure(df, column=column, alias=alias_name))
             else:
                 if isinstance(measure, str) or isinstance(measure, int):
                     if measure not in df.columns:
                         self._validation_message = f"Measure column '{measure}' not found in dataframe."
                         return False
-                    self._measures.add(Measure(df, measure))
+                    number_format = None
+                    if "numberFormat" in measure:
+                        number_format = measure["numberFormat"]
+
+                    self._measures.add(Measure(df, column=measure, alias=None, number_format=number_format))
                 else:
                     self._validation_message = "Measure column not found in schema."
                     return False
@@ -138,9 +159,10 @@ class Schema:
         :return: Returns the inferred schema.
         """
         df = self._df
-        schema = {"dimensions": [], "measures": []}
+        schema_dict = {"dimensions": [], "measures": []}
         self._dimensions = DimensionCollection()
         self._measures = MeasureCollection()
+        aliases: dict[str, str] = {}
 
         if exclude is not None:
             if isinstance(exclude, str) or isinstance(exclude, int):
@@ -149,42 +171,29 @@ class Schema:
             exclude = []
 
         for column_name, dtype in df.dtypes.items():
+            column_name = str(column_name)
             if column_name not in exclude:
+                dict_column = {"column": column_name}
+
+                # check if the column name is a valid Python identifier
+                if not column_name.isidentifier():
+                    # ...it's not a valid Python identifier, lets try to create a valid alias
+                    alias = pythonize(column_name)
+                    if alias.isidentifier() and alias not in aliases:
+                        # check if the alias is not already in use, then we do not add it to prohibit duplicates
+                        aliases[column_name] = alias
+                        dict_column["alias"] = alias
+
                 if is_numeric_dtype(df[column_name]):
-                    schema["measures"].append({"column": column_name})
+                    schema_dict["measures"].append(dict_column)
                     self._measures.add(Measure(df, column_name))
                 else:
-                    schema["dimensions"].append({"column": column_name})
-                    self._dimensions.add(Dimension(df, column_name, self._caching))
+                    schema_dict["dimensions"].append(dict_column)
+                    self._dimensions.add(Dimension(df, column=column_name, alias=None, caching=self._caching))
 
         return self
 
-    # region Serialization
-    @classmethod
-    def from_dict(cls, dictionary: dict) -> Schema:
-        """
-        Creates a new schema from a dictionary containing schema information for a Cube.
-        Please refer to the documentation for further details on valid schema definitions.
-
-        :param dictionary: The dictionary containing the schema information.
-        :return: Returns a new schema object.
-        :exception: Raises an exception if the schema information is not valid or incomplete.
-        """
-        return cls(schema=dictionary)
-
-    @classmethod
-    def from_json(cls, json_string: str) -> Schema:
-        """
-        Creates a new schema from a json string containing schema information for a Cube.
-        If the json string is not valid and does refer to a file that contains a valid schema in json format,
-        an exception is raised.
-        Please refer to the documentation for further details on valid schema definitions.
-
-        :param json_string: The json string containing the schema information.
-        :return: Returns a new schema object.
-        :exception: Raises an exception if the schema information is not valid or incomplete.
-        """
-        return cls(schema=json_string)
+    # # region Serialization
 
     def to_dict(self) -> dict:
         """
@@ -194,9 +203,9 @@ class Schema:
         """
         schema = {"dimensions": [], "measures": []}
         for measure in self._measures:
-            schema["measures"].append({"column": measure.column})
+            schema["measures"].append(measure.to_dict())
         for dimension in self._dimensions:
-            schema["dimensions"].append({"column": dimension.column})
+            schema["dimensions"].append(dimension.to_dict())
         return schema
 
     def to_json(self) -> str:

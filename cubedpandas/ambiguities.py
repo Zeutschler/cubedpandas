@@ -1,8 +1,8 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import pandas as pd
-from cubedpandas.dimension_collection import DimensionCollection
-from cubedpandas.measure_collection import MeasureCollection
+from cubedpandas.schema.dimension_collection import DimensionCollection
+from schema.measure_collection import MeasureCollection
 
 
 class Ambiguities:
@@ -65,12 +65,12 @@ class Ambiguities:
             for j, other in enumerate(dims[i + 1:]):
                 if dim.dtype == other.dtype:  # only compare dimensions of the same type
                     # print(f"checking ambiguities between '{dim.name}'({dim.dtype}) and '{other.name}({other.dtype}):")
-                    ambiguous_members = dim.member_set & other.member_set  # intersection of 2 sets
+                    ambiguous_members = set(dim.members) & set(other.members)  # intersection of 2 sets
                     if ambiguous_members:
                         members = list(ambiguous_members)
                         ambiguity = {
-                            "message": f"{len(members)} ambiguity{'y' if len(members) == 1 else 'ies'} between dimensions '{dim.name}' and '{other.name}' found "
-                                       f"on member{'' if len(members) == 1 else 's'}: {', '.join(members[:3])}{'' if len(members) <= 3 else ' ...'}",
+                            "message": f"{len(members)} ambiguit{'y' if len(members) == 1 else 'ies'} between dimensions '{dim.name}' and '{other.name}' found "
+                                       f"on member{'' if len(members) == 1 else 's'}: {', '.join(members[:min(3, len(members))])}{'' if len(members) <= 3 else ' ...'}",
                             "dim1": dim.name,
                             "dim2": other.name,
                             "count": len(members),

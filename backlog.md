@@ -15,7 +15,7 @@
       Not wrapped into a `Member` object.
 - [ ] Implement `cdf.product.members` property to return a list of all members for a dimension.
 - [x] `top(n)` and `bottom(n)` functions for dimensions, e.g. `cdf.product.top(2)`.
-- [ ] `count` property for dimensions, e.g. `cdf.Online.product.count`, to count the number of distinct members.
+- [x] `count` property for dimensions, e.g. `cdf.Online.product.count`, to count the number of distinct members.
       The current implementation counts the records for the default measure.
 
 #### ... as related to new context based addressing

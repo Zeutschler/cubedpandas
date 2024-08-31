@@ -1,6 +1,7 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import pandas as pd
+from cubedpandas import *
 
 df = pd.DataFrame({"product": ["Apple", "Pear", "Banana", "Apple", "Pear", "Banana"],
                    "channel": ["Online", "Online", "Online", "Retail", "Retail", "Retail"],
@@ -62,6 +63,5 @@ print(df.cubed["customer:Peter", "cost"])
 
 # print(online.customer.Peter)
 # print(online.customer.Peter.cost)
-print(cdf.linked_cubes.count)
 
 # ...that's it for an intro! Thanks for trying CubedPandas. Feedback and ideas very welcome.

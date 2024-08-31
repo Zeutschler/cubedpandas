@@ -8,7 +8,7 @@ from cubedpandas.context.context import Context
 
 if TYPE_CHECKING:
     from cubedpandas.cube import Cube
-    from cubedpandas.dimension import Dimension
+    from cubedpandas.schema.dimension import Dimension
 
 
 class MemberNotFoundContext(Context):

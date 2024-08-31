@@ -8,9 +8,9 @@ from cubedpandas.context.context import Context
 
 if TYPE_CHECKING:
     from cubedpandas.cube import Cube
-    from cubedpandas.measure import Measure
-    from cubedpandas.dimension import Dimension
-    from cubedpandas.member import MemberSet
+    from cubedpandas.schema.measure import Measure
+    from cubedpandas.schema.dimension import Dimension
+    from cubedpandas.schema.member import MemberSet
 
 
 class MemberContext(Context):

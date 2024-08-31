@@ -12,10 +12,10 @@ from cubedpandas.slice.filter import Filter
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
     from cubedpandas.cube import Cube
-    from cubedpandas.measure_collection import MeasureCollection
-    from cubedpandas.measure import Measure
-    from cubedpandas.dimension import Dimension
-    from cubedpandas.dimension_collection import DimensionCollection
+    from schema.measure_collection import MeasureCollection
+    from cubedpandas.schema.measure import Measure
+    from cubedpandas.schema.dimension import Dimension
+    from cubedpandas.schema.dimension_collection import DimensionCollection
 
 
 class Slice:
@@ -179,8 +179,8 @@ class Slice:
     def _prepare(self) -> bool:
         """Validates the slice definition and prepares the slice for data retrieval through the `refresh()`method."""
 
-        from cubedpandas.measure_collection import MeasureCollection
-        from cubedpandas.measure import Measure
+        from schema.measure_collection import MeasureCollection
+        from cubedpandas.schema.measure import Measure
 
         # 1. setup filters based on the context
         self._prepare_filters()
@@ -190,34 +190,34 @@ class Slice:
             self._prepare_axis("rows", self._rows),
             # no columns defined, so we use all available measures as columns, if possible.
             if not self._axis["rows"].contains_any((Measure, MeasureCollection)):
-                self._columns = self._cube.measures
+                self._columns = self._cube.schema.measures
                 self._prepare_axis("columns", self._columns)
 
         elif (not self.has_rows) and self.has_columns:
             self._prepare_axis("columns", self._columns)
             # no rows defined, so we use all available measures as columns, if possible.
             if not self._axis["columns"].contains_any((Measure, MeasureCollection)):
-                self._columns = self._cube.measures
+                self._columns = self._cube.schema.measures
                 self._prepare_axis("rows", self._columns)
 
         elif (not self.has_rows) and (not self.has_columns):
             # The slice must was called without any rows or columns definitions
             # Let's create a default slice with the first dimension as rows and all available measures as columns
-            if len(self._cube.dimensions) > 0:
-                self._rows = self._cube.dimensions[0]
+            if len(self._cube.schema.dimensions) > 0:
+                self._rows = self._cube.schema.dimensions[0]
                 self._prepare_axis("rows", self._rows)
-                if len(self._cube.measures) > 0:
-                    self._columns = self._cube.measures
+                if len(self._cube.schema.measures) > 0:
+                    self._columns = self._cube.schema.measures
                     self._prepare_axis("columns", self._columns)
                 else:
                     # No measures available in the cube, so we just count the rows
                     self._prepare_axis("columns", "count")
             else:
                 # No dimensions available in the cube, so we use all measures as columns
-                if len(self._cube.measures) > 0:
+                if len(self._cube.schema.measures) > 0:
                     self._rows = "*"  # filter for all rows
                     self._prepare_axis("rows", self._rows)
-                    self._columns = self._cube.measures
+                    self._columns = self._cube.schema.measures
                     self._prepare_axis("columns", self._columns),
         else:
             self._prepare_axis("rows", self._rows)
@@ -247,27 +247,29 @@ class Slice:
         axis = Axis(name=axis_name, data=axis_definition)
         self._axis[axis_name] = axis
 
-    def _refresh(self) -> bool:
+    def _refresh(self, sub_totals: bool = True) -> bool:
         """Refreshes the slice based on the current configuration and data from the underlying cube and dataframe."""
         if not self._is_prepared:
             return False
 
-        from cubedpandas.measure_collection import MeasureCollection
-        from cubedpandas.measure import Measure
-        from cubedpandas.dimension import Dimension
-        from cubedpandas.dimension_collection import DimensionCollection
+        from cubedpandas.schema.measure_collection import MeasureCollection
+        from cubedpandas.schema.measure import Measure
+        from cubedpandas.schema.dimension import Dimension
+        from cubedpandas.schema.dimension_collection import DimensionCollection
         from cubedpandas.context.dimension_context import DimensionContext
 
-        # todo: DUMMY implementation only...
-        # evaluate all available rows and columns blocks (just one for now)
         # 1. get the row mask from the filters
         df = self._cube._df
-        row_mask = self.filters.row_mask()
+        row_mask = self.filters.row_mask
         if row_mask is not None:
             df = df.iloc[row_mask]
 
+        # todo: DUMMY implementation only...
+        # evaluate all available rows and columns blocks (just one for now)
+
+
         # 2. get the data from the cube (for now, we assume that both axes have only one block)
-        measures = [measure for measure in self._cube.measures]
+        measures = [measure for measure in self._cube.schema.measures]
         row_items = [item.item for item in self._axis["rows"].blocks[0].block_items.to_list()]
         # for now, we assume just Dimensions on the row
         for item in row_items:
@@ -295,7 +297,7 @@ class Slice:
                 column_items = []
                 break
             elif not isinstance(item, (DimensionContext, Dimension)):
-                raise ValueError(f"Invalid row item type '{type(item.item)}'.")
+                raise ValueError(f"Invalid row item type '{type(item)}'.")
 
         # Create a Pandas pivot table to generate the desired output
         values = [m.column for m in measures]
@@ -307,46 +309,59 @@ class Slice:
         columns = [item.column for item in column_items]
 
         pvt = pd.pivot_table(df, values=values, index=index, columns=columns, aggfunc=aggfunc,
-                             fill_value=0, dropna=True, margins=False, margins_name='(all)')
+                             fill_value=0, dropna=True, margins=True, margins_name='(all)')
+
+        # pvt = self.get_subtotal(pvt)
+
+        # pvt.stack('Gender')
+        # pvt.stack()
+
+        # https://pandas.pydata.org/docs/user_guide/groupby.html
+        # # Split Dataframe using groupby() &
+        # # Grouping by particular dataframe column
+        # grouped = df.groupby(df.Duration)
+        # df1 = grouped.get_group("35days")
+        # print(df1)
 
         # subtotal of the rows
-        row_items_count = len(row_items)
-        if row_items_count > 1:
-            subtotal_rows = pvt.groupby(level=0).sum()
-            # rename the index in order to concatenate  with pvt
-            subtotal_rows.index = pd.MultiIndex.from_tuples([(item, '(all)', "") for item in subtotal_rows.index])
-            # add the subtotals rows to pvt
-            pvt = pd.concat([pvt, subtotal_rows], join="outer").sort_index()
+        if sub_totals == False:
+            row_items_count = len(row_items)
+            if row_items_count > 1:
+                subtotal_rows = pvt.groupby(level=0).sum()
+                # rename the index in order to concatenate  with pvt
+                subtotal_rows.index = pd.MultiIndex.from_tuples([(item, '(all)', "") for item in subtotal_rows.index])
+                # add the subtotals rows to pvt
+                pvt = pd.concat([pvt, subtotal_rows], join="outer").sort_index()
 
-            # index = pvt.index
-            # names = pvt.index.names
-            # new_names = ["#ordinal",].extend(names)
-            # new_tuples = [tuple([r*10]) + item for r, item in enumerate(index)]
-            # new_index = pd.MultiIndex.from_tuples(new_tuples, names=new_names)
-            #
-            # pvt.set_index(new_index, inplace=True)
-            #
-            # for level in range(1, row_items_count):
-            #
-            #     subtotal_rows = pvt.groupby(level=level).sum()
-            #     values = subtotal_rows.index.values.tolist()
-            #     pvt.index.searchsorted() .searchsorted('a', side='right')
-            #
-            #     sub_total_tuples = [(t[0]) + (t[level]) for t in new_tuples if (t[level] in values) ]
-            #
-            #     # rename the index in order to concatenate  with pvt
-            #     subtotal_label = ["" for i in range(row_items_count + 1)]
-            #     subtotal_tuples = []
-            #     for item in subtotal_rows.index:
-            #         subtotal_label[level] = item
-            #         subtotal_label[level + 1] = "(all)"
-            #         subtotal_tuples.append(tuple(subtotal_label))
-            #     subtotal_rows.index = pd.MultiIndex.from_tuples(subtotal_tuples)
-            #
-            #     # add the subtotals rows to pvt
-            #     df = pd.concat([pvt, subtotal_rows], join="outer")
-            #
-            # pvt = df.sort_index(level=0)
+                # index = pvt.index
+                # names = pvt.index.names
+                # new_names = ["#ordinal",].extend(names)
+                # new_tuples = [tuple([r*10]) + item for r, item in enumerate(index)]
+                # new_index = pd.MultiIndex.from_tuples(new_tuples, names=new_names)
+                #
+                # pvt.set_index(new_index, inplace=True)
+                #
+                # for level in range(1, row_items_count):
+                #
+                #     subtotal_rows = pvt.groupby(level=level).sum()
+                #     values = subtotal_rows.index.values.tolist()
+                #     pvt.index.searchsorted() .searchsorted('a', side='right')
+                #
+                #     sub_total_tuples = [(t[0]) + (t[level]) for t in new_tuples if (t[level] in values) ]
+                #
+                #     # rename the index in order to concatenate  with pvt
+                #     subtotal_label = ["" for i in range(row_items_count + 1)]
+                #     subtotal_tuples = []
+                #     for item in subtotal_rows.index:
+                #         subtotal_label[level] = item
+                #         subtotal_label[level + 1] = "(all)"
+                #         subtotal_tuples.append(tuple(subtotal_label))
+                #     subtotal_rows.index = pd.MultiIndex.from_tuples(subtotal_tuples)
+                #
+                #     # add the subtotals rows to pvt
+                #     df = pd.concat([pvt, subtotal_rows], join="outer")
+                #
+                # pvt = df.sort_index(level=0)
 
         if False:
             # subtotal of the columns
@@ -365,13 +380,52 @@ class Slice:
             pvt.loc[("Total", ""), :] = pvt.sum() / 2
             pvt.loc[:, ("ID", "Total", "")] = pvt.sum(axis=1) / 2
 
-        # apply formatting
-        df.style \
+        # apply formatting: https://pandas.pydata.org/docs/user_guide/style.html
+        pvt.style \
             .format(precision=2, thousands=".", decimal=",") \
-            .format_index(str.upper, axis=1)
+            .format_index(str.upper, axis=1) \
+            .set_caption("This is a caption") \
+            .background_gradient(axis=None, vmin=1, vmax=1000, cmap="YlGnBu")
 
         # return result
         self._pivot_table = pvt
         return True
 
+    @staticmethod
+    def get_subtotal(table, sub_total='subtotal', get_total=False, total='TOTAL'):
+        """
+        Parameters
+        ----------
+        table : dataframe, table with multi-index resulting from pd.pivot_table() or
+        df.groupby().
+        sub_total : str, optional
+            Name given to the subtotal. The default is '_Sous-total'.
+        get_total : boolean, optional
+            Precise if you want to add the final total (in case you used groupeby()).
+            The default is False.
+        total : str, optional
+            Name given to the total. The default is 'TOTAL'.
+
+        Returns
+        -------
+        A table with the total and subtotal added.
+        """
+        index_name1 = table.index.names[0]
+        index_name2 = table.index.names[1]
+
+        pvt = table.unstack(0)
+        mask = pvt.columns.get_level_values(index_name1) != 'All'
+        # print (mask)
+        pvt.loc[sub_total] = pvt.loc[:, mask].sum()
+
+        pvt = pvt.stack().swaplevel(0, 1).sort_index()
+        pvt = pvt[pvt.columns[1:].tolist() + pvt.columns[:1].tolist()]
+
+        if get_total:
+            mask = pvt.index.get_level_values(index_name2) != sub_total
+            pvt.loc[(total, ''), :] = pvt.loc[mask].sum()
+        print(pvt)
+        return (pvt)
+
     # endregion
+

@@ -8,20 +8,11 @@ df = pd.DataFrame({"product": ["Apple", "Pear", "Banana", "Apple", "Pear", "Bana
                    "sales": [100, 150, 300, 200, 250, 350],
                    "cost": [50, 90, 150, 100, 150, 175]})
 
-cdf = cubed(df)  # That's it! You now have multi-dimensional access to your dataframe. Let's see...
+cdf = cubed(df)
 
+cdf.settings.debug_mode = True
 context = cdf.product["Apple", "Pear"].sales
 print(context.address)
 print(context.cube_address)
 
-
-
-
-
-
-
-
-
-
-
-
+print(context.dsf_asdfsd)

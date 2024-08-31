@@ -4,7 +4,7 @@ from typing import Any
 
 import numpy as np
 
-from cubedpandas.dimension import Dimension
+from cubedpandas.schema.dimension import Dimension
 
 
 class Member:

@@ -1,16 +1,13 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import pandas as pd
-from cubedpandas.cube import Cube
 from cubedpandas.settings import CachingStrategy, EAGER_CACHING_THRESHOLD
 import sys
 
 
 def cubed(df: pd.DataFrame, schema=None,
-          infer_schema: bool = True,
           exclude: str | list | tuple | None = None,
           caching: CachingStrategy = CachingStrategy.LAZY,
-          caching_threshold: int = EAGER_CACHING_THRESHOLD,
           read_only: bool = True):
     """
     Wraps a Pandas dataframes into a cube to provide convenient multi-dimensional access
@@ -22,17 +19,10 @@ def cubed(df: pd.DataFrame, schema=None,
             The Pandas dataframe to be wrapped into the CubedPandas `Cube` object.
 
         schema:
-            (optional) A schema that defines the dimensions and measures of the Cube. If not provided, the schema will be inferred from the dataframe if
-            parameter `infer_schema` is set to `True`. For further details please refer to the documentation of the
-            `Schema` class.
-            Default value is `None`.
-
-        infer_schema:
-            (optional) If no schema is provided and `infer_schema` is set to True, a suitable
-            schema will be inferred from the unerlying dataframe. All numerical columns will
-            be treated as measures, all other columns as dimensions. If this behaviour is not
-            desired, a schema must be provided.
-            Default value is `True`.
+            (optional) A schema that defines the dimensions and measures of the Cube. If not provided, a
+            default schema, treating all numerical columns will as measures, all other columns as dimensions,
+            will be automatically inferred from the dataframe. If this behaviour is not desired, a valid
+            schema must be provided. Default value is `None`.
 
         exclude:
             (optional) Defines the columns that should be excluded from the cube if no schema is provied.
@@ -48,12 +38,6 @@ def cubed(df: pd.DataFrame, schema=None,
             Please refer to the documentation of 'CachingStrategy' for more information.
             Default value is `CachingStrategy.LAZY`.
 
-        caching_threshold:
-            (optional) The threshold as 'number of members' for EAGER caching only. If the number of
-            distinct members in a dimension is below this threshold, the dimension will be cached
-            eargerly, if caching is set to CacheStrategy.EAGER or CacheStrategy.FULL. Above this
-            threshold, the dimension will be cached lazily.
-            Default value is `EAGER_CACHING_THRESHOLD`, equivalent to 256 unique members per dimension.
 
         read_only:
             (optional) Defines if write backs to the underlying dataframe are permitted.
@@ -79,8 +63,9 @@ def cubed(df: pd.DataFrame, schema=None,
         >>> cdf["product:B"]
         2
     """
-    return Cube(df=df, schema=schema, infer_schema=infer_schema, exclude=exclude,
-                caching=caching, caching_threshold=caching_threshold,
+    from cubedpandas.cube import Cube
+    return Cube(df=df, schema=schema, exclude=exclude,
+                caching=caching,
                 read_only=read_only)
 
 
@@ -105,7 +90,14 @@ def pythonize(name: str, lowered: bool = False) -> str:
     if not name:
         return "_"
 
-    return "".join([c if c.isalnum() or c == "_" else "_" for c in name])
+    name = "".join([c if c.isalnum() or c == "_" else "_" for c in name])
+    while "__" in name:
+        name = name.replace("__", "_")
+    if name.startswith("_"):
+        name = name[1:]
+    if name.endswith("_"):
+        name = name[:-1]
+    return name
 
 
 def auto_round(value: float, small_value_precision: int = 4, high_value_precision: int = 2, high_value_threshold: float = 100) -> float | int:

@@ -8,9 +8,10 @@ from typing import Any
 import pandas as pd
 
 from cubedpandas.settings import CubeSettings
-from cubedpandas.schema import Schema
-from cubedpandas.measure_collection import MeasureCollection
-from cubedpandas.dimension_collection import DimensionCollection
+from cubedpandas.schema.schema import Schema
+from cubedpandas.schema.measure_collection import MeasureCollection
+from cubedpandas.schema.dimension import Dimension
+from cubedpandas.schema.dimension_collection import DimensionCollection
 from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.settings import CachingStrategy, EAGER_CACHING_THRESHOLD
 from cubedpandas.context import Context, CubeContext, FilterContext
@@ -56,14 +57,12 @@ class Cube:
 
     def __init__(self, df: pd.DataFrame,
                  schema=None,
-                 infer_schema: bool = True,
                  exclude: str | list | tuple | None = None,
                  read_only: bool = True,
                  ignore_member_key_errors: bool = True,
                  ignore_case: bool = True,
                  ignore_key_errors: bool = True,
                  caching: CachingStrategy = CachingStrategy.LAZY,
-                 caching_threshold: int = EAGER_CACHING_THRESHOLD,
                  eager_evaluation: bool = True,
                  ):
         """
@@ -76,17 +75,10 @@ class Cube:
                 The Pandas dataframe to be wrapped into the CubedPandas `Cube` object.
 
             schema:
-                (optional) A schema that defines the dimensions and measures of the Cube. If not provided, the schema will be inferred from the dataframe if
-                parameter `infer_schema` is set to `True`. For further details please refer to the documentation of the
-                `Schema` class.
-                Default value is `None`.
-
-            infer_schema:
-                (optional) If no schema is provided and `infer_schema` is set to True, a suitable
-                schema will be inferred from the unerlying dataframe. All numerical columns will
-                be treated as measures, all other columns as dimensions. If this behaviour is not
-                desired, a schema must be provided.
-                Default value is `True`.
+                (optional) A schema that defines the dimensions and measures of the Cube. If not provided, a
+                default schema, treating all numerical columns will as measures, all other columns as dimensions,
+                will be automatically inferred from the dataframe. If this behaviour is not desired, a valid
+                schema must be provided. Default value is `None`.
 
             exclude:
                 (optional) Defines the columns that should be excluded from the cube if no schema is provied.
@@ -162,19 +154,18 @@ class Cube:
 
         self._convert_values_to_python_data_types: bool = True
         self._df: pd.DataFrame = df
-        self._infer_schema: bool = infer_schema
         self._exclude: str | list | tuple | None = exclude
         self._caching: CachingStrategy = caching
-        self._caching_threshold: int = caching_threshold
+        self._caching_threshold: int = EAGER_CACHING_THRESHOLD
         self._member_cache: dict = {}
         self._cube_links = CubeLinks(self)
         self._runs_in_jupyter = Cube._runs_in_jupyter()
 
         # get or prepare the cube schema and setup dimensions and measures
-        if (schema is None) and infer_schema:
+        if schema is None:
             schema = Schema(df).infer_schema(exclude=self._exclude)
         else:
-            schema = Schema(df, schema, caching=caching)
+            schema = Schema(df, schema)
         self._schema: Schema = schema
         self._dimensions: DimensionCollection = schema.dimensions
         self._measures: MeasureCollection = schema.measures
@@ -195,14 +186,6 @@ class Cube:
         return self._settings
 
     @property
-    def measures(self) -> MeasureCollection:
-        """
-        Returns:
-            The measures available within or defined for the Cube.
-        """
-        return self._measures
-
-    @property
     def ambiguities(self) -> Ambiguities:
         """
         Returns:
@@ -212,14 +195,14 @@ class Cube:
             self._ambiguities = Ambiguities(self._df, self._dimensions, self._measures)
         return self._ambiguities
 
-    @property
-    def linked_cubes(self) -> CubeLinks:
-        """
-        Returns:
-            A list of linked cubes that are linked to this cube.
-        """
-        # todo: implement a proper linked cubes collection object
-        return self._cube_links
+    # @property
+    # def linked_cubes(self) -> CubeLinks:
+    #     """
+    #     Returns:
+    #         A list of linked cubes that are linked to this cube.
+    #     """
+    #     # todo: implement a proper linked cubes collection object
+    #     return self._cube_links
 
     @property
     def schema(self) -> Schema:
@@ -235,14 +218,6 @@ class Cube:
         The underlying Pandas dataframe of the Cube.
         """
         return self._df
-
-    @property
-    def dimensions(self) -> DimensionCollection:
-        """
-        Returns:
-            The dimensions available through the Cube.
-        """
-        return self._schema.dimensions
 
     def __len__(self):
         """

@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_datetime64_any_dtype, is_bool_dtype, is_numeric_dtype, is_string_dtype
+from passlib.exc import type_name
 
 from cubedpandas.context.context import Context
 from cubedpandas.context.datetime_resolver import resolve_datetime
@@ -16,9 +18,9 @@ from cubedpandas.context.filter_context import FilterContext
 from cubedpandas.context.function_context import FunctionContext
 
 if TYPE_CHECKING:
-    from cubedpandas.dimension import Dimension
-    from cubedpandas.member import Member, MemberSet
-    from cubedpandas.measure import Measure
+    from cubedpandas.schema.dimension import Dimension
+    from cubedpandas.schema.member import Member, MemberSet
+    from cubedpandas.schema.measure import Measure
 
 
 class ContextResolver:
@@ -47,11 +49,17 @@ class ContextResolver:
             raise ValueError(f"The context handed in as an address argument refers to a different cube/dataframe. "
                              f"Only contexts from the same cube can be used as address arguments.")
 
+        if address.__class__.__name__ == 'Measure' or address.__class__.__name__ == 'Dimension':
+            address = str(address)
+
+
         # 3. String addresses are resolved by checking for measures, dimensions and members.
         if isinstance(address, str):
-
-            if cube.settings.auto_whitespace and ("_" in address) and (not address.startswith("_")):
-                address = address.replace("_", " ")
+            address_with_whitespaces = None
+            if dynamic_attribute:
+                if cube.settings.auto_whitespace and ("_" in address) and (not address.startswith("_")):
+                    # address = address.replace("_", " ")
+                    address_with_whitespaces = address.replace("_", " ")
 
             # 3.1. Check for function keywords like SUM, AVG, MIN, MAX, etc.
             if address.upper() in FunctionContext.KEYWORDS:
@@ -59,11 +67,13 @@ class ContextResolver:
                 return function
 
             # 3.1. Check for names of measures
-            if address in cube.measures:
+            if address_with_whitespaces is not None:
+                address = address_with_whitespaces if address_with_whitespaces in cube.schema.measures else address
+            if address in cube.schema.measures:
                 from cubedpandas.context.measure_context import MeasureContext
 
                 # set the measure for the context to the new resolved measure
-                measure = cube.measures[address]
+                measure = cube.schema.measures[address]
                 resolved_context = MeasureContext(cube=cube, parent=parent, address=address, row_mask=row_mask,
                                                   measure=measure, dimension=dimension, resolve=False)
                 return resolved_context
@@ -71,10 +81,12 @@ class ContextResolver:
                 #                        measure=measure, dimension=dimension)
 
             # 3.2. Check for names of dimensions
-            if address in cube.dimensions:
+            if address_with_whitespaces is not None:
+                address = address_with_whitespaces if address_with_whitespaces in cube.schema.dimensions else address
+            if address in cube.schema.dimensions:
                 from cubedpandas.context.dimension_context import DimensionContext
 
-                dimension = cube.dimensions[address]
+                dimension = cube.schema.dimensions[address]
                 resolved_context = DimensionContext(cube=cube, parent=parent, address=address,
                                                     row_mask=row_mask,
                                                     measure=measure, dimension=dimension, resolve=False)
@@ -94,6 +106,9 @@ class ContextResolver:
                 # return ref
 
             # 3.3. Check if the address contains a list of members, e.g. "A, B, C"
+            if address_with_whitespaces is not None:
+                address = address_with_whitespaces
+
             address = ContextResolver.string_address_to_list(cube, address)
 
         # 4. Check for callable objects, e.g. lambda functions
@@ -108,7 +123,7 @@ class ContextResolver:
         # 5. Check for members of all data types over all dimensions in the cube
         #    Let's try start with a dimension that was handed in,
         #    if a dimension was handed in from the parent context.
-        if not isinstance(address, list):
+        if not isinstance(address, list | tuple):
 
             skip_checks = False
             dimension_list = None
@@ -119,17 +134,19 @@ class ContextResolver:
                 dimension_list = [target_dimension]
             elif isinstance(address, str) and (":" in address):
                 dim_name, member_name = address.split(":")
-                if dim_name.strip() in cube.dimensions:
-                    new_dimension = cube.dimensions[dim_name.strip()]
+                if dim_name.strip() in cube.schema.dimensions:
+                    new_dimension = cube.schema.dimensions[dim_name.strip()]
                     if dimension is not None:
                         dimension_switched = new_dimension != dimension
                     dimension = new_dimension
 
-                    address = member_name.strip()  # todo: Datatype conversion required for int, bool, date?
+                    address = member_name.strip()
+                    address = ContextResolver.adjust_data_type(address, dimension)
+
                     dimension_list = [dimension]
                     skip_checks = True  # let's skip the checks as we have a dimension hint
             if dimension_list is None:
-                dimension_list = cube.dimensions.starting_with_this_dimension(dimension)
+                dimension_list = cube.schema.dimensions.starting_with_this_dimension(dimension)
 
             for dim in dimension_list:
                 if dim == dimension and not dimension_switched:
@@ -151,7 +168,7 @@ class ContextResolver:
 
                 if exists:
                     # We found the member...
-                    from cubedpandas.member import Member, MemberSet
+                    from cubedpandas.schema.member import Member, MemberSet
                     member = Member(dim, address)
                     members = MemberSet(dimension=dim, address=address, row_mask=new_row_mask,
                                         members=[member])
@@ -170,7 +187,7 @@ class ContextResolver:
             if is_valid_context:
                 return new_context_ref
             else:
-                if parent.cube.settings.ignore_member_key_errors and not dynamic_attribute:
+                if parent.cube.settings.ignore_member_key_errors:  # and not dynamic_attribute:
                     if dimension is not None:
                         if cube.df[dimension.column].dtype == pd.DataFrame([address, ])[0].dtype:
                             from cubedpandas.context.member_not_found_context import MemberNotFoundContext
@@ -199,7 +216,7 @@ class ContextResolver:
                         # In this case, we will return the cube context to return all records
                         return True, context
                     # We are at the cube level, so we need to consider all dimensions
-                    dimensions = context.cube.dimensions
+                    dimensions = context.cube.schema.dimensions
                 else:
                     # We are at a dimension level, so we will only consider the current dimension
                     dimensions = [dimension]
@@ -215,7 +232,7 @@ class ContextResolver:
                                                                  parent_member_mask=member_mask,
                                                                  skip_checks=True))
                         if exists:
-                            from cubedpandas.member import MemberSet
+                            from cubedpandas.schema.member import MemberSet
                             members = MemberSet(dimension=context.dimension, address=address, row_mask=new_row_mask,
                                                 members=address)
                             from cubedpandas.context.member_context import MemberContext
@@ -237,7 +254,7 @@ class ContextResolver:
                         member=(from_dt, to_dt), row_mask=parent_row_mask, parent_member_mask=context.member_mask,
                         skip_checks=True, evaluate_as_range=True)
                     if exists:
-                        from cubedpandas.member import MemberSet
+                        from cubedpandas.schema.member import MemberSet
                         members = MemberSet(dimension=context.dimension, address=address, row_mask=new_row_mask,
                                             members=address)
                         from cubedpandas.context.member_context import MemberContext
@@ -289,12 +306,12 @@ class ContextResolver:
 
             # process all arguments of the dictionary
             for dim_name, member in address.items():
-                if dim_name not in context.cube.dimensions:
+                if dim_name not in context.cube.schema.dimensions:
                     context.message = (f"Invalid address '{address}'. Dictionary key '{dim_name}' does "
                                        f"not reference to a dimension (dataframe column name) defined "
                                        f"for the cube.")
                     return False, context
-                dim = context.cube.dimensions[dim_name]
+                dim = context.cube.schema.dimensions[dim_name]
                 # first add a dimension context...
                 from cubedpandas.context.dimension_context import DimensionContext
                 context = DimensionContext(cube=context.cube, parent=context, address=dim_name,
@@ -329,7 +346,7 @@ class ContextResolver:
                                        f"At least one member seems to be an unsupported unhashable object.")
                     return False, context
 
-                from cubedpandas.member import MemberSet
+                from cubedpandas.schema.member import MemberSet
                 members = MemberSet(dimension=context.dimension, address=address, row_mask=new_row_mask,
                                     members=address)
                 from cubedpandas.context.member_context import MemberContext
@@ -358,7 +375,7 @@ class ContextResolver:
                 parent_row_mask = context._get_row_mask(before_dimension=dimension)
                 exists, new_row_mask, member_mask = dimension._check_exists_and_resolve_member(address, parent_row_mask)
                 if exists:
-                    from cubedpandas.member import Member, MemberSet
+                    from cubedpandas.schema.member import Member, MemberSet
                     member = Member(dimension, address)
                     members = MemberSet(dimension=dimension, address=address, row_mask=new_row_mask,
                                         members=[member])
@@ -438,6 +455,25 @@ class ContextResolver:
         elif isinstance(address, bool):
             return pd.api.types.is_bool_dtype(dimension.dtype)
         return False
+
+    @staticmethod
+    def adjust_data_type(address: any, dimension: Dimension) -> any:
+        """Adjusts the data type of the address to the data type of the dimension."""
+        try:
+            if pd.api.types.is_string_dtype(dimension.dtype):
+                return str(address)
+            elif pd.api.types.is_integer_dtype(dimension.dtype):
+                return int(address)
+            elif pd.api.types.is_datetime64_any_dtype(dimension.dtype):
+                return datetime.datetime(address)
+            elif pd.api.types.is_float_dtype(dimension.dtype):
+                return float(address)
+            elif pd.api.types.is_bool_dtype(dimension.dtype):
+                return bool(address)
+            return address
+        except Exception as e:
+            # just return the original address if the conversion fails, subsequent checks will be performed
+            return address
 
 
 class ExpressionContextResolver:

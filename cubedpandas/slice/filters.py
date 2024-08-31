@@ -16,13 +16,14 @@ class Filters(list[Filter]):
     def __init__(self):
         super().__init__()
 
+    @property
     def row_mask(self) -> np.ndarray | None:
         """
         Returns the row mask of all combined filters.
         """
         if len(self) == 0:
             return None
-        return self[-1].context.row_mask
+        return self[-1].context.row_mask  # the last filter is the most recent/filtered one
 
     def append(self, __object):
         super().append(__object)

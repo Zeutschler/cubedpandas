@@ -3,7 +3,7 @@
 import pandas as pd
 from cubedpandas.cube import Cube
 from cubedpandas.context.context import Context
-from cubedpandas.settings import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.settings import CachingStrategy
 
 
 @pd.api.extensions.register_dataframe_accessor("cubed")
@@ -36,14 +36,12 @@ class CubedPandasAccessor:
 
     @property
     def cube(self, schema=None,
-             infer_schema: bool = True,
              exclude: str | list | tuple | None = None,
              read_only: bool = True,
              ignore_member_key_errors: bool = True,
              ignore_case: bool = True,
              ignore_key_errors: bool = True,
              caching: CachingStrategy = CachingStrategy.LAZY,
-             caching_threshold: int = EAGER_CACHING_THRESHOLD,
              eager_evaluation: bool = True):
         """
          Wraps a Pandas dataframes into a cube to provide convenient multi-dimensional access
@@ -59,13 +57,6 @@ class CubedPandasAccessor:
                 parameter `infer_schema` is set to `True`. For further details please refer to the documentation of the
                 `Schema` class.
                 Default value is `None`.
-
-            infer_schema:
-                (optional) If no schema is provided and `infer_schema` is set to True, a suitable
-                schema will be inferred from the unerlying dataframe. All numerical columns will
-                be treated as measures, all other columns as dimensions. If this behaviour is not
-                desired, a schema must be provided.
-                Default value is `True`.
 
             exclude:
                 (optional) Defines the columns that should be excluded from the cube if no schema is provied.
@@ -100,13 +91,6 @@ class CubedPandasAccessor:
                 Please refer to the documentation of 'CachingStrategy' for more information.
                 Default value is `CachingStrategy.LAZY`.
 
-            caching_threshold:
-                (optional) The threshold as 'number of members' for EAGER caching only. If the number of
-                distinct members in a dimension is below this threshold, the dimension will be cached
-                eargerly, if caching is set to `CacheStrategy.EAGER` or `CacheStrategy.FULL`. Above this
-                threshold, the dimension will be cached lazily.
-                Default value is `EAGER_CACHING_THRESHOLD`, equivalent to 256 unique members per dimension.
-
             eager_evaluation:
                 (optional) If set to `True`, the cube will evaluate the context eagerly, i.e. when the context
                 is created. Eager evaluation is recommended for most use cases, as it simplifies debugging and
@@ -130,12 +114,11 @@ class CubedPandasAccessor:
             >>> cdf["product:B"]
         """
         return Cube(df=self._df,
-                    schema=schema, infer_schema=infer_schema,
+                    schema=schema,
                     exclude=exclude,
                     read_only=read_only,
                     ignore_member_key_errors=ignore_member_key_errors,
                     ignore_case=ignore_case,
                     ignore_key_errors=ignore_key_errors,
                     caching=caching,
-                    caching_threshold=caching_threshold,
                     eager_evaluation=eager_evaluation)

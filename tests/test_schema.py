@@ -24,8 +24,6 @@ class TestSchema(TestCase):
         }
 
     def test_infer_schema(self):
-        # create a cube without a schema,
-        # this will force a call to Schema.infer_schema(...)
         cube = Cube(self.df)
         # get the created schema
         generated_schema = cube.schema

@@ -33,7 +33,7 @@ async def root():
     cube = cubed(dataset, exclude = ["Invoice ID", "Date", "Time"])
 
     # (3) create a randomly generated CubedPandas `Slice`
-    rows = random.sample(cube.dimensions.to_list(), k=random.randint(1, 4 ))
+    rows = random.sample(cube.schema.dimensions.to_list(), k=random.randint(1, 4))
     columns = None
     if len(rows) >= 3:
         columns = rows[len(rows)-1]

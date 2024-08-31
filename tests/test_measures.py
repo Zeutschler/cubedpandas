@@ -1,5 +1,5 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
-
+import numpy as np
 import pandas as pd
 from unittest import TestCase
 from cubedpandas import Cube
@@ -29,8 +29,23 @@ class TestMeasures(TestCase):
         cdf = Cube(self.df, schema=self.schema)
 
         self.assertEqual(cdf.A.Online, 100)
-        cdf.measures.default = "cost"
+        cdf.schema.measures.default = "cost"
         self.assertEqual(cdf.A.Online, 50)
 
         with self.assertRaises(ValueError):
-            cdf.measures.default = "xxxxxxx"
+            cdf.schema.measures.default = "xxxxxxx"
+
+    def test_measure_methods(self):
+        cdf = Cube(self.df, schema=self.schema)
+
+        x = cdf.Online.sales.sum
+
+        self.assertEqual(cdf.Online.sales, 100 + 150 + 300)
+        self.assertEqual(cdf.Online.sales.count, 3)
+        self.assertEqual(cdf.Online.sales.sum, 100 + 150 + 300)
+        self.assertEqual(cdf.Online.sales.mean, (100 + 150 + 300) / 3)
+        self.assertEqual(cdf.Online.sales.min, 100)
+        self.assertEqual(cdf.Online.sales.max, 300)
+        self.assertEqual(cdf.Online.sales.std, np.std([100, 150, 300]))
+        self.assertEqual(cdf.Online.sales.var, np.var([100, 150, 300]))
+        self.assertEqual(cdf.Online.sales.median, 150)

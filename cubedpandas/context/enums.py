@@ -45,6 +45,8 @@ class ContextFunction(IntEnum):
     """Sum of all values in the current context."""
     AVG = 2
     """Average of all values in the current context."""
+    MEAN = 2
+    """Average of all values in the current context."""
     MEDIAN = 3
     """Median of all values/rows in the current context."""
     MIN = 4

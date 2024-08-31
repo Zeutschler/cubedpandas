@@ -220,3 +220,18 @@ class TestCubeContext(TestCase):
 
         self.assertEqual(c.Online[a], 150 + 300)
         self.assertEqual(c.Online[a & b], 150)
+
+    def test_dimension_context_methods(self):
+        c = Cube(self.df, schema=self.schema)
+
+        self.assertEqual(c.product.members, ["A", "B", "C"])
+        self.assertEqual(c.product.count, 3)
+        self.assertEqual(c.product.unique, ["A", "B", "C"])
+
+        self.assertEqual(c.channel.members, ["Online", "Retail"])
+        self.assertEqual(c.channel.count, 2)
+        self.assertEqual(c.channel.unique, ["Online", "Retail"])
+
+        self.assertEqual(c.A.channel.members, ["Online", "Retail"])
+        self.assertEqual(c.A.channel.count, 2)
+        self.assertEqual(c.A.channel.unique, ["Online", "Retail"])

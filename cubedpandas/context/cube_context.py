@@ -17,11 +17,11 @@ class CubeContext(Context):
     def __init__(self, cube: 'Cube', dynamic_attribute: bool = False):
         super().__init__(cube=cube, address=None, parent=None, row_mask=None, measure=None,
                          dynamic_attribute=dynamic_attribute)
-        self._measure = cube.measures.default
+        self._measure = cube.schema.measures.default
 
         if cube.settings.populate_members:
             # Support for dynamic attributes
-            for measure in cube.measures:
+            for measure in cube.schema.measures:
                 measure_name = measure.column.replace(" ", "_")
                 if measure_name not in self.__dict__:
                     from cubedpandas.context.context_resolver import ContextResolver
