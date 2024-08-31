@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from typing import Iterable
-from cubedpandas.dimension import Dimension
+from cubedpandas.schema.dimension import Dimension
 
 
 class DimensionCollection(Iterable[Dimension]):
@@ -45,6 +45,9 @@ class DimensionCollection(Iterable[Dimension]):
             raise ValueError(f"A dimension '{name}' already exists.")
 
         self._dims[name] = dimension
+        if dimension.alias is not None:
+            self._dims[dimension.alias] = dimension
+
 
         # For future use...
         # # Add all name variants to the collection "List Price" >>> "list price", "List_Price", "list_price"

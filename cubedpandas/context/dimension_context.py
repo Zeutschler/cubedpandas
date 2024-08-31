@@ -8,8 +8,8 @@ from cubedpandas.context.context import Context
 
 if TYPE_CHECKING:
     from cubedpandas.cube import Cube
-    from cubedpandas.measure import Measure
-    from cubedpandas.dimension import Dimension
+    from cubedpandas.schema.measure import Measure
+    from cubedpandas.schema.dimension import Dimension
     from cubedpandas.context.member_context import MemberContext
 
 
@@ -36,3 +36,27 @@ class DimensionContext(Context):
     @property
     def members(self) -> list:
         return self._dimension.members
+
+    @property
+    def count(self) -> int:
+        """
+        Returns the number of unique members in the dimension matching the current context.
+        """
+        if self._row_mask is not None:
+            records = self._df.iloc[self._row_mask][self._dimension.column].nunique()
+            return records
+        else:
+            return self._df[self._dimension.column].nunique()
+
+    @property
+    def unique(self) -> list:
+        """
+        Returns a list of unique members in the dimension matching the current context.
+        """
+        if self._row_mask is not None:
+            return self._df.iloc[self._row_mask][self._dimension.column].unique().tolist()
+        else:
+            return self._df[self._dimension.column].unique().tolist()
+
+    def __len__(self):
+        return self.count

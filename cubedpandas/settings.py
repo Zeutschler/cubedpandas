@@ -51,6 +51,7 @@ class CubeSettings:
         self._ignore_case: bool = False
         self._ignore_key_errors: bool = False
         self._eager_evaluation: bool = True
+        self._debug_mode: bool = False
 
         self._caching_strategy: CachingStrategy = CachingStrategy.LAZY
         self._caching_threshold: int = EAGER_CACHING_THRESHOLD
@@ -192,6 +193,27 @@ class CubeSettings:
         self._eager_evaluation = value
 
     @property
+    def caching_threshold(self) -> int:
+        """
+        caching_threshold:
+            The threshold as 'number of members' for EAGER caching only. If the number of
+            distinct members in a dimension is below this threshold, the dimension will be cached
+            eargerly, if caching is set to CacheStrategy.EAGER or CacheStrategy.FULL. Above this
+            threshold, the dimension will be cached lazily.
+            Default value is `EAGER_CACHING_THRESHOLD`, equivalent to max. 256 unique members per dimension.
+        """
+        return self._caching_threshold
+
+    @caching_threshold.setter
+    def caching_threshold(self, value: int):
+        """
+        Sets the threshold for EAGER caching.
+        """
+        self._caching_threshold = value
+
+
+
+    @property
     def caching_strategy(self) -> CachingStrategy:
         """
         Returns:
@@ -220,6 +242,21 @@ class CubeSettings:
         Sets the member population strategy for the cube.
         """
         self._populate_members = value
+
+    @property
+    def debug_mode(self) -> bool:
+        """
+        Returns:
+            True if the Cube is in debug mode, otherwise False.
+        """
+        return self._debug_mode
+
+    @debug_mode.setter
+    def debug_mode(self, value: bool):
+        """
+        Sets the debug mode for the cube.
+        """
+        self._debug_mode = value
 
     # disabled for now
     # @property

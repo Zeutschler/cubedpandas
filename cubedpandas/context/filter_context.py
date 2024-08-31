@@ -8,8 +8,8 @@ from numpy.ma.extras import row_stack
 from cubedpandas.context.context import Context
 
 if TYPE_CHECKING:
-    from cubedpandas.measure import Measure
-    from cubedpandas.dimension import Dimension
+    from cubedpandas.schema.measure import Measure
+    from cubedpandas.schema.dimension import Dimension
 
     from cubedpandas.context.context import MeasureContext
 

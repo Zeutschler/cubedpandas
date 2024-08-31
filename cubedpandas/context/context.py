@@ -13,8 +13,8 @@ from cubedpandas.context.enums import ContextFunction, ContextAllocation, Boolea
 if TYPE_CHECKING:
     from cubedpandas.cube import Cube
     from cubedpandas.slice import Slice
-    from cubedpandas.measure import Measure
-    from cubedpandas.dimension import Dimension
+    from cubedpandas.schema.measure import Measure
+    from cubedpandas.schema.dimension import Dimension
 
     # all subclasses of Context listed here:
     from cubedpandas.context.measure_context import MeasureContext
@@ -341,33 +341,39 @@ class Context(SupportsFloat):
                 raise AttributeError()
         else:
             if self._semaphore:
-                raise AttributeError(f"Unexpected fatal error while trying to resolve the context for '{name}'.")
+                raise AttributeError(
+                    f"CubedPandas: Unexpected fatal error while trying to resolve the context for '{name}'.")
 
         if name == "_ipython_canary_method_should_not_exist": # pragma: no cover
             raise AttributeError("cubedpandas")
 
-        from cubedpandas.context.context_resolver import ContextResolver
-        self._semaphore = True
-        #print(f"semaphore set to '{self._semaphore}'")
-
-        if str(name).endswith("_"):
-            name = str(name)[:-1]
-            from cubedpandas.context.filter_context import FilterContext
-            if name != "":
-                #print(f"Before resolving context for '{name}'")
-                context = ContextResolver.resolve(parent=self, address=name, dynamic_attribute=True)
-                #print(f"After resolving context for '{name}'")
-                resolved = FilterContext(context)
+        try:
+            from cubedpandas.context.context_resolver import ContextResolver
+            self._semaphore = True
+            if str(name).endswith("_"):
+                name = str(name)[:-1]
+                from cubedpandas.context.filter_context import FilterContext
+                if name != "":
+                    context = ContextResolver.resolve(parent=self, address=name, dynamic_attribute=True)
+                    resolved = FilterContext(context)
+                else:
+                    resolved = FilterContext(self)
             else:
-                resolved = FilterContext(self)
-        else:
-            #print(f"Before resolving context for '{name}'")
-            resolved = ContextResolver.resolve(parent=self, address=name, dynamic_attribute=True)
-        #print(f"After resolving context for '{name}'")
-        #print(f"...before trying to set semaphore to '{False}'")
-        self._semaphore = False
-        #print(f"semaphore set to '{self._semaphore}'")
-        return resolved
+                resolved = ContextResolver.resolve(parent=self, address=name, dynamic_attribute=True)
+            self._semaphore = False
+            return resolved
+        except ValueError as e:
+            self._semaphore = False
+            if self._cube.settings.debug_mode:
+                raise e
+            else:
+                # As key errors will occur quite often, e.g. due to typos, we do not want
+                # to not confuse the user with the full error trace stack, but just the error message.
+                raise ValueError(f"CubedPandas: {str(e)}") from None
+        except Exception as e:
+            # All unexpected errors
+            self._semaphore = False
+            raise e
 
     # endregion
 
@@ -395,7 +401,7 @@ class Context(SupportsFloat):
             raise AttributeError("cubedpandas")
 
         from cubedpandas.context.context_resolver import ContextResolver
-        return ContextResolver.resolve(parent=self, address=address)
+        return ContextResolver.resolve(parent=self, address=address, dynamic_attribute=self._dynamic_attribute)
 
     def __setitem__(self, address, value):
         """
@@ -513,7 +519,7 @@ class Context(SupportsFloat):
         """
         if self._measure is None:
             if self._parent is None:
-                self._measure = self._cube.measures.default
+                self._measure = self._cube.schema.measures.default
             else:
                 self._measure = self._parent._resolve_measure()
         return self._measure

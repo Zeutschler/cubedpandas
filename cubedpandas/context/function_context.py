@@ -2,22 +2,21 @@
 
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
-import numpy as np
 
 from cubedpandas.context.enums import ContextFunction
 from cubedpandas.context.context import Context
 
 if TYPE_CHECKING:
     from cubedpandas.cube import Cube
-    from cubedpandas.measure import Measure
-    from cubedpandas.dimension import Dimension
+    from cubedpandas.schema.measure import Measure
+    from cubedpandas.schema.dimension import Dimension
 
 
 class FunctionContext(Context):
     """
     A context representing a mathematical operation like SUM, MIN, MAX, AVG, etc.
     """
-    KEYWORDS = {"SUM", "AVG", "MEDIAN", "MIN", "MAX", "STD", "VAR", "POF",
+    KEYWORDS = {"SUM", "AVG", "MEDIAN", "MEAN", "MIN", "MAX", "STD", "VAR", "POF",
                 "COUNT", "NAN", "AN", "ZERO", "NZERO", "CUSTOM"}
 
 

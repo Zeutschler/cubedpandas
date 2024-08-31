@@ -62,19 +62,32 @@ def resolve_datetime(value: Any) -> (datetime | None, datetime | None):
             dt = parse(value)
 
             # Check if the date has been guessed by dateutil.parser
-            y_pos = value.find(str(dt.year))
-            m_pos = value.find(str(dt.month))
-            d_pos = value.find(str(dt.day))
+            year_pos = value.find(str(dt.year))
+            month_num_pos = value.find(str(dt.month))
+            day_num_pos = value.find(str(dt.day))
 
             d_now = datetime.now().day
 
-            if d_now == dt.day and (y_pos == -1 or m_pos == -1 or d_pos == -1):
+            if d_now == dt.day and (year_pos == -1 or month_num_pos == -1 or day_num_pos == -1):
                 # It seems to be a guessed date.
                 # Do not trust this.
                 weekday, last = calendar.monthrange(dt.year, dt.month)
                 return datetime(year=dt.year, month=dt.month, day=1), datetime(year=dt.year, month=dt.month, day=last, hour=23, minute=59, second=59, microsecond=999999)
 
+            # check for month names
+            month_short_name_pos = str(value).lower().find(dt.strftime("%b").lower())
+            month_long_name_pos = str(value).lower().find(dt.strftime("%B").lower())
+            if month_short_name_pos > -1 or month_long_name_pos > -1:
+                if day_num_pos == -1 or month_num_pos >= year_pos:
+                    # no date given, just a month name and maybe a year
+                    # get the first and last day of the month
+                    weekday, last = calendar.monthrange(dt.year, dt.month)
+                    return datetime(year=dt.year, month=dt.month, day=1), datetime(year=dt.year, month=dt.month,
+                                                                                   day=last, hour=23, minute=59,
+                                                                                   second=59, microsecond=999999)
+
             return dt, None
+
         except ParserError as e:
             # Failed to parse the date
             return None, None

@@ -21,13 +21,15 @@ class Dimension(Iterable, ABC):
     Represents a dimension of a cube, mapped to a column in the underlying Pandas dataframe.
     """
 
-    def __init__(self, df: pd.DataFrame, column, caching: CachingStrategy = CachingStrategy.LAZY):
+    def __init__(self, df: pd.DataFrame, column, alias: str | None = None,
+                 caching: CachingStrategy = CachingStrategy.LAZY):
         """
         Initializes a new Dimension from a Pandas dataframe and a column name.
         """
         self._df: pd.DataFrame = df
         self._column = column
         self._column_ordinal = df.columns.get_loc(column)
+        self._alias: str | None = alias
         self._dtype = df[column].dtype
         self._members: set | None = None
         self._member_list: list | None = None
@@ -124,6 +126,13 @@ class Dimension(Iterable, ABC):
         self._members = None
         self._member_list = None
 
+    def to_dict(self):
+        d = {'column': self._column}
+        if self._alias:
+            d['alias'] = self._alias
+        return d
+
+
     def contains(self, member):
         self._load_members()
 
@@ -190,19 +199,18 @@ class Dimension(Iterable, ABC):
         return self._member_list
 
     @property
-    def member_set(self) -> set:
-        """
-        Returns the set of members of the dimension.
-        """
-        self._load_members()
-        return self._members
-
-    @property
-    def column(self):
+    def column(self) -> str:
         """
         Returns the column name in the underlying Pandas dataframe the dimension refers to.
         """
         return self._column
+
+    @property
+    def alias(self) -> str:
+        """
+        Returns the alias of the dimension if defined, `None`otherwise.
+        """
+        return self._alias
 
     @property
     def name(self):
