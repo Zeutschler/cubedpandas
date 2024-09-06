@@ -3,6 +3,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
+import re
 import numpy as np
 import pandas as pd
 
@@ -32,6 +33,7 @@ class Slice:
                  measures: Any = None,
                  aggfunc: None | str | list[str] = None,
                  sub_totals: bool = True,
+                 sort_values: bool = False,
                  max_rows: bool | int = False,
                  max_columns: bool | int = True,
                  config: dict | str | None = None):
@@ -60,6 +62,9 @@ class Slice:
 
             sub_totals:
                 (optional) If sub-totals should be displayed in the pivot table. Default is `True`.
+
+            sort_values:
+                (optional) If the values should be sorted in the pivot table. Default is `True`.
 
             max_rows:
                 (optional) The maximum number of rows to be displayed in the pivot table. Either a positive
@@ -109,6 +114,7 @@ class Slice:
         self._measures = measures
         self._aggfunc = aggfunc
         self._sub_totals: bool = sub_totals
+        self._sort_values: bool = sort_values
         self._max_rows: bool = max_rows
         self._max_columns: bool = max_columns
         self._config = config
@@ -147,6 +153,11 @@ class Slice:
     def sub_totals(self) -> bool:
         """Returns if sub-totals should be shown in the slice."""
         return self._sub_totals
+
+    @property
+    def sort_values(self) -> bool:
+        """Returns if the values should be sorted in the slice."""
+        return self._sort_values
 
     @property
     def max_rows(self) -> bool | int:
@@ -280,6 +291,11 @@ class Slice:
         # 6.1 add subtotal of the rows
         if self._sub_totals:
             pvt = self._add_subtotals(pvt, row_dimensions, aggfunc=agg_functions[0])
+        # 6.2 sort values in the pivot table rows
+        if self._sort_values is not None and self._sort_values != False:
+            pvt = self._sort_row_values(pvt=pvt, row_columns=index, sort_measure=self._sort_values,
+                                        measures=values, default_measure=values[0])
+
 
         # 7. apply pivot table formatting: https://pandas.pydata.org/docs/user_guide/style.html
         pvt.style \
@@ -437,5 +453,32 @@ class Slice:
         new_pvt = pd.concat(segments, join="inner")
         new_pvt = new_pvt.sort_index()
         return new_pvt
+
+    @staticmethod
+    def _sort_row_values(pvt: pd.DataFrame, row_columns, sort_measure, measures, default_measure,
+                         aggfunc="sum") -> pd.DataFrame:
+        """Sorts the values in a pivot table."""
+        ascending = False
+        if isinstance(sort_measure, str):
+            measure = sort_measure.upper().strip()
+            if "ASC" in measure or "ASCENDING" in measure:
+                ascending = True
+            if "DESC" in measure or "DESCENDING" in measure:
+                ascending = False
+
+            tokens = re.split(': |; |, |\*|\n', sort_measure)
+            if len(tokens) > 1:
+                sort_measure = tokens[:-1]
+            if sort_measure not in measures:
+                raise ValueError(f"Invalid measure '{sort_measure}' for sorting in method `slice(...)`.")
+
+            value = sort_measure
+        else:
+            value = default_measure
+        sort_by = [(row_dim, aggfunc) for row_dim in row_columns]
+        sort_by = [row_dim for row_dim in row_columns[:-1]]
+        sort_order = [ascending for _ in row_columns[:-1]]
+        pvt = pvt.sort_values(by=sort_by, ascending=sort_order)
+        return pvt
 
     # endregion

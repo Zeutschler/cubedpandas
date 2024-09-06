@@ -278,7 +278,8 @@ class Cube:
         raise NotImplementedError("Deletion not implemented yet.")
 
     def slice(self, rows=None, columns=None, measures=None, aggfunc=None,
-              sub_totals: bool = True, max_rows: bool | int = False, max_columns: bool | int = True,
+              sub_totals: bool = True, sort_values: bool = False,
+              max_rows: bool | int = False, max_columns: bool | int = True,
               config=None) -> pd.DataFrame:
         """
         Creates and returns a Pandas PivotTable based on the current context. Using the `slice` method
@@ -305,6 +306,9 @@ class Cube:
 
             sub_totals:
                 (optional) If sub-totals should be displayed in the pivot table. Default is `True`.
+
+            sort_values:
+                (optional) If the values should be sorted in the pivot table. Default is `True`.
 
             max_rows:
                 (optional) The maximum number of rows to be displayed in the pivot table. Either a positive
@@ -339,7 +343,8 @@ class Cube:
             | Banana  |   350 |   200 |   150 |
         """
         return CubeContext(self).slice(rows=rows, columns=columns, measures=measures, aggfunc=aggfunc,
-                                       sub_totals=sub_totals, max_rows=max_rows, max_columns=max_columns,
+                                       sub_totals=sub_totals, sort_values=sort_values,
+                                       max_rows=max_rows, max_columns=max_columns,
                                        config=config)
 
     # endregion

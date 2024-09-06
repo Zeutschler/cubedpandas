@@ -86,6 +86,7 @@ plugins:
 
         handlers:
           python:
+            paths: [ cubedpandas ]
             options:
               docstring_style: google
               docstring_section_style: list
