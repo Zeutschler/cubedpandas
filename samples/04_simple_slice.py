@@ -3,7 +3,6 @@ from datetime import datetime
 
 import pandas as pd
 from cubedpandas import cubed
-from cubedpandas import Slice
 
 
 df = pd.DataFrame({"product": ["Apple", "Pear", "Banana", "Apple", "Pear", "Banana"],
@@ -14,10 +13,8 @@ df = pd.DataFrame({"product": ["Apple", "Pear", "Banana", "Apple", "Pear", "Bana
 cdf = cubed(df)
 
 # defined slice
-slice = Slice(cdf, rows=[dim for dim in cdf.schema.dimensions], columns=cdf.schema.measures)
-slice.show()
-print(slice.to_html())
+slice = cdf.slice(rows=[dim for dim in cdf.schema.dimensions], columns=cdf.schema.measures)
+print(slice)
 
-slice = Slice(cdf.Online, rows=cdf.schema.dimensions, columns=cdf.schema.measures)
-slice.show()
-
+slice = cdf.Online.slice(rows=cdf.schema.dimensions, columns=cdf.schema.measures)
+print(slice)

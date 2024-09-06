@@ -24,17 +24,30 @@ class CachingStrategy(IntEnum):
     FULL = 3
 
     def __str__(self):
-        match self.value:
-            case 0:
-                return 'NONE'  # - no caching'
-            case 1:
-                return 'LAZY'  # - caching on first access'
-            case 2:
-                return 'EAGER'  # - pre caching of low cardinality dimensions, other on access'
-            case 3:
-                return 'FULL'  # - pre caching of all dimensions. Not recommended for large high cardinality datasets'
-            case _:
-                return 'UNKNOWN'
+        return f'{self.__class__.__name__}.{self.name}'
+
+    @classmethod
+    def _missing_(cls, value):
+        if isinstance(value, str):
+            value = value.lower()
+            if value in dir(cls):
+                return cls[value]
+        return cls.LAZY  # default
+
+    @classmethod
+    def from_any(cls, value):
+        if isinstance(value, bool):
+            return CachingStrategy.EAGER if value else CachingStrategy.NONE
+        if isinstance(value, str):
+            caching = value.upper().strip()
+            if caching in CachingStrategy.__members__:
+                return CachingStrategy[caching]
+            else:
+                # calls the `_missing_` method, returns the default caching value
+                return CachingStrategy(caching)
+        else:
+            return CachingStrategy(str(value).upper().strip())
+
 
 
 class CubeSettings:

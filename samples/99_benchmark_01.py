@@ -84,7 +84,3 @@ print(f"expected value (from df) for maker '{maker}' := {df_read(maker):,.0f}")
 print("\nMemory footprint:")
 collected = gc.collect()
 print(f"\tdataframe  : {df.memory_usage(index=True).sum():,.0f} bytes")
-print(
-    f"\tcube non-cached: {cube.size_in_bytes:,.0f} bytes = {cube.size_in_bytes / df.memory_usage(index=True).sum():.2%} of dataframe")
-print(
-    f"\tcube cached: {cached_cube.size_in_bytes:,.0f} bytes = {cached_cube.size_in_bytes / df.memory_usage(index=True).sum():.2%} of dataframe")

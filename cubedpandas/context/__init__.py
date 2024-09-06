@@ -14,6 +14,7 @@ from cubedpandas.context.measure_context import MeasureContext
 from cubedpandas.context.member_context import MemberContext
 from cubedpandas.context.member_not_found_context import MemberNotFoundContext
 from cubedpandas.context.datetime_resolver import resolve_datetime
+from cubedpandas.context.slice import Slice
 
 __all__ = [
     "BooleanOperation",
@@ -31,5 +32,6 @@ __all__ = [
     "MeasureContext",
     "MemberContext",
     "MemberNotFoundContext",
-    "resolve_datetime"
+    "resolve_datetime",
+    "Slice"
 ]

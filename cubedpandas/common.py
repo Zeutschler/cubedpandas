@@ -1,7 +1,7 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import pandas as pd
-from cubedpandas.settings import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.settings import CachingStrategy
 import sys
 
 
@@ -72,7 +72,9 @@ def cubed(df: pd.DataFrame, schema=None,
 def pythonize(name: str, lowered: bool = False) -> str:
     """
     Converts a string into a valid Python variable name by replacing all invalid characters with underscores.
-    The first character must be a letter or an underscore, all following characters can be letters, digits or underscores.
+
+    The first character must be a letter or an underscore, all following characters can be letters, digits or
+    underscores.
 
     Args:
         name:
@@ -87,16 +89,19 @@ def pythonize(name: str, lowered: bool = False) -> str:
         >>> pythonize("Hello World")
         'Hello_World'
     """
-    if not name:
-        return "_"
-
+    # Remove all invalid characters from the string
     name = "".join([c if c.isalnum() or c == "_" else "_" for c in name])
+    # Replace all occurrences of "__" with "_"
     while "__" in name:
         name = name.replace("__", "_")
+    # Remove leading and trailing "_" from the string
     if name.startswith("_"):
         name = name[1:]
     if name.endswith("_"):
         name = name[:-1]
+    # Lowercase the string if lowered is True
+    if lowered:
+        name = name.lower()
     return name
 
 

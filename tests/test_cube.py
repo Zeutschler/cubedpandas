@@ -16,7 +16,7 @@ class TestCube(TestCase):
         self.df = pd.DataFrame.from_dict(data)
         self.schema = {
             "dimensions": [
-                {"column": "product"},
+                {"column": "product", "caching": "EAGER"},
                 {"column": "channel"}
             ],
             "measures": [

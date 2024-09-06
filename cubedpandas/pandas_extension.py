@@ -41,8 +41,7 @@ class CubedPandasAccessor:
              ignore_member_key_errors: bool = True,
              ignore_case: bool = True,
              ignore_key_errors: bool = True,
-             caching: CachingStrategy = CachingStrategy.LAZY,
-             eager_evaluation: bool = True):
+             caching: CachingStrategy = CachingStrategy.LAZY):
         """
          Wraps a Pandas dataframes into a cube to provide convenient multi-dimensional access
         to the underlying dataframe for easy aggregation, filtering, slicing, reporting and
@@ -86,16 +85,11 @@ class CubedPandasAccessor:
                 (optional) A caching strategy to be applied for accessing the cube. recommended
                 value for almost all use cases is `CachingStrategy.LAZY`, which caches
                 dimension members on first access. Caching can be beneficial for performance, but
-                may also consume more memory. To cache all dimension members eagerly (on
-                initialization of the cube), set this parameter to `CachingStrategy.EAGER`.
+                may also consume more memory. To cache all dimension members on
+                initialization of the cube, set caching to `CachingStrategy.EAGER`.
                 Please refer to the documentation of 'CachingStrategy' for more information.
                 Default value is `CachingStrategy.LAZY`.
 
-            eager_evaluation:
-                (optional) If set to `True`, the cube will evaluate the context eagerly, i.e. when the context
-                is created. Eager evaluation is recommended for most use cases, as it simplifies debugging and
-                error handling. If set to `False`, the cube will evaluate the context lazily, i.e. only when
-                the value of a context is accessed/requested.
 
         Returns:
             A new Cube object that wraps the dataframe.
@@ -120,5 +114,4 @@ class CubedPandasAccessor:
                     ignore_member_key_errors=ignore_member_key_errors,
                     ignore_case=ignore_case,
                     ignore_key_errors=ignore_key_errors,
-                    caching=caching,
-                    eager_evaluation=eager_evaluation)
+                    caching=caching)

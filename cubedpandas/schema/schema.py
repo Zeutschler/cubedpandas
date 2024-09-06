@@ -14,6 +14,7 @@ from cubedpandas.schema.measure import Measure
 from cubedpandas.schema.measure_collection import MeasureCollection
 from cubedpandas.common import pythonize
 
+
 class Schema:
     """
     Defines a schema for multi-dimensional data access through a CubedPandas cube upon an
@@ -46,7 +47,7 @@ class Schema:
         self._validation_message: str = ""
 
         if schema is not None:
-            if not self.validate():
+            if not self._validate_and_create():
                 raise ValueError(self._validation_message)
 
     def _load_schema(self, schema: Any) -> dict:
@@ -64,16 +65,21 @@ class Schema:
                 except FileNotFoundError:
                     raise ValueError("Invalid schema information.")
 
-    def validate(self) -> bool:
+    def _validate_and_create(self) -> bool:
         """
-        Validates the schema against the given Pandas dataframe.
+        Validates the schema against the given Pandas dataframe and creates the dimensions and measures.
 
-        If returned True, the schema is valid for the given Pandas dataframe and can be used to access its data.
-        Otherwise, the schema is not valid and will or may lead to errors when accessing its data.
-
-        :return: Returns True if the schema is valid for the given Pandas dataframe, otherwise False.
+        Returns:
+        True, if the schema is valid for the given Pandas dataframe.
+        Otherwise, False and a validation message `_validation_message` is set.
         """
         df = self._df
+
+        # if defined in the schema, override the default caching strategy
+        if "caching" in self._schema:
+            self._caching = CachingStrategy.from_any(self._schema["caching"])
+
+        # get dimension and measure columns from the schema
         self._dimensions = DimensionCollection()
         for dimension in self._schema["dimensions"]:
             if "column" in dimension:
@@ -82,17 +88,26 @@ class Schema:
                     self._validation_message = f"Dimension column '{column}' not found in dataframe."
                     return False
                 alias_name = None
+
                 if "alias" in dimension:
                     alias_name = dimension["alias"]
-                self._dimensions.add(Dimension(df, column=column, alias=alias_name, caching=self._caching))
+
+                caching = self._caching
+                dim_specific_caching = False
+                if "caching" in dimension:
+                    caching = CachingStrategy.from_any(dimension["caching"])
+                    dim_specific_caching = True
+
+                self._dimensions.add(Dimension(df, column=column, alias=alias_name,
+                                               caching=caching, dim_specific_caching=dim_specific_caching))
             else:
                 if isinstance(dimension, str) or isinstance(dimension, int):
                     if dimension not in df.columns:
-                        self._validation_message = f"Dimension column '{dimension}' not found in dataframe."
+                        self._validation_message = f"Dimension column named '{dimension}' not found in dataframe."
                         return False
                     self._dimensions.add(Dimension(df, column=dimension, alias=None, caching=self._caching))
                 else:
-                    self._validation_message = "Dimension column not found in schema."
+                    self._validation_message = f"Dimension column of type '{type(dimension)}' not found in schema."
                     return False
 
         self._measures = MeasureCollection()
@@ -100,11 +115,12 @@ class Schema:
             if "column" in measure:
                 column = measure["column"]
                 if column not in df.columns:
-                    self._validation_message = f"Measure column '{column}' not found in dataframe."
+                    self._validation_message = f"Measure column named '{column}' not found in dataframe."
                     return False
                 alias_name = None
                 if "alias" in measure:
                     alias_name = measure["alias"]
+
                 self._measures.add(Measure(df, column=column, alias=alias_name))
             else:
                 if isinstance(measure, str) or isinstance(measure, int):
@@ -117,7 +133,7 @@ class Schema:
 
                     self._measures.add(Measure(df, column=measure, alias=None, number_format=number_format))
                 else:
-                    self._validation_message = "Measure column not found in schema."
+                    self._validation_message = f"Measure column of type '{type(measure)}' not found in schema."
                     return False
         return True
 
@@ -180,7 +196,7 @@ class Schema:
                     # ...it's not a valid Python identifier, lets try to create a valid alias
                     alias = pythonize(column_name)
                     if alias.isidentifier() and alias not in aliases:
-                        # check if the alias is not already in use, then we do not add it to prohibit duplicates
+                        # check if the alias is not already in use, to prohibit duplicates
                         aliases[column_name] = alias
                         dict_column["alias"] = alias
 
@@ -201,7 +217,9 @@ class Schema:
 
         :return: Returns a dictionary containing the schema information.
         """
-        schema = {"dimensions": [], "measures": []}
+        schema = {"caching": self._caching.name,
+                  "dimensions": [],
+                  "measures": []}
         for measure in self._measures:
             schema["measures"].append(measure.to_dict())
         for dimension in self._dimensions:

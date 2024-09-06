@@ -121,7 +121,6 @@ nav:
       - 'Schema': 'class-schema.md'
       - 'Cube': 'class-cube.md'
       - 'Context': 'class-context.md'
-      - 'Slice': 'class-slice.md'
       - 'Dimension': 'class-dimension.md'
       - 'Measure': 'class-measure.md'
   - 'Blog':
