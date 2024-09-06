@@ -26,6 +26,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+        <loc>https://zeutschler.github.io/cubedpandas/best-practise/</loc>
+        <lastmod>2024-09-06</lastmod>
+        <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://zeutschler.github.io/cubedpandas/best-practises/</loc>
          <lastmod>2024-09-06</lastmod>
          <changefreq>daily</changefreq>
@@ -102,11 +107,6 @@
     </url>
     <url>
          <loc>https://zeutschler.github.io/cubedpandas/thomas/</loc>
-         <lastmod>2024-09-06</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://zeutschler.github.io/cubedpandas/use-cases/</loc>
          <lastmod>2024-09-06</lastmod>
          <changefreq>daily</changefreq>
     </url>

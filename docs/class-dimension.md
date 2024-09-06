@@ -1,4 +1,4 @@
-# SalesDataModel class
+# Dimension class
 
 ::: cubedpandas.schema.Dimension
 
