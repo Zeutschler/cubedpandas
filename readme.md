@@ -140,11 +140,4 @@ If you have fallen in love with CubedPandas or find it otherwise valuable,
 please consider to [become a sponsor of the CubedPandas project](https://github.com/sponsors/Zeutschler) so we 
 can push the project forward faster and make CubePandas even more awesome.
 
-### Your feedback, ideas and support are very welcome!
-
-CubedPandas is in an early stage of development, your
-[Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and
-[Feedback](https://github.com/Zeutschler/cubedpandas/discussions)
-are very welcome to make CubedPandas even more awesome. Many thanks!
-
 *...happy cubing!*
