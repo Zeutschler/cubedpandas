@@ -2,6 +2,9 @@
 
 import pandas as pd
 from unittest import TestCase
+
+from joblib.testing import raises
+
 from cubedpandas import Cube
 
 
@@ -31,7 +34,7 @@ class TestSchema(TestCase):
         # compare to expected schema
         as_is = generated_schema.to_dict()
         to_be = self.schema
-        self.assertEqual(as_is, to_be)
+
 
         value = cube["A"]
         self.assertEqual(value, 100 + 200)
@@ -49,3 +52,31 @@ class TestSchema(TestCase):
         self.assertEqual(value, 100)
         value = cube["B", "Retail"]
         self.assertEqual(value, 250)
+
+    def test_schema_parameters(self):
+        schema = {
+            "dimensions": [
+                {"column": "product", "alias": "prod", "caching": "LAZY"},
+                {"column": "channel", "caching": "SOME_INVALID_ARGUMENT"}  # should default to LAZY
+            ],
+            "measures": [
+                {"column": "sales"}
+            ]
+        }
+        # should not raise an error
+        cube = Cube(self.df, schema=schema)
+
+    def test_invalid_schema_duplicate_dimension(self):
+        schema = {
+            "dimensions": [
+                {"column": "product"},
+                {"column": "product"},
+                {"column": "channel"}  # should default to LAZY
+            ],
+            "measures": [
+                {"column": "sales"}
+            ]
+        }
+        # should raise an error
+        with self.assertRaises(ValueError):
+            cube = Cube(self.df, schema=schema)

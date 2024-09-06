@@ -40,7 +40,7 @@ class DimensionStatistics:
             measures = [self._dimension.cube.default, ]
 
         for measure in measures:
-            data = self._dimension.cube._df[measure].value_counts(dropna=False, ascending=False)
+            data = self._dimension.cube._pivot_table[measure].value_counts(dropna=False, ascending=False)
             data.plot(kind='hist', bins=20, title=f'{measure} Histogram')
 
     def outliers(self, measure,

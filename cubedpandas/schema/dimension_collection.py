@@ -18,11 +18,12 @@ class DimensionCollection(Iterable[Dimension]):
 
     def __iter__(self) -> DimensionCollection:
         self._counter = 0
-        self._dims_list = list(self._dims.values())
+        self._dims_list = list(set(self._dims.values()))  # unique values needed, duplicates may be caused by aliasing
+        # self._dims_list = list(self._dims.values())
         return self
 
     def __next__(self) -> Dimension:
-        if self._counter >= len(self._dims):
+        if self._counter >= len(self._dims_list):
             raise StopIteration
         dim = self._dims_list[self._counter]
         self._counter += 1

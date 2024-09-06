@@ -12,7 +12,6 @@ import uvicorn
 import socket
 from pathlib import Path
 
-from docutils.parsers.rst.directives import choice
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.responses import FileResponse
@@ -40,9 +39,11 @@ async def root():
         rows = rows[:len(rows)-1]
     slice = cube.slice(rows=rows, columns=columns)
 
-    # (4) turn the slice into html using the `slice.to_html()` method
-    # (5) serve the result to the user.
-    return html_template.format(table=slice.to_html(classes=["table", "table-sm"], style='style="white-space:nowrap;"'))
+    # (4) wrap the slice into nice html
+    slice_html_table = slice.to_html(classes=["table", "table-sm"])
+    style = 'style="white-space:nowrap;"'
+    slice_html_table = slice_html_table.replace("<table", f"<table style='{style}'")
+    return html_template.format(table=slice_html_table)
 
 
 @app.get("/logo.png", response_class=FileResponse)

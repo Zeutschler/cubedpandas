@@ -12,7 +12,6 @@ from cubedpandas.context.enums import ContextFunction, ContextAllocation, Boolea
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:
     from cubedpandas.cube import Cube
-    from cubedpandas.slice import Slice
     from cubedpandas.schema.measure import Measure
     from cubedpandas.schema.dimension import Dimension
 
@@ -26,6 +25,7 @@ if TYPE_CHECKING:
     from cubedpandas.context.member_not_found_context import MemberNotFoundContext
     from cubedpandas.context.cube_context import CubeContext
     from cubedpandas.context.boolean_operation_context import BooleanOperationContext
+    from cubedpandas.context.slice import Slice
 
 
 class Context(SupportsFloat):
@@ -435,47 +435,79 @@ class Context(SupportsFloat):
         row_mask, measure = self._cube._resolve_address(address, self._row_mask, self.measure)
         self._cube._delete(row_mask, measure)
 
-    def slice(self, rows=None, columns=None, config=None) -> Slice:
+    def slice(self, rows=None, columns=None, measures=None, aggfunc=None,
+              sub_totals: bool = True, sort_values: bool = False,
+              max_rows: bool | int = False, max_columns: bool | int = True,
+              config=None) -> pd.DataFrame:
         """
-        Returns a new slice for the context. A slice represents a table-alike view to data in the cube.
-        Typically, a slice has rows, columns and filters, comparable to an Excel PivotTable.
-        Useful for printing in Jupyter, visual data analysis and reporting purposes.
-        Slices can be easily 'navigated' by setting and changing rows, columns and filters.
+        Creates and returns a Pandas PivotTable based on the current context. Using the `slice` method
+        sophisticated PivotTables can be easily created for printing in Jupyter, visual data analysis and
+        reporting purposes by setting and changing rows, columns and filters.
 
-        Please refer to the documentation of the Slice class for further details.
+        Please refer to the documentation of the slice methods for further details.
 
         Args:
             rows:
-                The rows of the slice. Can be one or more dimensions with or without a member definition,
-                or no dimension.
+                (optional) The rows of the slice. Can contain be one or more dimensions with
+                or without a member definitions or measures or `None`.
 
             columns:
-                The columns of the slice. Can be one or more dimensions with or without a member definition,
-                or no dimension.
+                (optional) The columns of the slice. Can contain be one or more dimensions with
+                or without a member definitions or measures or `None`.
 
-            filters:
-                The filters of the slice. Can be one or more dimensions with or without a member definition,
-                or no dimension.
+            measures:
+                (optional) The measures/values of the slice. Can be one or more measures, or `None`.
+
+            aggfunc:
+                (optional) The aggregation function or functions to be used for the pivot table.
+                Default value is 'sum'.
+
+            sub_totals:
+                (optional) If sub-totals should be displayed in the pivot table. Default is `True`.
+
+            sort_values:
+                (optional) If the values should be sorted in the pivot table. Default is `True`.
+
+            max_rows:
+                (optional) The maximum number of rows to be displayed in the pivot table. Either a positive
+                integer or a boolean value. If set to `True`, all rows will be shown. If set to `False`,
+                the default number of rows (as defined in Pandas) will be shown. Default value is `False`.
+
+            max_columns:
+                (optional) The maximum number of columns to be displayed in the pivot table. Either a positive
+                integer or a boolean value. If set to `True`, all columns will be shown. If set to `False`,
+                the default number of columns (as defined in Pandas) will be shown. Default value is `True`.
 
             config:
                 (optional) A slice configuration as a dictionary, a json string or a path to an existing
                 file containing the configuration. Slice configurations can be used to define a more
-                complex layout. Please refer to the documentation of the Slice class for further details.
+                complex layout. Please refer to the documentation of the slice method for further details.
+
+        Returns:
+            A Pandas DataFrame representing the pivot table.
+
+        Raises:
+            ValueError:
+                If the values for the paramerters rows, columns, filters or config are invalid.
 
         Samples:
             >>> cdf = cubed(df)
-            >>> cdf.slice(rows="product", columns="region", filters={"year": 2020})
+            >>> cdf.year["2000"].slice(rows="product", columns="region")
             ------------------------------------
             year: 2000
             ------------------------------------
-            |         | (all) | North | South |
+            |  Sales  | (all) | North | South |
             ------------------------------------
             | (all)   |   550 |   300 |   250 |
             | Apple   |   200 |   100 |   100 |
             | Banana  |   350 |   200 |   150 |
         """
-        from cubedpandas import Slice
-        return Slice(self, rows=rows, columns=columns, config=config)
+        from cubedpandas.context.slice import Slice
+        slice = Slice(self, rows=rows, columns=columns, measures=measures, aggfunc=aggfunc,
+                      sub_totals=sub_totals, sort_values=sort_values,
+                      max_rows=max_rows, max_columns=max_columns,
+                      config=config)
+        return slice.pivot_table
 
     def filter(self, filter: Any) -> Context:
         """
@@ -931,6 +963,10 @@ class Context(SupportsFloat):
 
     def __format__(self, format_spec):
         return self.value.__format__(format_spec)
+
+    def __hash__(self):
+        context_hash = f"{self._dimension}_{self._address}_{self._measure}".__hash__()
+        return context_hash
 
     # end region
 

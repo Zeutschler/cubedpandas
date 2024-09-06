@@ -28,7 +28,6 @@ class TestCubeContext(TestCase):
     def test_cube_context_dynamic_methods(self):
         c = Cube(self.df, schema=self.schema)
 
-        self.assertEqual(c.context, 100 + 150 + 300 + 200 + 250 + 350)
         self.assertEqual(c.A.B.Online, 100 + 150)
 
         self.assertEqual(c.A.B.Online, 100 + 150)

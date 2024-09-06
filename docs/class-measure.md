@@ -1,6 +1,6 @@
 # SalesDataModel class
 
-::: cubedpandas.measure.Measure
+::: cubedpandas.schema.Measure
 
 
 

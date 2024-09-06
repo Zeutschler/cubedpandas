@@ -11,7 +11,7 @@ import pandas as pd
 from pandas.api.types import (is_string_dtype, is_numeric_dtype, is_bool_dtype,
                               is_datetime64_any_dtype)
 
-from cubedpandas.settings import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.settings import CachingStrategy
 from cubedpandas.context.datetime_resolver import resolve_datetime
 from cubedpandas.statistics import DimensionStatistics
 
@@ -22,7 +22,8 @@ class Dimension(Iterable, ABC):
     """
 
     def __init__(self, df: pd.DataFrame, column, alias: str | None = None,
-                 caching: CachingStrategy = CachingStrategy.LAZY):
+                 caching: CachingStrategy = CachingStrategy.LAZY,
+                 dim_specific_caching: bool = False):
         """
         Initializes a new Dimension from a Pandas dataframe and a column name.
         """
@@ -34,8 +35,9 @@ class Dimension(Iterable, ABC):
         self._members: set | None = None
         self._member_list: list | None = None
         self._member_array: np.ndarray | None = None
-        self._cached: bool = False
-        self._caching: CachingStrategy = caching
+        self._is_fully_cached: bool = False
+        self._caching_strategy: CachingStrategy = caching
+        self._dim_specific_caching: bool = dim_specific_caching
         self._cache: dict = {}
         self._cache_members: list | None = None
         self._counter: int = 0
@@ -54,8 +56,9 @@ class Dimension(Iterable, ABC):
         - Leading and trailing underscores are ignored/removed, e.g., `hello` will resolve `    hello `.
         - All other special characters are removed, e.g., `12/4 cars` is the same as `124_cars`.
 
-        - If the name is not a valid Python identifier (e.g. contains special characters), the `slicer`
-        method needs to be used to resolve the member name. e.g., `12/4 cars` is a valid name for a value
+        - If the name is not a valid Python identifier (e.g. contains special characters), the index
+        methodneeds to be used to resolve the member name. e.g., `12/4 cars` is not a valid Python identifier,
+        hence indexing `a = cdf['12/4 cars']` needs to be used.
 
         If the name is not a valid Python identifier (e.g. contains special characters), the `slicer`
         method needs to be used to resolve the member name. e.g., `12/4 cars` is a valid name for a value
@@ -94,18 +97,14 @@ class Dimension(Iterable, ABC):
             self._member_list = self._member_array.tolist()
             self._members = set(self._member_list)
 
-    def _cache_warm_up(self, caching_threshold: int = EAGER_CACHING_THRESHOLD):
+    def _cache_warm_up(self):
         """Warms up the cache of the Cube."""
-        if self._caching < CachingStrategy.EAGER:
+        if self._caching_strategy < CachingStrategy.EAGER:
             return
-
-        if caching_threshold < 1:
-            caching_threshold = sys.maxsize
 
         self._load_members()
 
-        if (((self._caching == CachingStrategy.EAGER) and (len(self._members) <= caching_threshold)) or
-            (self._caching == CachingStrategy.FULL)) or (not self._cache_members is None):
+        if self._caching_strategy == CachingStrategy.EAGER or self._cache_members is not None:
 
             if self._cache_members is None:
                 cache_members = self._members
@@ -117,19 +116,21 @@ class Dimension(Iterable, ABC):
                 mask = mask[mask == True].index.to_numpy()
                 self._cache[member] = mask
 
-            self._cached = True
+            self._is_fully_cached = True
 
     def clear_cache(self):
         """Clears the cache of the Dimension."""
         self._cache = {}
-        self._cached = False
+        self._is_fully_cached = False
         self._members = None
         self._member_list = None
 
     def to_dict(self):
         d = {'column': self._column}
-        if self._alias:
+        if self._alias is not None:
             d['alias'] = self._alias
+        if self._dim_specific_caching:
+            d['caching'] = self._caching_strategy.name
         return d
 
 
@@ -206,7 +207,7 @@ class Dimension(Iterable, ABC):
         return self._column
 
     @property
-    def alias(self) -> str:
+    def alias(self) -> str | None:
         """
         Returns the alias of the dimension if defined, `None`otherwise.
         """
@@ -258,7 +259,7 @@ class Dimension(Iterable, ABC):
             member = (member,)
 
         # 1. check if the member definition is already in the cache...
-        if self._caching > CachingStrategy.NONE:
+        if self._caching_strategy > CachingStrategy.NONE:
             if member in self._cache:
                 if row_mask is None:
                     return self._cache[member]
@@ -278,7 +279,7 @@ class Dimension(Iterable, ABC):
                 break
 
         # 3. cache the result
-        if self._caching > CachingStrategy.NONE:
+        if self._caching_strategy > CachingStrategy.NONE:
             self._cache[member] = mask
 
         if row_mask is None:
@@ -293,7 +294,7 @@ class Dimension(Iterable, ABC):
                                          evaluate_as_range: bool = False) \
             -> tuple[bool, np.ndarray | None, np.ndarray | None]:
 
-        if self._caching > CachingStrategy.NONE:
+        if self._caching_strategy > CachingStrategy.NONE:
             if isinstance(member, list):
                 member = tuple(sorted(member))
 
@@ -327,7 +328,7 @@ class Dimension(Iterable, ABC):
         if member_mask.size == 0:
             return False, None, None
 
-        if self._caching > CachingStrategy.NONE:
+        if self._caching_strategy > CachingStrategy.NONE:
             self._cache[member] = member_mask
 
         # for consecutive members from the same single dimension, we need to first union the masks

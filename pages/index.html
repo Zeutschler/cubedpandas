@@ -437,18 +437,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#installation-and-getting-started" class="md-nav__link">
+  <a href="#getting-started" class="md-nav__link">
     <span class="md-ellipsis">
-      Installation and Getting Started
+      Getting Started
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#give-me-a-context-so-i-will-give-you-a-cell" class="md-nav__link">
+  <a href="#context-please-so-i-will-give-you-data" class="md-nav__link">
     <span class="md-ellipsis">
-      Give me a Context, so I will give you a Cell!
+      Context please, so I will give you data!
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pivot-drill-down-slice-dice" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pivot, Drill-Down, Slice &amp; Dice
     </span>
   </a>
   
@@ -654,7 +663,7 @@
         
   
   <span class="md-ellipsis">
-    `cubed method
+    cubed methods
   </span>
   
 
@@ -718,27 +727,6 @@
   
   <span class="md-ellipsis">
     Context
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="class-slice/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Slice
   </span>
   
 
@@ -1064,18 +1052,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#installation-and-getting-started" class="md-nav__link">
+  <a href="#getting-started" class="md-nav__link">
     <span class="md-ellipsis">
-      Installation and Getting Started
+      Getting Started
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#give-me-a-context-so-i-will-give-you-a-cell" class="md-nav__link">
+  <a href="#context-please-so-i-will-give-you-data" class="md-nav__link">
     <span class="md-ellipsis">
-      Give me a Context, so I will give you a Cell!
+      Context please, so I will give you data!
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pivot-drill-down-slice-dice" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pivot, Drill-Down, Slice &amp; Dice
     </span>
   </a>
   
@@ -1118,31 +1115,37 @@
 started with CubedPandas, a powerful and easy-to-use Python library for working with Pandas dataframes.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>CubedPandas is still in an early stage of its development. 
-Features are likely subject to change. Anyhow, your <a href="https://github.com/Zeutschler/cubedpandas/issues">Ideas, Issues</a> and <a href="https://github.com/Zeutschler/cubedpandas/discussions">Feedback</a> are very welcome!</p>
+<p>CubedPandas is in an early stage of development, your 
+<a href="https://github.com/Zeutschler/cubedpandas/issues">Ideas, Issues</a> and 
+<a href="https://github.com/Zeutschler/cubedpandas/discussions">Feedback</a> 
+are very welcome to make CubedPandas even more awesome. Many thanks!</p>
 </div>
 <h2 id="olap-comfort-meets-pandas-power">OLAP comfort meets Pandas power!<a class="headerlink" href="#olap-comfort-meets-pandas-power" title="Permanent link">&para;</a></h2>
-<p>CubedPandas aims to offer an <strong><em>easy, fast &amp; natural approach to work with Pandas dataframes</em></strong>. 
-To achieve this, CubedPandas wraps your dataframe into a lightweight, virtual multi-dimensional OLAP cube, 
-that can be analysed and used in a very natural, compact and readable and natural manner. </p>
+<p>dPandas offer a new <strong><em>easy, fast &amp; fun approach to navigate and analyze Pandas dataframes</em></strong>. 
+CubedPandas is inspired by the powerful concepts of OLAP (Online Analytical Processing) and MDX (Multi-Dimensional
+Expressions) and aims to bring the comfort and power of OLAP to Pandas dataframes.</p>
 <p>For novice users, CubedPandas can be a great help to get started with Pandas, as it hides some
 of the complexity and verbosity of Pandas dataframes. For experienced users, CubedPandas
-can be a great productivity booster, as it allows to write more compact, readable and
-maintainable code. Just to give you a first idea, this Pandas code:</p>
-<div class="highlight"><pre><span></span><code><span class="n">value</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;make&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Audi&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;engine&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;hybrid&#39;</span><span class="p">),</span> <span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+can be a productivity booster, as it allows you to write more compact, readable and
+maintainable code. Just to give you a first idea, this Pandas code</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Pandas: calculate the total revenue of all hybrid Audi cars</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;make&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Audi&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;engine&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;hybrid&#39;</span><span class="p">),</span> <span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </code></pre></div>
-<p>can be turned into this CubedPandas code:</p>
-<div class="highlight"><pre><span></span><code><span class="n">value</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">cubed</span><span class="o">.</span><span class="n">Audi</span><span class="o">.</span><span class="n">hybrid</span><span class="o">.</span><span class="n">price</span>
+<p>turns into this CubedPandas code</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># CubedPandas: calculate the total revenue of all hybrid Audi cars</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">cubed</span><span class="o">.</span><span class="n">Audi</span><span class="o">.</span><span class="n">hybrid</span><span class="o">.</span><span class="n">price</span>
 </code></pre></div>
 <p>As CubedPandas does not duplicate data or modifies the underlying dataframe and does not add 
-any performance penalty - but in some cases can even boost performance by factors - it can be 
-used in production use cases without any concerns and should be of great help in many use cases. </p>
-<p>And in <a href="https://jupyter.org">Jupyter notebooks</a>, CubedPandas will really 
-start to shine. For further information, please visit the 
-<a href="https://zeutschler.github.io/cubedpandas/">CubedPandas Documentation</a>.</p>
-<h3 id="installation-and-getting-started">Installation and Getting Started<a class="headerlink" href="#installation-and-getting-started" title="Permanent link">&para;</a></h3>
-<p>After installing CubedPandas using <code>pip install cubedpandas</code>, you are ready to go. 
-<em>'Cubing'</em> a Pandas dataframe is as simple as this:</p>
+any performance penalty - in some cases can even boost Pandas performance by factors - it can be 
+used in production without any concerns and should be of great help in many use cases. </p>
+<p>In <a href="https://jupyter.org">Jupyter notebooks</a>, CubedPandas will really start to shine. For further 
+information, please visit the <a href="https://zeutschler.github.io/cubedpandas/">CubedPandas Documentation</a>
+or try the included samples.</p>
+<h3 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h3>
+<p>After installing CubedPandas 
+<div class="highlight"><pre><span></span><code><span class="go">pip install cubedpandas</span>
+</code></pre></div>
+you are ready to go. Using CubedPandas is as simple as this:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">cubedpandas</span> <span class="kn">import</span> <span class="n">cubed</span>
 
@@ -1154,42 +1157,50 @@ start to shine. For further information, please visit the
                    <span class="s2">&quot;revenue&quot;</span><span class="p">:</span>  <span class="p">[</span><span class="mi">100</span><span class="p">,</span>      <span class="mi">150</span><span class="p">,</span>      <span class="mi">300</span><span class="p">,</span>      <span class="mi">200</span><span class="p">,</span>      <span class="mi">250</span><span class="p">,</span>      <span class="mi">350</span>     <span class="p">],</span>
                    <span class="s2">&quot;cost&quot;</span><span class="p">:</span>     <span class="p">[</span><span class="mi">50</span><span class="p">,</span>       <span class="mi">90</span><span class="p">,</span>       <span class="mi">150</span><span class="p">,</span>      <span class="mi">100</span><span class="p">,</span>      <span class="mi">150</span><span class="p">,</span>      <span class="mi">175</span>     <span class="p">]})</span>
 
-<span class="n">cdf</span> <span class="o">=</span> <span class="n">cubed</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># Wrapp your dataframe into a cube and start cubing!</span>
+<span class="n">cdf</span> <span class="o">=</span> <span class="n">cubed</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># Wrapp your dataframe into a cube and start using it!</span>
 </code></pre></div>
 <p>CubedPandas <strong>automatically infers a multi-dimensional schema</strong> from your Pandas dataframe which 
 defines a virtual <strong>Cube</strong> over the dataframe. By default, numeric columns of the dataframe 
 are considered as <strong>Measures</strong> - <em>the numeric values to analyse &amp; aggregate</em> - all other columns are 
 considered as <strong>Dimensions</strong> - <em>to filter, navigate and view the data</em>. The individual values in a 
 dimension column are called the <strong>Members</strong> of the dimension. In the example above, column <code>channel</code> 
-becomes a dimension with the two members <code>Online</code> and <code>Retail</code>, revenue and cost are the measures.</p>
+becomes a dimension with the two members <code>Online</code> and <code>Retail</code>, <code>revenue</code> and <code>cost</code> are our measures.</p>
 <p>Although rarely required, you can also define your own schema. Schemas are quite powerful and flexible, 
 as they will allow you to define dimensions and measures, aliases and (planned for upcoming releases) 
-also custom aggregations, business logic, number formating, linked cubes and much more. </p>
-<h3 id="give-me-a-context-so-i-will-give-you-a-cell">Give me a Context, so I will give you a Cell!<a class="headerlink" href="#give-me-a-context-so-i-will-give-you-a-cell" title="Permanent link">&para;</a></h3>
+also custom aggregations, business logic, number formating, linked cubes (star-schemas) and much more. </p>
+<h3 id="context-please-so-i-will-give-you-data">Context please, so I will give you data!<a class="headerlink" href="#context-please-so-i-will-give-you-data" title="Permanent link">&para;</a></h3>
 <p>One key feature of CubePandas is an easy &amp; intuitive access to individual <strong>Data Cells</strong> in 
-multi-dimensional data space. To do so, you'll need to define a multi-dimensional <strong>Context</strong> and 
+multi-dimensional data space. To do so, you'll need to define a multi-dimensional <strong>Context</strong> so 
 CubedPandas will evaluate, aggregate (<code>sum</code> by default) and return the requested value from 
 the underlying dataframe.</p>
-<p><strong>Context objects behave like numbers</strong> (float, int), so you can use them directly in arithmetic 
+<p><strong>Context objects behave like normal numbers</strong> (float, int), so you can use them directly in arithmetic 
 operations. In the following examples, all addresses will refer to the exactly same rows from the dataframe
 and thereby all return the same value of <code>100</code>. </p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Let Pandas set the scene...</span>
 <span class="n">a</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;product&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Apple&quot;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Online&quot;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;customer&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Peter&quot;</span><span class="p">),</span> <span class="s2">&quot;revenue&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
 <span class="c1"># Can we do better with CubedPandas? </span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">cdf</span><span class="o">.</span><span class="n">product</span><span class="p">[</span><span class="s2">&quot;Apple&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">channel</span><span class="p">[</span><span class="s2">&quot;Online&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">customer</span><span class="p">[</span><span class="s2">&quot;Peter&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">revenue</span>  <span class="c1"># explicit, readable, flexible and fast  </span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">cdf</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">Apple</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">Online</span><span class="o">.</span><span class="n">customer</span><span class="o">.</span><span class="n">Peter</span><span class="o">.</span><span class="n">revenue</span>  <span class="c1"># identical, if member names are Python-compliant</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">cdf</span><span class="p">[</span><span class="s2">&quot;product:Apple&quot;</span><span class="p">,</span> <span class="s2">&quot;channel:Online&quot;</span><span class="p">,</span> <span class="s2">&quot;customer:Peter&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">revenue</span>  <span class="c1"># explicit, readable, flexible and fast  </span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">cdf</span><span class="o">.</span><span class="n">product</span><span class="p">[</span><span class="s2">&quot;Apple&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">channel</span><span class="p">[</span><span class="s2">&quot;Online&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">customer</span><span class="p">[</span><span class="s2">&quot;Peter&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">revenue</span>  <span class="c1"># ...better, if column names are Python-compliant  </span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">cdf</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">Apple</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">Online</span><span class="o">.</span><span class="n">customer</span><span class="o">.</span><span class="n">Peter</span><span class="o">.</span><span class="n">revenue</span>  <span class="c1"># ...even better, if member names are Python-compliant</span>
 
-<span class="c1"># If there are no ambiguities in your data - can be easily checked - then you can use this shorthand forms:</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">cdf</span><span class="p">[</span><span class="s2">&quot;Online&quot;</span><span class="p">,</span> <span class="s2">&quot;Apple&quot;</span><span class="p">,</span> <span class="s2">&quot;Peter&quot;</span><span class="p">,</span> <span class="s2">&quot;revenue&quot;</span><span class="p">]</span>
-<span class="n">e</span> <span class="o">=</span> <span class="n">cdf</span><span class="o">.</span><span class="n">Online</span><span class="o">.</span><span class="n">Apple</span><span class="o">.</span><span class="n">Peter</span><span class="o">.</span><span class="n">revenue</span>
-<span class="n">f</span> <span class="o">=</span> <span class="n">cdf</span><span class="o">.</span><span class="n">Online</span><span class="o">.</span><span class="n">Apple</span><span class="o">.</span><span class="n">Peter</span>  <span class="c1"># if &#39;revenue&#39; is the default measure (it is), so it can be omitted</span>
+<span class="c1"># If there are no ambiguities in your dataframe - what can be easily checked - then you can use this shorthand forms:</span>
+<span class="n">e</span> <span class="o">=</span> <span class="n">cdf</span><span class="p">[</span><span class="s2">&quot;Online&quot;</span><span class="p">,</span> <span class="s2">&quot;Apple&quot;</span><span class="p">,</span> <span class="s2">&quot;Peter&quot;</span><span class="p">,</span> <span class="s2">&quot;revenue&quot;</span><span class="p">]</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">cdf</span><span class="o">.</span><span class="n">Online</span><span class="o">.</span><span class="n">Apple</span><span class="o">.</span><span class="n">Peter</span><span class="o">.</span><span class="n">revenue</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">cdf</span><span class="o">.</span><span class="n">Online</span><span class="o">.</span><span class="n">Apple</span><span class="o">.</span><span class="n">Peter</span>  <span class="c1"># as &#39;revenue&#39; is the default (first) measure of the cube, it can be omitted</span>
 
-<span class="k">assert</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span> <span class="o">==</span> <span class="n">c</span> <span class="o">==</span> <span class="n">d</span> <span class="o">==</span> <span class="n">e</span> <span class="o">==</span> <span class="n">f</span> <span class="o">==</span> <span class="mi">100</span>
+<span class="k">assert</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span> <span class="o">==</span> <span class="n">c</span> <span class="o">==</span> <span class="n">d</span> <span class="o">==</span> <span class="n">e</span> <span class="o">==</span> <span class="n">f</span> <span class="o">==</span> <span class="n">g</span> <span class="o">==</span> <span class="mi">100</span>
 </code></pre></div>
-<p>Context objects act as filters on the underlying dataframe. So you can use also CubedPandas for 
+<p>Context objects also act as <strong>filters on the underlying dataframe</strong>. So you can use also CubedPandas for 
 fast and easy filtering only, e.g. like this:</p>
 <div class="highlight"><pre><span></span><code><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">cubed</span><span class="o">.</span><span class="n">product</span><span class="p">[</span><span class="s2">&quot;Apple&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">channel</span><span class="p">[</span><span class="s2">&quot;Online&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">df</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">cubed</span><span class="o">.</span><span class="n">Apple</span><span class="o">.</span><span class="n">Online</span><span class="o">.</span><span class="n">df</span> <span class="c1"># short form, if column names are Python-compliant and there are no ambiguities</span>
+</code></pre></div>
+<h3 id="pivot-drill-down-slice-dice">Pivot, Drill-Down, Slice &amp; Dice<a class="headerlink" href="#pivot-drill-down-slice-dice" title="Permanent link">&para;</a></h3>
+<p>The Pandas pivot table is a very powerful tool. Unfortunately, it is quite verbose and very hard to master. 
+CubedPandas offers the <code>slice</code> method to create pivot tables in a more intuitive and easy way, e.g. by default</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Let&#39;s create a simple pivot table with the revenue for dimensions products and channels</span>
+<span class="n">cdf</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="s2">&quot;product&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">measures</span><span class="o">=</span><span class="s2">&quot;revenue&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>For further information, samples and a complete feature list as well as valuable tips and tricks,
 please visit the <a href="https://zeutschler.github.io/cubedpandas/">CubedPandas Documentation</a>.</p>

@@ -86,6 +86,7 @@ plugins:
 
         handlers:
           python:
+            paths: [ cubedpandas ]
             options:
               docstring_style: google
               docstring_section_style: list
@@ -121,7 +122,6 @@ nav:
       - 'Schema': 'class-schema.md'
       - 'Cube': 'class-cube.md'
       - 'Context': 'class-context.md'
-      - 'Slice': 'class-slice.md'
       - 'Dimension': 'class-dimension.md'
       - 'Measure': 'class-measure.md'
   - 'Blog':

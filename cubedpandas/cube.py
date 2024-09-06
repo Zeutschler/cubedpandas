@@ -2,48 +2,16 @@
 
 from __future__ import annotations
 import sys
-from types import ModuleType, FunctionType
-from gc import get_referents
 from typing import Any
 import pandas as pd
 
 from cubedpandas.settings import CubeSettings
 from cubedpandas.schema.schema import Schema
 from cubedpandas.schema.measure_collection import MeasureCollection
-from cubedpandas.schema.dimension import Dimension
 from cubedpandas.schema.dimension_collection import DimensionCollection
 from cubedpandas.ambiguities import Ambiguities
-from cubedpandas.settings import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.settings import CachingStrategy
 from cubedpandas.context import Context, CubeContext, FilterContext
-from cubedpandas.slice import Slice
-
-
-class CubeLinks:
-    def __init__(self, parent: Cube):
-        self._parent: Cube = parent
-        self._links: list[Cube] = []
-
-    def __len__(self):
-        return len(self._links)
-
-    def __getitem__(self, index):
-        return self._links[index]
-
-    def add(self, cube: Cube):
-        if not cube in self._links:
-            self._links.append(cube)
-
-    @property
-    def parent(self) -> Cube:
-        return self._parent
-
-    @property
-    def links(self) -> list[Cube]:
-        return self._links
-
-    @property
-    def count(self) -> int:
-        return len(self._links)
 
 
 class Cube:
@@ -62,8 +30,7 @@ class Cube:
                  ignore_member_key_errors: bool = True,
                  ignore_case: bool = True,
                  ignore_key_errors: bool = True,
-                 caching: CachingStrategy = CachingStrategy.LAZY,
-                 eager_evaluation: bool = True,
+                 caching: CachingStrategy = CachingStrategy.LAZY
                  ):
         """
         Wraps a Pandas dataframes into a cube to provide convenient multi-dimensional access
@@ -108,23 +75,10 @@ class Cube:
                 (optional) A caching strategy to be applied for accessing the cube. recommended
                 value for almost all use cases is `CachingStrategy.LAZY`, which caches
                 dimension members on first access. Caching can be beneficial for performance, but
-                may also consume more memory. To cache all dimension members eagerly (on
-                initialization of the cube), set this parameter to `CachingStrategy.EAGER`.
+                may also consume more memory. To cache all dimension members on
+                initialization of the cube, set caching to `CachingStrategy.EAGER`.
                 Please refer to the documentation of 'CachingStrategy' for more information.
                 Default value is `CachingStrategy.LAZY`.
-
-            caching_threshold:
-                (optional) The threshold as 'number of members' for EAGER caching only. If the number of
-                distinct members in a dimension is below this threshold, the dimension will be cached
-                eargerly, if caching is set to `CacheStrategy.EAGER` or `CacheStrategy.FULL`. Above this
-                threshold, the dimension will be cached lazily.
-                Default value is `EAGER_CACHING_THRESHOLD`, equivalent to 256 unique members per dimension.
-
-            eager_evaluation:
-                (optional) If set to `True`, the cube will evaluate the context eagerly, i.e. when the context
-                is created. Eager evaluation is recommended for most use cases, as it simplifies debugging and
-                error handling. If set to `False`, the cube will evaluate the context lazily, i.e. only when
-                the value of a context is accessed/requested.
 
         Returns:
             A new Cube object that wraps the dataframe.
@@ -149,16 +103,13 @@ class Cube:
             self._settings.ignore_member_key_errors = ignore_member_key_errors
             self._settings.ignore_case = ignore_case
             self._settings.ignore_key_errors = ignore_key_errors
-            self._settings.eager_evaluation = eager_evaluation
 
 
         self._convert_values_to_python_data_types: bool = True
         self._df: pd.DataFrame = df
         self._exclude: str | list | tuple | None = exclude
         self._caching: CachingStrategy = caching
-        self._caching_threshold: int = EAGER_CACHING_THRESHOLD
         self._member_cache: dict = {}
-        self._cube_links = CubeLinks(self)
         self._runs_in_jupyter = Cube._runs_in_jupyter()
 
         # get or prepare the cube schema and setup dimensions and measures
@@ -226,57 +177,20 @@ class Cube:
         """
         return len(self._df)
 
-    @property
-    def size_in_bytes(self) -> int:
-        """
-        Returns:
-        The size in bytes allocated by the `Cube` object instance.
-        The memory allocation by the underlying dataframe is not included.
-        """
-        df_memory = self._df.memory_usage(deep=True).sum()
-        own_memory = self._getsize(self) - df_memory
-        return df_memory + own_memory
-
-    @staticmethod
-    def _getsize(obj):
-        """Returns the memory usage of an object in bytes."""
-        blacklist = type, ModuleType, FunctionType, pd.DataFrame
-        if isinstance(obj, blacklist):
-            raise TypeError('getsize() does not take argument of type: ' + str(type(obj)))
-        seen_ids = set()
-        size = 0
-        objects = [obj]
-        while objects:
-            need_referents = []
-            for obj in objects:
-                if not isinstance(obj, blacklist) and id(obj) not in seen_ids:
-                    seen_ids.add(id(obj))
-                    size += sys.getsizeof(obj)
-                    need_referents.append(obj)
-            objects = get_referents(*need_referents)
-        return size
-
     def _warm_up_cache(self):
         """Warms up the cache of the Cube, if required."""
         if self._caching >= CachingStrategy.EAGER:
-            for dimension in self._dimensions:
-                dimension._cache_warm_up(caching_threshold=self._caching_threshold)
-
-    def clear_cache(self):
-        """
-        Clears the cache of the Cube for all dimensions.
-        """
-        self._member_cache = {}
-        for dimension in self._dimensions:
-            dimension.clear_cache()
-
+            for dimension in self._schema.dimensions:
+                dimension._cache_warm_up()
     # endregion
 
     # region Data Access Methods
-    @property
-    def context(self) -> Context:
-        context = CubeContext(self)
-        return context
+
+    # Note: deprecated in favor of the __getattr__ and __getitem__ methods
+    # @property
+    # def context(self) -> Context:
+    #     context = CubeContext(self)
+    #     return context
 
     def __getattr__(self, name) -> Context | CubeContext:
         """
@@ -361,34 +275,77 @@ class Cube:
             PermissionError:
                 If write back is attempted on a read-only Cube.
         """
-        raise NotImplementedError("Not implemented yet")
-        # if self._read_only:
-        #    raise PermissionError("Write back is not permitted on a read-only cube.")
-        # dest_slice: Cell = Cell(self, address=address)
-        # self._delete(dest_slice._row_mask)
+        raise NotImplementedError("Deletion not implemented yet.")
 
-    def slice(self, rows=None, columns=None, config=None) -> Slice:
+    def slice(self, rows=None, columns=None, measures=None, aggfunc=None,
+              sub_totals: bool = True, sort_values: bool = False,
+              max_rows: bool | int = False, max_columns: bool | int = True,
+              config=None) -> pd.DataFrame:
         """
-        Returns a new slice for the cube. A slice represents a table-alike view to data in the cube.
-        Typically, a slice has rows, columns and filters, comparable to an Excel PivotTable.
-        Useful for printing in Jupyter, visual data analysis and reporting purposes.
-        Slices can be easily 'navigated' by setting and changing rows, columns and filters.
+        Creates and returns a Pandas PivotTable based on the current context. Using the `slice` method
+        sophisticated PivotTables can be easily created for printing in Jupyter, visual data analysis and
+        reporting purposes by setting and changing rows, columns and filters.
 
-        Please refer to the documentation of the Slice class for further details.
+        Please refer to the documentation of the slice methods for further details.
+
+        Args:
+            rows:
+                (optional) The rows of the slice. Can contain be one or more dimensions with
+                or without a member definitions or measures or `None`.
+
+            columns:
+                (optional) The columns of the slice. Can contain be one or more dimensions with
+                or without a member definitions or measures or `None`.
+
+            measures:
+                (optional) The measures/values of the slice. Can be one or more measures, or `None`.
+
+            aggfunc:
+                (optional) The aggregation function or functions to be used for the pivot table.
+                Default value is 'sum'.
+
+            sub_totals:
+                (optional) If sub-totals should be displayed in the pivot table. Default is `True`.
+
+            sort_values:
+                (optional) If the values should be sorted in the pivot table. Default is `True`.
+
+            max_rows:
+                (optional) The maximum number of rows to be displayed in the pivot table. Either a positive
+                integer or a boolean value. If set to `True`, all rows will be shown. If set to `False`,
+                the default number of rows (as defined in Pandas) will be shown. Default value is `False`.
+
+            max_columns:
+                (optional) The maximum number of columns to be displayed in the pivot table. Either a positive
+                integer or a boolean value. If set to `True`, all columns will be shown. If set to `False`,
+                the default number of columns (as defined in Pandas) will be shown. Default value is `True`.
+
+            config:
+                (optional) A slice configuration as a dictionary, a json string or a path to an existing
+                file containing the configuration. Slice configurations can be used to define a more
+                complex layout. Please refer to the documentation of the slice method for further details.
+
+        Returns:
+            A Pandas DataFrame representing the pivot table.
+
+        Raises:
+            ValueError:
+                If the values for the paramerters rows, columns, filters or config are invalid.
 
         Samples:
             >>> cdf = cubed(df)
-            >>> cdf.slice(rows="product", columns="region", filters={"year": 2020})
+            >>> cdf.slice(rows="product", columns="region")
             ------------------------------------
-            year: 2000
-            ------------------------------------
-            |         | (all) | North | South |
+            |  Sales  | (all) | North | South |
             ------------------------------------
             | (all)   |   550 |   300 |   250 |
             | Apple   |   200 |   100 |   100 |
             | Banana  |   350 |   200 |   150 |
         """
-        return CubeContext(self).slice(rows=rows, columns=columns, config=config)
+        return CubeContext(self).slice(rows=rows, columns=columns, measures=measures, aggfunc=aggfunc,
+                                       sub_totals=sub_totals, sort_values=sort_values,
+                                       max_rows=max_rows, max_columns=max_columns,
+                                       config=config)
 
     # endregion
 

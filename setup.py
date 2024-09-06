@@ -16,19 +16,17 @@ from cubedpandas import VERSION as CUBEDPANDAS_VERSION
 # https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
 
 VERSION = CUBEDPANDAS_VERSION
-DESCRIPTION = "CubedPandas - Multi-dimensional data analysis for Pandas dataframes."
+DESCRIPTION = "CubedPandas - OLAP comfort meets Pandas power!"
 LONG_DESCRIPTION = """
-CubedPandas provides an easy, intuitive, fast and fun approach to perform multi-dimensional 
-numerical data analysis & processing on Pandas dataframes. CubedPandas wraps almost any
-dataframe into a multi-dimensional cube, which can be aggregated, sliced, diced, filtered, 
-updated and much more. 
+CubedPandas offer a new ***easy, fast & fun approach to navigate and analyze Pandas dataframes***. 
+CubedPandas is inspired by the powerful concepts of OLAP (Online Analytical Processing) and MDX (Multi-Dimensional
+Expressions) and aims to bring the comfort and power of OLAP to Pandas dataframes.
 
-CubedPandas is inspired by OLAP cubes (online analytical processing), which are typically used
-for reporting, business intelligence, data warehousing and financial analysis purposes.
+For novice users, CubedPandas can be a great help to get started with Pandas, as it hides some
+of the complexity and verbosity of Pandas dataframes. For experienced users, CubedPandas
+can be a productivity booster, as it allows you to write more compact, readable and
+maintainable code.
 
-IMPORTANT NOTE: 
-CubedPandas is under active development, not yet feature complete and may be subject to breaking changes.
- 
 Just give it a try...   
 """
 
@@ -44,7 +42,7 @@ setup(
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Scientific/Engineering :: Mathematics",
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Environment :: Console",
@@ -75,7 +73,7 @@ setup(
         'python-dateutil',
     ],
     test_suite="cubedpandas.tests",
-    packages=['cubedpandas', 'cubedpandas.context', 'cubedpandas.schema', 'cubedpandas.slice', 'tests'],
+    packages=['cubedpandas', 'cubedpandas.context', 'cubedpandas.schema', 'tests'],
     project_urls={
         'Homepage': 'https://zeutschler.github.io/cubedpandas/',
         'Documentation': 'https://zeutschler.github.io/cubedpandas/',

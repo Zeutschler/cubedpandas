@@ -7,7 +7,7 @@ from cubedpandas.schema.dimension import Dimension
 from cubedpandas.schema.dimension_collection import DimensionCollection
 from cubedpandas.schema.member import Member, MemberSet
 
-from cubedpandas.settings import CachingStrategy, EAGER_CACHING_THRESHOLD
+from cubedpandas.settings import CachingStrategy
 from cubedpandas.cube import Cube
 from cubedpandas.context.enums import ContextFunction, ContextAllocation, BooleanOperation
 
@@ -25,9 +25,7 @@ from cubedpandas.context.measure_context import MeasureContext
 from cubedpandas.context.member_context import MemberContext
 from cubedpandas.context.member_not_found_context import MemberNotFoundContext
 
-from cubedpandas.slice.slice import Slice
-
-__version__ = "0.2.24"
+__version__ = "0.2.27"
 VERSION = __version__
 
 __all__ = [
@@ -45,7 +43,6 @@ __all__ = [
     "CubedPandasAccessor",
     "Dimension",
     "DimensionCollection",
-    "EAGER_CACHING_THRESHOLD",
     "FilterContext",
     "FunctionContext",
     "Measure",
@@ -56,6 +53,5 @@ __all__ = [
     "MemberNotFoundContext",
     "MemberSet",
     "Schema",
-    "Slice",
     "VERSION"
 ]

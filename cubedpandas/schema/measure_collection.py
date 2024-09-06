@@ -20,7 +20,8 @@ class MeasureCollection(Iterable[Measure]):
 
     def __iter__(self) -> MeasureCollection:
         self._counter = 0
-        self._measure_list = list(self._measures.values())
+        self._measure_list = list(
+            set(self._measures.values()))  # unique values needed, duplicates may be caused by aliasing
         return self
 
     def __next__(self) -> Measure:
