@@ -1,4 +1,4 @@
-# SalesDataModel class
+# Measure class
 
 ::: cubedpandas.schema.Measure
 

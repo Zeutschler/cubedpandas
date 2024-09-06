@@ -111,7 +111,7 @@ plugins:
 nav:
   - Home:
     - 'Welcome': 'index.md'
-    - 'Use Cases': 'use-cases.md'
+    - 'Best Practise': 'best-practise.md'
     - 'FAQ': 'faq.md'
     - 'Installation': 'installation.md'
     - 'Basic Usage': 'basic-usage.md'
