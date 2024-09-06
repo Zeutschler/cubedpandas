@@ -15,11 +15,6 @@
 
 -----------------
 
-***Remark:*** CubedPandas is in an early stage of development, your
-[Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and
-[Feedback](https://github.com/Zeutschler/cubedpandas/discussions)
-are very welcome to make CubedPandas even more awesome. Many thanks!
-
 CubedPandas offer a new ***easy, fast & fun approach to navigate and analyze Pandas dataframes***.
 CubedPandas is inspired by the powerful concepts of OLAP (Online Analytical Processing) and MDX (Multi-Dimensional
 Expressions) and aims to bring the comfort and power of OLAP to Pandas dataframes.
@@ -51,13 +46,13 @@ or try the included samples.
 
 ### Getting Started
 
-After installing CubedPandas
+CubedPandas is available on pypi.org (https://pypi.org/project/cubedpandas/) and can be installed by
 
 ```console
 pip install cubedpandas
 ```
 
-you are ready to go. Using CubedPandas is as simple as this:
+Using CubedPandas is as simple as wrapping any Pandas dataframe into a cube like this:
 
 ```python
 import pandas as pd
@@ -144,5 +139,12 @@ For general questions, discussions and feedback, please use the
 If you have fallen in love with CubedPandas or find it otherwise valuable, 
 please consider to [become a sponsor of the CubedPandas project](https://github.com/sponsors/Zeutschler) so we 
 can push the project forward faster and make CubePandas even more awesome.
+
+### Your feedback, ideas and support are very welcome!
+
+CubedPandas is in an early stage of development, your
+[Ideas, Issues](https://github.com/Zeutschler/cubedpandas/issues) and
+[Feedback](https://github.com/Zeutschler/cubedpandas/discussions)
+are very welcome to make CubedPandas even more awesome. Many thanks!
 
 *...happy cubing!*

@@ -25,7 +25,7 @@ from cubedpandas.context.measure_context import MeasureContext
 from cubedpandas.context.member_context import MemberContext
 from cubedpandas.context.member_not_found_context import MemberNotFoundContext
 
-__version__ = "0.2.27"
+__version__ = "0.2.28"
 VERSION = __version__
 
 __all__ = [

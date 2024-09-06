@@ -11,7 +11,7 @@ started with CubedPandas, a powerful and easy-to-use Python library for working 
 
 ## OLAP comfort meets Pandas power!
  
-dPandas offer a new ***easy, fast & fun approach to navigate and analyze Pandas dataframes***. 
+CubedPandas offer a new ***easy, fast & fun approach to navigate and analyze Pandas dataframes***.
 CubedPandas is inspired by the powerful concepts of OLAP (Online Analytical Processing) and MDX (Multi-Dimensional
 Expressions) and aims to bring the comfort and power of OLAP to Pandas dataframes.
 
@@ -32,22 +32,23 @@ turns into this CubedPandas code
 value = df.cubed.Audi.hybrid.price
 ```
 
-As CubedPandas does not duplicate data or modifies the underlying dataframe and does not add 
-any performance penalty - in some cases can even boost Pandas performance by factors - it can be 
-used in production without any concerns and should be of great help in many use cases. 
+As CubedPandas does not duplicate data or modifies the underlying dataframe and does not add
+any performance penalty - in some cases can even boost Pandas performance by factors - it can be
+used in production without any concerns and should be of great help in many use cases.
 
-In [Jupyter notebooks](https://jupyter.org), CubedPandas will really start to shine. For further 
+In [Jupyter notebooks](https://jupyter.org), CubedPandas will really start to shine. For further
 information, please visit the [CubedPandas Documentation](https://zeutschler.github.io/cubedpandas/)
 or try the included samples.
 
-
 ### Getting Started
 
-After installing CubedPandas 
+CubedPandas is available on pypi.org (https://pypi.org/project/cubedpandas/) and can be installed by
+
 ```console
 pip install cubedpandas
 ```
-you are ready to go. Using CubedPandas is as simple as this:
+
+Using CubedPandas is as simple as wrapping any Pandas dataframe into a cube like this:
 
 ```python
 import pandas as pd
@@ -68,20 +69,20 @@ CubedPandas **automatically infers a multi-dimensional schema** from your Pandas
 defines a virtual **Cube** over the dataframe. By default, numeric columns of the dataframe 
 are considered as **Measures** - *the numeric values to analyse & aggregate* - all other columns are 
 considered as **Dimensions** - *to filter, navigate and view the data*. The individual values in a 
-dimension column are called the **Members** of the dimension. In the example above, column `channel` 
+dimension column are called the **Members** of the dimension. In the example above, column `channel`
 becomes a dimension with the two members `Online` and `Retail`, `revenue` and `cost` are our measures.
 
 Although rarely required, you can also define your own schema. Schemas are quite powerful and flexible, 
-as they will allow you to define dimensions and measures, aliases and (planned for upcoming releases) 
-also custom aggregations, business logic, number formating, linked cubes (star-schemas) and much more. 
+as they will allow you to define dimensions and measures, aliases and (planned for upcoming releases)
+also custom aggregations, business logic, number formating, linked cubes (star-schemas) and much more.
 
 ### Context please, so I will give you data!
-One key feature of CubePandas is an easy & intuitive access to individual **Data Cells** in 
-multi-dimensional data space. To do so, you'll need to define a multi-dimensional **Context** so 
+One key feature of CubePandas is an easy & intuitive access to individual **Data Cells** in
+multi-dimensional data space. To do so, you'll need to define a multi-dimensional **Context** so
 CubedPandas will evaluate, aggregate (`sum` by default) and return the requested value from 
 the underlying dataframe.
 
-**Context objects behave like normal numbers** (float, int), so you can use them directly in arithmetic 
+**Context objects behave like normal numbers** (float, int), so you can use them directly in arithmetic
 operations. In the following examples, all addresses will refer to the exactly same rows from the dataframe
 and thereby all return the same value of `100`. 
 
@@ -91,7 +92,8 @@ a = df.loc[(df["product"] == "Apple") & (df["channel"] == "Online") & (df["custo
 
 # Can we do better with CubedPandas? 
 b = cdf["product:Apple", "channel:Online", "customer:Peter"].revenue  # explicit, readable, flexible and fast  
-c = cdf.product["Apple"].channel["Online"].customer["Peter"].revenue  # ...better, if column names are Python-compliant  
+c = cdf.product["Apple"].channel["Online"].customer[
+    "Peter"].revenue  # ...better, if column names are Python-compliant  
 d = cdf.product.Apple.channel.Online.customer.Peter.revenue  # ...even better, if member names are Python-compliant
 
 # If there are no ambiguities in your dataframe - what can be easily checked - then you can use this shorthand forms:
@@ -102,18 +104,18 @@ g = cdf.Online.Apple.Peter  # as 'revenue' is the default (first) measure of the
 assert a == b == c == d == e == f == g == 100
 ```
 
-Context objects also act as **filters on the underlying dataframe**. So you can use also CubedPandas for 
+Context objects also act as **filters on the underlying dataframe**. So you can use also CubedPandas for
 fast and easy filtering only, e.g. like this:
 
 ```python   
 df = df.cubed.product["Apple"].channel["Online"].df
-df = df.cubed.Apple.Online.df # short form, if column names are Python-compliant and there are no ambiguities
+df = df.cubed.Apple.Online.df  # short form, if column names are Python-compliant and there are no ambiguities
 ```
 
 ### Pivot, Drill-Down, Slice & Dice
-The Pandas pivot table is a very powerful tool. Unfortunately, it is quite verbose and very hard to master. 
-CubedPandas offers the `slice` method to create pivot tables in a more intuitive and easy way, e.g. by default
 
+The Pandas pivot table is a very powerful tool. Unfortunately, it is quite verbose and very hard to master.
+CubedPandas offers the `slice` method to create pivot tables in a more intuitive and easy way, e.g. by default
 
 ```python   
 # Let's create a simple pivot table with the revenue for dimensions products and channels
@@ -133,5 +135,6 @@ For general questions, discussions and feedback, please use the
 If you have fallen in love with CubedPandas or find it otherwise valuable, 
 please consider to [become a sponsor of the CubedPandas project](https://github.com/sponsors/Zeutschler) so we 
 can push the project forward faster and make CubePandas even more awesome.
+
 
 *...happy cubing!*
