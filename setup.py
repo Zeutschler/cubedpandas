@@ -44,7 +44,7 @@ setup(
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Scientific/Engineering :: Mathematics",
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Environment :: Console",
@@ -75,7 +75,7 @@ setup(
         'python-dateutil',
     ],
     test_suite="cubedpandas.tests",
-    packages=['cubedpandas', 'cubedpandas.context', 'cubedpandas.schema', 'cubedpandas.slice', 'tests'],
+    packages=['cubedpandas', 'cubedpandas.context', 'cubedpandas.schema', 'tests'],
     project_urls={
         'Homepage': 'https://zeutschler.github.io/cubedpandas/',
         'Documentation': 'https://zeutschler.github.io/cubedpandas/',
