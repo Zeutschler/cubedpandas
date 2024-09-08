@@ -26,6 +26,10 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
+      - run: pip install numpy
+      - run: pip install pandas
+      - run: pip install python-dateutil
+      - run: pip install cubedpandas
       - run: pip install mkdocs
       - run: pip install mkdocs-material
       - run: pip install mkdocs-exclude
