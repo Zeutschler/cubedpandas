@@ -38,5 +38,7 @@ To stop the local web server, press `CTRL+C` in the command line tool. That's al
 Additional information on how to use MkDocs can be found in the [MkDocs documentation](https://www.mkdocs.org/)
 and in the following guide [RealPython: Build Your Python Project Documentation With MkDocs](https://realpython.com/python-project-documentation-with-mkdocs/).
 
-
+For GitHub Action setup please see
+the [GitHub Action documentation](https://docs.github.com/en/actions/learn-github-actions).
+and https://github.com/mkdocs/mkdocs/discussions/3432
 

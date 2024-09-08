@@ -11,6 +11,7 @@
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/presentations" />
       <excludeFolder url="file://$MODULE_DIR$/pages" />
+      <excludeFolder url="file://$MODULE_DIR$/site" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.11" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
