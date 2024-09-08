@@ -48,9 +48,7 @@ class CubedPandasAccessor:
         to the underlying dataframe for easy aggregation, filtering, slicing, reporting and
         data manipulation and write back.
 
-        Args:
-            df:
-                The Pandas dataframe to be wrapped into the CubedPandas `Cube` object.
+        Arguments:
 
             schema:
                 (optional) A schema that defines the dimensions and measures of the Cube. If not provided, the schema will be inferred from the dataframe if
@@ -68,6 +66,12 @@ class CubedPandasAccessor:
                 If read_only is set to `True`, write back attempts will raise an `PermissionError`.
                 If read_only is set to `False`, write backs are permitted and will be pushed back
                 to the underlying dataframe.
+                Default value is `True`.
+
+            ignore_member_key_errors:
+                (optional) If set to `True`, key errors for members of dimensions will be ignored and
+                cell values will return 0.0 or `None` if no matching record exists. If set to `False`,
+                key errors will be raised as exceptions when accessing cell values for non-existing members.
                 Default value is `True`.
 
             ignore_case:

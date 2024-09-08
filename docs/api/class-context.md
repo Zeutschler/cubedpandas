@@ -1,4 +1,4 @@
-# Generator class
+# CubedPandas Context Class
 
 ::: cubedpandas.context.context.Context
 

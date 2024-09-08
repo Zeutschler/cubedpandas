@@ -1,4 +1,4 @@
-# SalesDataModel class
+# CubedPandas Schema Class
 
 ::: cubedpandas.schema.Schema
 

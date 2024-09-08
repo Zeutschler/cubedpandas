@@ -1,4 +1,3 @@
-
 site_name: cubedpandas
 site_description: Multi-dimensional data analysis for Pandas dataframes.
 site_author: Thomas Zeutschler
@@ -18,7 +17,7 @@ extra:
     property: G-P329GF2G3W
   consent:
     title: Cookie consent
-    description: >- 
+    description: >-
       We use cookies to recognize your repeated visits and preferences, as well
       as to measure the effectiveness of our documentation and whether users
       find what they're searching for. With your consent, you're helping us to
@@ -46,6 +45,7 @@ theme:
     - navigation.tabs
     - navigation.expand
     - search.suggest
+    - content.code.copy
 
   palette:
     # primary: custom
@@ -68,11 +68,19 @@ theme:
 
 markdown_extensions:
   - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
   - pymdownx.details
   - pymdownx.superfences
   - toc:
       permalink: true
   - tables
+  - attr_list
+  - md_in_html
 
 
 plugins:
@@ -81,27 +89,27 @@ plugins:
   - blog
 
   - mkdocstrings:
-        enabled: !ENV [ENABLE_MKDOCSTRINGS, true]
-        default_handler: python
+      enabled: !ENV [ ENABLE_MKDOCSTRINGS, true ]
+      default_handler: python
 
-        handlers:
-          python:
-            paths: [ cubedpandas ]
-            options:
-              docstring_style: google
-              docstring_section_style: list
-              ignore_init_summary: false
-              show_if_no_docstring: false
-              show_docstring_description: true
-              show_docstring_examples: true
-              show_docstring_raises: true
-              show_docstring_returns: true
-              show_docstring_warns: true
-              show_docstring_yields: true
-              show_source: false
-              show_bases: true
+      handlers:
+        python:
+          paths: [ cubedpandas ]
+          options:
+            docstring_style: google
+            docstring_section_style: list
+            ignore_init_summary: false
+            show_if_no_docstring: false
+            show_docstring_description: true
+            show_docstring_examples: true
+            show_docstring_raises: true
+            show_docstring_returns: true
+            show_docstring_warns: true
+            show_docstring_yields: true
+            show_source: false
+            show_bases: true
 
-              members_order: source
+            members_order: source
   - mike:    # see https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
   - exclude:
       glob:
@@ -110,23 +118,31 @@ plugins:
 
 nav:
   - Home:
-    - 'Welcome': 'index.md'
-    - 'FAQ': 'faq.md'
-    - 'Installation': 'installation.md'
-    - 'Getting Started': 'basic-usage.md'
-    - 'Advanced Usage': 'advanced-usage.md'
-    - 'Best Practises': 'best-practises.md'
-    - 'Documentation':
-      - 'cubed methods': 'method-cubed.md'
-      - 'Schema': 'class-schema.md'
-      - 'Cube': 'class-cube.md'
-      - 'Context': 'class-context.md'
-      - 'Dimension': 'class-dimension.md'
-      - 'Measure': 'class-measure.md'
+      - 'Welcome': 'index.md'
+      - 'Use Cases': 'use-cases.md'
+      - 'FAQ': 'faq.md'
+      - 'Installation': 'installation.md'
+      - 'Getting Started': 'getting-started.md'
+      - 'Guides':
+          - 'Cheatsheet (pdf)': 'guides/cheatsheet.md'
+          - 'Aggregations': 'guides/best-practise-aggregations.md'
+          - 'Advanced Filtering': 'guides/best-practise-filtering.md'
+          - 'DateTime Intelligence': 'guides/best-practise-datetime.md'
+          - 'Pivot Tables': 'guides/best-practise-pivot-tables.md'
+      - 'API Documentation':
+          - 'cubed methods': 'api/method-cubed.md'
+          - 'Cube': 'api/class-cube.md'
+          - 'Schema': 'api/class-schema.md'
+          - 'Context': 'api/class-context.md'
+          - 'Dimension': 'api/class-dimension.md'
+          - 'Measure': 'api/class-measure.md'
+      - 'License': 'license.md'
+      - 'Blog': 'blog/index.md'
+      - 'About': 'about/thomas.md'
   - 'Blog':
-    - blog/index.md
+      - 'blog/index.md'
   - 'About':
-    - 'About me': 'thomas.md'
-    - 'License': 'license.md'
-    - 'Contributing': 'contributing.md'
-    - 'Release Notes': 'release-notes.md'
+      - 'About me': 'about/thomas.md'
+      - 'License': 'about/license.md'
+      - 'Contributing': 'about/contributing.md'
+      - 'Release Notes': 'about/release-notes.md'

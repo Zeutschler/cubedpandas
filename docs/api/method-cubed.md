@@ -73,3 +73,4 @@ assert(x == y == 100)
     options:
       members:
       - CubedPandasAccessor
+

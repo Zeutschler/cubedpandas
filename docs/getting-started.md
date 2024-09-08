@@ -1,27 +1,25 @@
 # Getting started with CubedPandas
 
-This guide will help you to get started with CubedPandas. It starts with the very basics and guides
-you step by step through the different capabilities of CubedPandas. You the TOC to navigate to the
-section you are interested in.
+This guide will help you to get started with CubedPandas. It explains the concept and basic usage
+and capabilities of CubedPandas.
 
 [TOC]
 
 ## 1. Installation
 
-CubedPandas is available via [PyPI](https://pypi.org/project/cubedpandas/) and can and should be
-installed via pip. It is recommended to always use the latest version of CubedPandas, as new features
-and bug fixes are added regularly.
+CubedPandas is available via [PyPI.org](https://pypi.org/project/cubedpandas/) and can be
+installed via pip. It is recommended to always use the latest version of CubedPandas, as CubedPandas is still under
+constant development, new features are added frequently and know bugs get fixed.
 
 ```bash
 pip install cubedpandas
 ```
 
-## 2. The Basic Approach of Cubed Pandas
+## 2. The Basic Concept of Cubed Pandas
 
-The only purpose of CubedPandas is to provide an easier and more intuitive way to access and manipulate
-data in Pandas DataFrames. As DataFrames are two-dimensional structures (tables), it is not always easy
-to access data in a way that is close to our natural human way of thinking and data analysis. Therefore,
-CubedPandas introduces 2 main concepts:
+The main purpose of CubedPandas is to make working with Pandas easier and more intuitive, ideally also more fun.
+As DataFrames are two-dimensional structures (tables), it is not always easy to access data in a way that is
+close to our natural human way of thinking and analysing data. Therefore, CubedPandas introduces 2 main concepts:
 
 ### 2.1 Multi-Dimensional Cubes
 
@@ -36,7 +34,7 @@ of the DataFrame are considered as **Measures** - *the numeric values to analyse
 other columns are considered as **Dimensions** - *to filter, navigate and view the data*.
 The individual distinct values in a dimension column are called the **Members** of the dimension.
 
-```python
+```python  linenums="1" hl_lines="14" title="Converting a Pandas DataFrame into a CubedPandas Cube"
 import pandas as pd
 from cubedpandas import cubed
 
