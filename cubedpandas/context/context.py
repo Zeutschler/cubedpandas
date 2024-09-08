@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-from tkinter.constants import RAISED
-from typing import SupportsFloat, TYPE_CHECKING, Any, Type
+from typing import SupportsFloat, TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
