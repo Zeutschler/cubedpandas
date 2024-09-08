@@ -87,12 +87,12 @@
     {
       "location": "faq/#for-whom-is-cubedpandas-intended",
       "title": "For whom is CubedPandas intended?",
-      "text": "<p>CubedPandas is intended to be useful for every Pandas user. From novice Pandas users or even  non-tech business users, to overcome the complexity of Pandas, up to experienced Pandas experts,  who want to speed up their data analysis tasks.</p> <p>Another strength of CubedPandas is the support for multi-dimensional OLAP-style data analysis,  which is often used for financial data analysis, business intelligence, and reporting.</p>"
+      "text": "<p>CubedPandas is intended to be useful for every Pandas user. From novice Pandas users or even non-tech business users, to overcome the complexity of Pandas, up to experienced Pandas experts, who want to speed up their data analysis tasks.</p> <p>Another strength of CubedPandas is the support for multi-dimensional OLAP-style data analysis, which is often used for financial data analysis, business intelligence, and reporting.</p>"
     },
     {
       "location": "faq/#is-cubedpandas-free-to-use",
       "title": "Is CubedPandas free to use?",
-      "text": "<p>Yes, CubedPandas is free to use. CubedPandas is licensed under the permissive MIT License.  You can use it for commercial and non-commercial projects. You can also modify the source code  and distribute it under the same license.</p>"
+      "text": "<p>Yes, CubedPandas is free to use. CubedPandas is licensed under the permissive MIT License. You can use it for commercial and non-commercial projects. You can also modify the source code and distribute it under the same license.</p>"
     },
     {
       "location": "faq/#how-can-i-contribute-to-cubedpandas",
@@ -102,22 +102,22 @@
     {
       "location": "faq/#is-cubedpandas-ready-for-production-use",
       "title": "Is CubedPandas ready for production use?",
-      "text": "<p>No not yet, CubedPandas is still in the early PRE-ALPHA stages of development. Features are being added  and changed frequently. Bugs are still likely to be present, when using CubedPandas on real-world data sets. But, it's already possible to use CubedPandas for evaluation and simple data analysis tasks. If you experience any bugs it would be of great help to report them on the  CubedPandas GitHub Issues Page.</p>"
+      "text": "<p>No not yet, CubedPandas is still in the early PRE-ALPHA stages of development. Features are being added and changed frequently. Bugs are still likely to be present, when using CubedPandas on real-world data sets. But, it's already possible to use CubedPandas for evaluation and simple data analysis tasks. If you experience any bugs it would be of great help to report them on the CubedPandas GitHub Issues Page.</p>"
     },
     {
       "location": "getting-started/",
       "title": "Getting started with CubedPandas",
-      "text": "<p>This guide will help you to get started with CubedPandas. It explains the concept and basic usage  and capabilities of CubedPandas. </p> <ul> <li>Getting started with CubedPandas<ul> <li>1. Installation</li> <li>2. The Basic Concept of Cubed Pandas<ul> <li>2.1 Multi-Dimensional Cubes</li> <li>2.2 Interact With Data To Minimize Distraction<ul> <li>2.2.1 Using the . operator</li> <li>2.2.1 Using the [...] operator</li> </ul> </li> </ul> </li> <li>3. The Basic Concepts of CubedPandas<ul> <li>3.1 Context = Data Cell = Numerical Value</li> <li>3.2 Aggregation Function Calls</li> <li>3.3 Context Objects Behave Like Numerical Values</li> <li>3.4 CubedPandas Data Types are Python Data Types</li> <li>3.5 Context Objects Are Lazy</li> <li>3.6 Context Reuse Can Speed Up Your Code</li> <li>3.7 Key Error Handling</li> <li>3.8 Boolean Dimensions</li> </ul> </li> </ul> </li> </ul>"
+      "text": "<p>This guide will help you to get started with CubedPandas. It explains the concept and basic usage and capabilities of CubedPandas.</p> <ul> <li>Getting started with CubedPandas<ul> <li>1. Installation</li> <li>2. The Basic Concept of Cubed Pandas<ul> <li>2.1 Multi-Dimensional Cubes</li> <li>2.2 Interact With Data To Minimize Distraction<ul> <li>2.2.1 Using the . operator</li> <li>2.2.1 Using the [...] operator</li> </ul> </li> </ul> </li> <li>3. The Basic Concepts of CubedPandas<ul> <li>3.1 Context = Data Cell = Numerical Value</li> <li>3.2 Aggregation Function Calls</li> <li>3.3 Context Objects Behave Like Numerical Values</li> <li>3.4 CubedPandas Data Types are Python Data Types</li> <li>3.5 Context Objects Are Lazy</li> <li>3.6 Context Reuse Can Speed Up Your Code</li> <li>3.7 Key Error Handling</li> <li>3.8 Boolean Dimensions</li> </ul> </li> </ul> </li> </ul>"
     },
     {
       "location": "getting-started/#1-installation",
       "title": "1. Installation",
-      "text": "<p>CubedPandas is available via PyPI.org and can be installed via pip. It is recommended to always use the latest version of CubedPandas, as CubedPandas is still under  constant development, new features are added frequently and know bugs get fixed.</p> <pre><code>pip install cubedpandas\n</code></pre>"
+      "text": "<p>CubedPandas is available via PyPI.org and can be installed via pip. It is recommended to always use the latest version of CubedPandas, as CubedPandas is still under constant development, new features are added frequently and know bugs get fixed.</p> <pre><code>pip install cubedpandas\n</code></pre>"
     },
     {
       "location": "getting-started/#2-the-basic-concept-of-cubed-pandas",
       "title": "2. The Basic Concept of Cubed Pandas",
-      "text": "<p>The main purpose of CubedPandas is to make working with Pandas easier and more intuitive, ideally also more fun. As DataFrames are two-dimensional structures (tables), it is not always easy to access data in a way that is  close to our natural human way of thinking and analysing data. Therefore, CubedPandas introduces 2 main concepts:</p>"
+      "text": "<p>The main purpose of CubedPandas is to make working with Pandas easier and more intuitive, ideally also more fun. As DataFrames are two-dimensional structures (tables), it is not always easy to access data in a way that is close to our natural human way of thinking and analysing data. Therefore, CubedPandas introduces 2 main concepts:</p>"
     },
     {
       "location": "getting-started/#21-multi-dimensional-cubes",
@@ -192,12 +192,12 @@
     {
       "location": "installation/#cubedpandas-installation",
       "title": "CubedPandas Installation",
-      "text": "<p>As always with Python packages, the easiest way to install CubedPandas is by using <code>pip</code>.</p> <pre><code>pip install cubedpandas\n</code></pre> <p>It is recommended to always use the latest version of CubedPandas, as CubedPandas is still under  constant development, new features are added frequently and know bugs get fixed.</p> <p>You will find the latest version of CubedPandas on PyPi.org.  Alternatively, you can clone the CubedPandas GitHub repo and  build it on your own or integrate somehow in your own project. Please check the  requirements.txt file for the required dependencies.</p>"
+      "text": "<p>As always with Python packages, the easiest way to install CubedPandas is by using <code>pip</code>.</p> <pre><code>pip install cubedpandas\n</code></pre> <p>It is recommended to always use the latest version of CubedPandas, as CubedPandas is still under constant development, new features are added frequently and know bugs get fixed.</p> <p>You will find the latest version of CubedPandas on PyPi.org. Alternatively, you can clone the CubedPandas GitHub repo and build it on your own or integrate somehow in your own project. Please check the requirements.txt file for the required dependencies.</p>"
     },
     {
       "location": "license/",
       "title": "License",
-      "text": "<p>CubedPandas is licensed under the permissive MIT License. You can use it for commercial and  non-commercial projects. You can also modify the source code and distribute it under the same license.</p> <pre><code>MIT License\n\nCopyright (c) 2024, Thomas Zeutschler\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n</code></pre>"
+      "text": "<p>CubedPandas is licensed under the permissive MIT License. You can use it for commercial and non-commercial projects. You can also modify the source code and distribute it under the same license.</p> <pre><code>MIT License\n\nCopyright (c) 2024, Thomas Zeutschler\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n</code></pre>"
     },
     {
       "location": "readme_mkdocs/",
@@ -247,12 +247,12 @@
     {
       "location": "about/contributing/",
       "title": "Contributing",
-      "text": "<p>You are very welcome to contribute to CubedPandas by reporting bugs, suggesting new features, or by contributing code. Please use the CubedPandas GitHub Issues Page  or the CubedPandas reddit channel to report bugs, suggest new features and give feedback. If you would like to contribute code, please fork the CubedPandas GitHub repo and create a pull request, or join me in pushing the CubedPandas project forward.</p>"
+      "text": "<p>You are very welcome to contribute to CubedPandas by reporting bugs, suggesting new features, or by contributing code. Please use the CubedPandas GitHub Issues Page or the CubedPandas reddit channel to report bugs, suggest new features and give feedback. If you would like to contribute code, please fork the CubedPandas GitHub repo and create a pull request, or join me in pushing the CubedPandas project forward.</p>"
     },
     {
       "location": "about/license/",
       "title": "License",
-      "text": "<p>CubedPandas is licensed under the permissive MIT License. You can use it for commercial and  non-commercial projects. You can also modify the source code and distribute it under the same license.</p> <pre><code>MIT License\n\nCopyright (c) 2024, Thomas Zeutschler\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n</code></pre>"
+      "text": "<p>CubedPandas is licensed under the permissive MIT License. You can use it for commercial and non-commercial projects. You can also modify the source code and distribute it under the same license.</p> <pre><code>MIT License\n\nCopyright (c) 2024, Thomas Zeutschler\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n</code></pre>"
     },
     {
       "location": "about/release-notes/",
@@ -282,7 +282,7 @@
     {
       "location": "about/release-notes/#release-02x",
       "title": "Release 0.2.x",
-      "text": "<ul> <li>[x] Date,time and Datetime resolvers for Englisch keywords like <code>yesterday</code>, <code>today</code>, <code>tomorrow</code>, <code>lastweek</code>,   <code>thisweek</code>, <code>nextweek</code>, <code>lastmonth</code>, <code>thismonth</code>, <code>nextmonth</code>, <code>lastyear</code>, <code>thisyear</code>, <code>nextyear</code> etc.   as members of a dimension. Multiple words should either be written together or separated by <code>_</code>,   e.g. <code>last_month</code> vs. <code>lastmonth</code>.</li> <li>[x] All member related functions should return a list of the member keys as defined in the dataframe.   Not wrapped into a <code>Member</code> object.</li> <li>[x] Support for <code>in</code> operator on DimensionContext</li> <li>[x] add feature/switch to return None vs. 0 for data without records.</li> <li>[x] <code>true</code> &amp; <code>false</code> as members of a dimension should be resolved as <code>True</code> and <code>False</code> respectively.   Aliases to be supported <code>yes</code> &amp; <code>no</code> and <code>on</code> &amp; <code>off</code> and <code>1</code> &amp; <code>0</code> if used via index.</li> <li>[x] Support callable methods for all aggregation functions, e.g. <code>sum</code> -&gt; <code>sum()</code>.   see https://stackoverflow.com/questions/20120983/determine-if-getattr-is-method-or-attribute-call</li> <li>[x] Further Cleanup and rewrite for Cube, Dimension and Measure object.   Move all none essential methods, properties and settings to respective properties,   e.g. <code>Cube.settings</code>, <code>Cube.properties</code>, <code>Cube.methods</code> etc.</li> <li>[x] check string representations for all objects when in running in Jupyter</li> <li>[x] Check, adapt and activate the existing writeback functionality.</li> <li>[x] Implement <code>cdf.product.members</code> property to return a list of all members for a dimension.</li> <li>[x] <code>top(n)</code> and <code>bottom(n)</code> functions for dimensions, e.g. <code>cdf.product.top(2)</code>.</li> <li>[x] <code>count</code> property for dimensions, e.g. <code>cdf.Online.product.count</code>, to count the number of distinct members.   The current implementation counts the records for the default measure.</li> <li>[x] Implement <code>Context.full_address</code> property returning a dictionary.</li> <li>[x] implement 'by(rows, colums)' feature for <code>Context</code> objects to mimic GroupBy functionality over 2 axis.</li> <li>[x] Boolean logic for <code>Contex</code> objects for advanced filtering. <code>and</code> and <code>or</code> operators        for <code>Context</code> objects,<code>and</code> as default.</li> <li>[x] Allow to set the default measure </li> <li>[x] Filter functions for dimensions: include, exclude, filter, like, regex, etc.</li> <li>[x] Filter functions for measures: gt, lt, eq, ne, etc.</li> <li>[x] Data Type Validation for columns</li> <li>[x] Update/rewrite all tests based on new syntax</li> </ul>"
+      "text": "<ul> <li>[x] Date,time and Datetime resolvers for Englisch keywords like <code>yesterday</code>, <code>today</code>, <code>tomorrow</code>, <code>lastweek</code>,   <code>thisweek</code>, <code>nextweek</code>, <code>lastmonth</code>, <code>thismonth</code>, <code>nextmonth</code>, <code>lastyear</code>, <code>thisyear</code>, <code>nextyear</code> etc.   as members of a dimension. Multiple words should either be written together or separated by <code>_</code>,   e.g. <code>last_month</code> vs. <code>lastmonth</code>.</li> <li>[x] All member related functions should return a list of the member keys as defined in the dataframe.   Not wrapped into a <code>Member</code> object.</li> <li>[x] Support for <code>in</code> operator on DimensionContext</li> <li>[x] add feature/switch to return None vs. 0 for data without records.</li> <li>[x] <code>true</code> &amp; <code>false</code> as members of a dimension should be resolved as <code>True</code> and <code>False</code> respectively.   Aliases to be supported <code>yes</code> &amp; <code>no</code> and <code>on</code> &amp; <code>off</code> and <code>1</code> &amp; <code>0</code> if used via index.</li> <li>[x] Support callable methods for all aggregation functions, e.g. <code>sum</code> -&gt; <code>sum()</code>.   see https://stackoverflow.com/questions/20120983/determine-if-getattr-is-method-or-attribute-call</li> <li>[x] Further Cleanup and rewrite for Cube, Dimension and Measure object.   Move all none essential methods, properties and settings to respective properties,   e.g. <code>Cube.settings</code>, <code>Cube.properties</code>, <code>Cube.methods</code> etc.</li> <li>[x] check string representations for all objects when in running in Jupyter</li> <li>[x] Check, adapt and activate the existing writeback functionality.</li> <li>[x] Implement <code>cdf.product.members</code> property to return a list of all members for a dimension.</li> <li>[x] <code>top(n)</code> and <code>bottom(n)</code> functions for dimensions, e.g. <code>cdf.product.top(2)</code>.</li> <li>[x] <code>count</code> property for dimensions, e.g. <code>cdf.Online.product.count</code>, to count the number of distinct members.   The current implementation counts the records for the default measure.</li> <li>[x] Implement <code>Context.full_address</code> property returning a dictionary.</li> <li>[x] implement 'by(rows, colums)' feature for <code>Context</code> objects to mimic GroupBy functionality over 2 axis.</li> <li>[x] Boolean logic for <code>Contex</code> objects for advanced filtering. <code>and</code> and <code>or</code> operators   for <code>Context</code> objects,<code>and</code> as default.</li> <li>[x] Allow to set the default measure</li> <li>[x] Filter functions for dimensions: include, exclude, filter, like, regex, etc.</li> <li>[x] Filter functions for measures: gt, lt, eq, ne, etc.</li> <li>[x] Data Type Validation for columns</li> <li>[x] Update/rewrite all tests based on new syntax</li> </ul>"
     },
     {
       "location": "about/release-notes/#release-01x",
@@ -291,8 +291,8 @@
     },
     {
       "location": "about/thomas/",
-      "title": "About",
-      "text": "<p>My name is Thomas Zeutschler. I'm located in Germany in the 'Ruhrgebiet' area  and love to code in Python due to Python's awesome and endless library ecosystem, great support community  and easy extensibility through tools like Numba, Cython or with languages like C, C++ and Rust. </p> <p>Pandas is a tool to which I have a strong love/hate relationship. It's a great tool, but sometimes it's  annoyingly complex and tedious to use, that's why I started the CubedPandas project.</p> <p>I'm a professional software architect and developer with focus on data, analytics, AI and modern  cloud based data architectures and data processing as well as the development, optimization,  modernization and especially speed-up of data-focussed solutions and systems of every size and complexity. </p> <p>In addition, I enjoy to be a senior analytics and fellow at the  BARC - Business Analytics Research Center in W\u00fcrzburg, Germany. BARC is the largest independent market analyst for data, analytics &amp; AI, business intelligence and corporate performance management in the  D-A-CH region. I proudly support mid-sized and large companies in improving their data &amp; analytics capabilities, setup,  and strategy. And I am honoured to help some well-known software vendors support their products and go-to-market  strategies market strategies in the area of data &amp; analytics. </p> <p>I'm a big fan and intense user of open source software. CubedPandas is one of my projects to say thank you to the community and to give something back. I hope you enjoy using CubedPandas as much as I enjoy developing it.</p> <p>Hobbies? Anything on two wheels, with or without an engine, on-road or off-road is my passion. </p> <p>If you would like to get in contact, do not hesitate to reach out to me  on LinkedIn or reddit or GitHub.</p> <p>Yours Thomas</p>"
+      "title": "Thomas",
+      "text": "<p>My name is Thomas Zeutschler. I'm located in Germany in the 'Ruhrgebiet' area and love to code in Python due to Python's awesome and endless library ecosystem, great support community and easy extensibility through tools like Numba, Cython or with languages like C, C++ and Rust.</p> <p>Pandas is a tool to which I have a strong love/hate relationship. It's a great tool, but sometimes it's annoyingly complex and tedious to use, that's why I started the CubedPandas project.</p> <p>I'm a professional software architect and developer with focus on data, analytics, AI and modern cloud based data architectures and data processing as well as the development, optimization, modernization and especially speed-up of data-focussed solutions and systems of every size and complexity.</p> <p>In addition, I enjoy to be a senior analytics and fellow at the BARC - Business Analytics Research Center in W\u00fcrzburg, Germany. BARC is the largest independent market analyst for data, analytics &amp; AI, business intelligence and corporate performance management in the D-A-CH region. I proudly support mid-sized and large companies in improving their data &amp; analytics capabilities, setup, and strategy. And I am honoured to help some well-known software vendors support their products and go-to-market strategies market strategies in the area of data &amp; analytics.</p> <p>I'm a big fan and intense user of open source software. CubedPandas is one of my projects to say thank you to the community and to give something back. I hope you enjoy using CubedPandas as much as I enjoy developing it.</p> <p>Hobbies? Anything on two wheels, with or without an engine, on-road or off-road is my passion.</p> <p>If you would like to get in contact, do not hesitate to reach out to me on LinkedIn or reddit or GitHub.</p> <p>Yours Thomas</p>"
     },
     {
       "location": "api/class-context/",
@@ -715,53 +715,53 @@
     },
     {
       "location": "guides/best-practise-aggregations/",
-      "title": "Aggregations",
+      "title": "Best practise aggregations",
       "text": ""
     },
     {
       "location": "guides/best-practise-aggregations/#sorry-well-add-that-later",
       "title": "Sorry, we'll add that later...",
-      "text": "<p>The current focus of development is on the core features of CubedPandas.  Once finished I'll work on this documention...</p> <p>!!! Note:     To stay tuned for updates and new releases of CubePandas,      please add a watch to the CubedPandas GitHub repo.         </p> <p>Thomas</p>"
+      "text": "<p>The current focus of development is on the core features of CubedPandas. Once finished I'll work on this documention...</p> <p>!!! Note: To stay tuned for updates and new releases of CubePandas, please add a watch to the CubedPandas GitHub repo.</p> <p>Thomas</p>"
     },
     {
       "location": "guides/best-practise-datetime/",
-      "title": "DateTime Intelligence",
+      "title": "Best practise datetime",
       "text": ""
     },
     {
       "location": "guides/best-practise-datetime/#sorry-well-add-that-later",
       "title": "Sorry, we'll add that later...",
-      "text": "<p>The current focus of development is on the core features of CubedPandas.  Once finished I'll work on this documention...</p> <p>!!! Note:     To stay tuned for updates and new releases of CubePandas,      please add a watch to the CubedPandas GitHub repo.         </p> <p>Thomas</p>"
+      "text": "<p>The current focus of development is on the core features of CubedPandas. Once finished I'll work on this documention...</p> <p>!!! Note: To stay tuned for updates and new releases of CubePandas, please add a watch to the CubedPandas GitHub repo.</p> <p>Thomas</p>"
     },
     {
       "location": "guides/best-practise-filtering/",
-      "title": "Advanced Filtering",
+      "title": "Best practise filtering",
       "text": ""
     },
     {
       "location": "guides/best-practise-filtering/#sorry-well-add-that-later",
       "title": "Sorry, we'll add that later...",
-      "text": "<p>The current focus of development is on the core features of CubedPandas.  Once finished I'll work on this documention...</p> <p>!!! Note:     To stay tuned for updates and new releases of CubePandas,      please add a watch to the CubedPandas GitHub repo.         </p> <p>Thomas</p>"
+      "text": "<p>The current focus of development is on the core features of CubedPandas. Once finished I'll work on this documention...</p> <p>!!! Note: To stay tuned for updates and new releases of CubePandas, please add a watch to the CubedPandas GitHub repo.</p> <p>Thomas</p>"
     },
     {
       "location": "guides/best-practise-pivot-tables/",
-      "title": "Pivot Tables",
+      "title": "Best practise pivot tables",
       "text": ""
     },
     {
       "location": "guides/best-practise-pivot-tables/#sorry-well-add-that-later",
       "title": "Sorry, we'll add that later...",
-      "text": "<p>The current focus of development is on the core features of CubedPandas.  Once finished I'll work on this documention...</p> <p>!!! Note:     To stay tuned for updates and new releases of CubePandas,      please add a watch to the CubedPandas GitHub repo.         </p> <p>Thomas</p>"
+      "text": "<p>The current focus of development is on the core features of CubedPandas. Once finished I'll work on this documention...</p> <p>!!! Note: To stay tuned for updates and new releases of CubePandas, please add a watch to the CubedPandas GitHub repo.</p> <p>Thomas</p>"
     },
     {
       "location": "guides/cheatsheet/",
-      "title": "Cheatsheet (pdf)",
+      "title": "Cheatsheet",
       "text": ""
     },
     {
       "location": "guides/cheatsheet/#sorry-well-add-that-later",
       "title": "Sorry, we'll add that later...",
-      "text": "<p>The current focus of development is on the core features of CubedPandas.  Once finished I'll work on this documention...</p> <p>!!! Note:     To stay tuned for updates and new releases of CubePandas,      please add a watch to the CubedPandas GitHub repo.         </p> <p>Thomas</p>"
+      "text": "<p>The current focus of development is on the core features of CubedPandas. Once finished I'll work on this documention...</p> <p>!!! Note: To stay tuned for updates and new releases of CubePandas, please add a watch to the CubedPandas GitHub repo.</p> <p>Thomas</p>"
     },
     {
       "location": "blog/archive/2024/",
