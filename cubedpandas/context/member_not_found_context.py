@@ -1,7 +1,9 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
+
 import pandas as pd
 
 from cubedpandas.context.context import Context
@@ -21,3 +23,7 @@ class MemberNotFoundContext(Context):
         empty_mask = pd.DataFrame(columns=["x"]).index.to_numpy()  # a hack. Can we do better?
         super().__init__(cube=cube, address=address, parent=parent, row_mask=empty_mask,
                          measure=parent.measure, dimension=dimension, resolve=False)
+
+    @property
+    def is_valid(self):
+        return False

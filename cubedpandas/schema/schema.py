@@ -1,18 +1,19 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 from __future__ import annotations
+
 import json
 from typing import Any
 
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
-from setuptools.command.alias import alias
+from pandas.core.dtypes.common import is_bool_dtype
 
-from cubedpandas.settings import CachingStrategy
+from cubedpandas.common import pythonize
 from cubedpandas.schema.dimension import Dimension
 from cubedpandas.schema.dimension_collection import DimensionCollection
 from cubedpandas.schema.measure import Measure
 from cubedpandas.schema.measure_collection import MeasureCollection
-from cubedpandas.common import pythonize
+from cubedpandas.settings import CachingStrategy
 
 
 class Schema:
@@ -200,7 +201,7 @@ class Schema:
                         aliases[column_name] = alias
                         dict_column["alias"] = alias
 
-                if is_numeric_dtype(df[column_name]):
+                if is_numeric_dtype(df[column_name]) and not is_bool_dtype(df[column_name]):
                     schema_dict["measures"].append(dict_column)
                     self._measures.add(Measure(df, column_name))
                 else:

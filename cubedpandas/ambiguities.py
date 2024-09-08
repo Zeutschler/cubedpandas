@@ -1,6 +1,7 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import pandas as pd
+
 from cubedpandas.schema.dimension_collection import DimensionCollection
 from cubedpandas.schema.measure_collection import MeasureCollection
 

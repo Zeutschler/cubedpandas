@@ -1,18 +1,18 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
+import datetime
 import random
-import sys
 import re
 from abc import ABC
 from typing import Iterable
-import datetime
+
 import numpy as np
 import pandas as pd
 from pandas.api.types import (is_string_dtype, is_numeric_dtype, is_bool_dtype,
                               is_datetime64_any_dtype)
 
-from cubedpandas.settings import CachingStrategy
 from cubedpandas.context.datetime_resolver import resolve_datetime
+from cubedpandas.settings import CachingStrategy
 from cubedpandas.statistics import DimensionStatistics
 
 
@@ -326,6 +326,7 @@ class Dimension(Iterable, ABC):
             mask = self._df[self._column] == member
         member_mask = mask[mask].index.to_numpy()
         if member_mask.size == 0:
+            # no records found
             return False, None, None
 
         if self._caching_strategy > CachingStrategy.NONE:
@@ -433,4 +434,5 @@ class Dimension(Iterable, ABC):
         """
         self._load_members()
         return random.sample(self._member_list, k=k, counts=counts)
+
     # endregion

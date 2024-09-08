@@ -1,9 +1,10 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
+
 import numpy as np
-from numpy.ma.extras import row_stack
 
 from cubedpandas.context.context import Context
 

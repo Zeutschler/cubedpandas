@@ -1,10 +1,11 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
+
 import numpy as np
 
-from cubedpandas.context.enums import ContextFunction
 from cubedpandas.context.context import Context
 
 if TYPE_CHECKING:

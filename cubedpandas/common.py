@@ -1,8 +1,10 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
+from decimal import Decimal
+
 import pandas as pd
+
 from cubedpandas.settings import CachingStrategy
-import sys
 
 
 def cubed(df: pd.DataFrame, schema=None,
@@ -105,11 +107,31 @@ def pythonize(name: str, lowered: bool = False) -> str:
     return name
 
 
-def auto_round(value: float, small_value_precision: int = 4, high_value_precision: int = 2, high_value_threshold: float = 100) -> float | int:
-    """Rounds a floating point number to a given precision."""
+def smart_round(value: float | int, precision: int = 6, min_digits: int = 2) -> float | int:
+    """
+    Rounds a numerical value to an 'appropriate' number of digits.
+    
+    Args:
+        value:
+            The value to be rounded.
+        
+        precision:
+            The number of digits of the value to be preserved. Default is 6.
+            For a value of 0.000123456789 and min_precision = 6, the result will be 0.000123456.
+            For a value of 123456.789 and min_precision = 6, the result will be 123456 + the
+            number of decimal digits as defined by argument `min_digits`.
+        
+        min_digits:
+            The minimum number of decimal digits to be displayed. Default is 2.
+    Returns:
+        The rounded value.
+    """
     if isinstance(value, int):
         return value
-    if value < high_value_threshold:
-        return round(value, small_value_precision)
+
+    adj_exp = Decimal(value).adjusted()
+    a = 1
+    if adj_exp <= 0:
+        return round(value, abs(adj_exp) + precision - 1)
     else:
-        return round(value, high_value_precision)
+        return round(value, max(min_digits, precision - adj_exp - 1))

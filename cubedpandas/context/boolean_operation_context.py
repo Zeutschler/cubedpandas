@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-
 from cubedpandas.context.context import Context
 from cubedpandas.context.enums import BooleanOperation
 
