@@ -1,15 +1,14 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
 
-from cubedpandas.context.enums import ContextFunction
+from typing import TYPE_CHECKING
+
 from cubedpandas.context.context import Context
+from cubedpandas.context.enums import ContextFunction
 
 if TYPE_CHECKING:
-    from cubedpandas.cube import Cube
-    from cubedpandas.schema.measure import Measure
-    from cubedpandas.schema.dimension import Dimension
+    pass
 
 
 class FunctionContext(Context):

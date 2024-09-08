@@ -2,8 +2,8 @@
 
 import ast
 import inspect
-import operator as op
 import math
+import operator as op
 
 
 class ExpressionFunctionLibrary:

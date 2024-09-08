@@ -1,6 +1,7 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
+
 import numpy as np
 import pandas as pd
 

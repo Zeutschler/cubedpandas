@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from enum import IntEnum
 
+
 class BooleanOperation(IntEnum):
     """Supported boolean operations for Context objects for filtering purposes."""
     AND = 1

@@ -1,19 +1,19 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 from __future__ import annotations
+
 import json
 from typing import Any
 
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from pandas.core.dtypes.common import is_bool_dtype
-from setuptools.command.alias import alias
 
-from cubedpandas.settings import CachingStrategy
+from cubedpandas.common import pythonize
 from cubedpandas.schema.dimension import Dimension
 from cubedpandas.schema.dimension_collection import DimensionCollection
 from cubedpandas.schema.measure import Measure
 from cubedpandas.schema.measure_collection import MeasureCollection
-from cubedpandas.common import pythonize
+from cubedpandas.settings import CachingStrategy
 
 
 class Schema:

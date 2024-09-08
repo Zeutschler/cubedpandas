@@ -7,7 +7,7 @@ from typing import SupportsFloat, TYPE_CHECKING, Any
 import numpy as np
 import pandas as pd
 
-from cubedpandas.context.enums import ContextFunction, ContextAllocation, BooleanOperation
+from cubedpandas.context.enums import ContextFunction, ContextAllocation
 
 # ___noinspection PyProtectedMember
 if TYPE_CHECKING:

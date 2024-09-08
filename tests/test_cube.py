@@ -3,8 +3,6 @@
 import pandas as pd
 from unittest import TestCase
 
-from pyspark.sql.group import dfapi
-
 from cubedpandas import Cube
 from cubedpandas import cubed
 

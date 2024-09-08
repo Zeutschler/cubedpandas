@@ -1,17 +1,19 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
+
 import sys
 from typing import Any
+
 import pandas as pd
 
-from cubedpandas.settings import CubeSettings
-from cubedpandas.schema.schema import Schema
-from cubedpandas.schema.measure_collection import MeasureCollection
-from cubedpandas.schema.dimension_collection import DimensionCollection
 from cubedpandas.ambiguities import Ambiguities
-from cubedpandas.settings import CachingStrategy
 from cubedpandas.context import Context, CubeContext, FilterContext
+from cubedpandas.schema.dimension_collection import DimensionCollection
+from cubedpandas.schema.measure_collection import MeasureCollection
+from cubedpandas.schema.schema import Schema
+from cubedpandas.settings import CachingStrategy
+from cubedpandas.settings import CubeSettings
 
 
 class Cube:

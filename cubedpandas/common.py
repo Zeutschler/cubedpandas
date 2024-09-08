@@ -1,11 +1,10 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
-from string import digits
+
+from decimal import Decimal
 
 import pandas as pd
+
 from cubedpandas.settings import CachingStrategy
-import math
-from decimal import Decimal
-import sys
 
 
 def cubed(df: pd.DataFrame, schema=None,

@@ -1,8 +1,9 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import pandas as pd
-from cubedpandas.cube import Cube
+
 from cubedpandas.context.context import Context
+from cubedpandas.cube import Cube
 from cubedpandas.settings import CachingStrategy
 
 

@@ -10,11 +10,11 @@ import numpy as np
 import pandas as pd
 
 from cubedpandas.context.context import Context
+from cubedpandas.context.datetime_resolver import parse_standard_date_token
 from cubedpandas.context.datetime_resolver import resolve_datetime
 from cubedpandas.context.expression import Expression
 from cubedpandas.context.filter_context import FilterContext
 from cubedpandas.context.function_context import FunctionContext
-from cubedpandas.context.datetime_resolver import parse_standard_date_token
 
 if TYPE_CHECKING:
     from cubedpandas.schema.dimension import Dimension

@@ -1,9 +1,10 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
 
 import re
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
 import pandas as pd
 
@@ -20,7 +21,6 @@ if TYPE_CHECKING:
     from cubedpandas.context.member_context import MemberContext
     from cubedpandas.context.filter_context import FilterContext
     from cubedpandas.context.boolean_operation_context import BooleanOperationContext
-    from cubedpandas.context.context_context import ContextContext
 
 
 class Slice:
@@ -217,14 +217,6 @@ class Slice:
     def create(self, sub_totals: bool = True):
         """Creates the slice based on the current configuration from the underlying cube and dataframe."""
 
-        from cubedpandas.schema.measure_collection import MeasureCollection
-        from cubedpandas.schema.measure import Measure
-        from cubedpandas.schema.dimension import Dimension
-        from cubedpandas.schema.dimension_collection import DimensionCollection
-        from cubedpandas.context.dimension_context import DimensionContext
-        from cubedpandas.context.measure_context import MeasureContext
-        from cubedpandas.context.member_context import MemberContext
-
         # 1. evaluate row and columns axis arguments
         row_measures, row_dimensions, row_filters = self._get_axis(self._rows)
         column_measures, column_dimensions, column_filters = self._get_axis(self._columns)
@@ -339,7 +331,6 @@ class Slice:
         from cubedpandas.context.member_context import MemberContext
         from cubedpandas.context.filter_context import FilterContext
         from cubedpandas.context.boolean_operation_context import BooleanOperationContext
-        from cubedpandas.context.context_context import ContextContext
 
         list_delimiters = [",", ";", "|"]
 
