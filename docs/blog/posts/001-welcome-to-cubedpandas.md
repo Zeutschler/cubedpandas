@@ -1,27 +1,27 @@
 ---
-date: 2024-06-16 
-draft: true 
+date:
+  created: 2024-06-16
+  updated: 2024-09-08
+draft: false
 authors:
   - zeutschler
-links:
-  - become-a-sponsor.md
-  
 categories:
-  - Hello
-  - World
+  - Project
 tags:
-  - Foo
-  - Bar
+  - Welcome
+  - General
+links:
+  - Homepage: index.md
 slug: welcome-to-cubedpandas
 pin: true
 ---
 
 # Welcome
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
 
-<!-- more -->
+Welcome to CubedPandas, the Python library to simplify and speed up your data analysis tasks with Pandas.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod
-nulla. Curabitur feugiat, tortor non consequat finibus, justo purus auctor
-massa, nec semper lorem quam in massa.
+Currently, I'm still in the ramp-up phase of the project, but I'm happy to have you here. Stay tuned
+for more updates and news about CubedPandas and how it can help people to speed up your data analysis tasks.
+
+Thomas
 

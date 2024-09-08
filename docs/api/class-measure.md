@@ -1,4 +1,4 @@
-# Measure class
+# CubedPandas Measure Class
 
 ::: cubedpandas.schema.Measure
 

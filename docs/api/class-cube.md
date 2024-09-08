@@ -1,4 +1,4 @@
-# Generator class
+# CubedPandas Cube Class
 
 ::: cubedpandas.cube.Cube
 
