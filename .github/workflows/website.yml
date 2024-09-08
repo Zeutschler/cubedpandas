@@ -9,6 +9,11 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+  paths:
+    - 'docs/**'
+    - 'requirements.txt'
+    - 'mkdocs.yml'
+
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
@@ -31,6 +36,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python_version: '3.x' # Uses latest 3.x version.
+      - name: Install dependencies
+        # Alternatively: pip install mkdocs
+        run: pip install -r requirements.txt
+      - name: Build Docs
+        run: mkdocs build
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
