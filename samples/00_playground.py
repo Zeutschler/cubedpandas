@@ -13,6 +13,5 @@ cdf = cubed(df)
 cdf.settings.debug_mode = True
 context = cdf.product["Apple", "Pear"].sales
 print(context.address)
-print(context.cube_address)
 
 print(context.dsf_asdfsd)

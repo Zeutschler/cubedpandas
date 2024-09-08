@@ -111,10 +111,9 @@ plugins:
 nav:
   - Home:
     - 'Welcome': 'index.md'
-    - 'Best Practise': 'best-practise.md'
     - 'FAQ': 'faq.md'
     - 'Installation': 'installation.md'
-    - 'Basic Usage': 'basic-usage.md'
+    - 'Getting Started': 'basic-usage.md'
     - 'Advanced Usage': 'advanced-usage.md'
     - 'Best Practises': 'best-practises.md'
     - 'Documentation':

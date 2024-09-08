@@ -5,6 +5,7 @@ from typing import Any
 
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
+from pandas.core.dtypes.common import is_bool_dtype
 from setuptools.command.alias import alias
 
 from cubedpandas.settings import CachingStrategy
@@ -200,7 +201,7 @@ class Schema:
                         aliases[column_name] = alias
                         dict_column["alias"] = alias
 
-                if is_numeric_dtype(df[column_name]):
+                if is_numeric_dtype(df[column_name]) and not is_bool_dtype(df[column_name]):
                     schema_dict["measures"].append(dict_column)
                     self._measures.add(Measure(df, column_name))
                 else:

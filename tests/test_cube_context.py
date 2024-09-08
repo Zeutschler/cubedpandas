@@ -234,3 +234,18 @@ class TestCubeContext(TestCase):
         self.assertEqual(c.A.channel.members, ["Online", "Retail"])
         self.assertEqual(c.A.channel.count, 2)
         self.assertEqual(c.A.channel.unique, ["Online", "Retail"])
+
+    def test_context_address(self):
+        cdf = Cube(self.df, schema=self.schema)
+        value = cdf.A.address
+        address = cdf.product.A.address
+        self.assertEqual(address, "A")
+        address = cdf.product.A.B.address
+        self.assertEqual(address, "B")
+
+    def test_member_context_in_operator(self):
+        cdf = Cube(self.df, schema=self.schema)
+        self.assertTrue("A" in cdf.product)
+        self.assertTrue("Online" in cdf.channel)
+        self.assertFalse("XXX" in cdf.product)
+        self.assertFalse("XXX" in cdf.channel)

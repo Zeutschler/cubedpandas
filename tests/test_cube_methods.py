@@ -39,3 +39,4 @@ class TestCube(TestCase):
         self.assertEqual(list(cdf.Online.row_mask_inverse), [3, 4, 5])
         self.assertEqual(list(cdf.A.Online.row_mask_inverse), [1, 2, 3, 4, 5])
         self.assertEqual(list(cdf.Retail.row_mask_inverse), [0, 1, 2])
+

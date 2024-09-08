@@ -21,3 +21,7 @@ class MemberNotFoundContext(Context):
         empty_mask = pd.DataFrame(columns=["x"]).index.to_numpy()  # a hack. Can we do better?
         super().__init__(cube=cube, address=address, parent=parent, row_mask=empty_mask,
                          measure=parent.measure, dimension=dimension, resolve=False)
+
+    @property
+    def is_valid(self):
+        return False

@@ -44,4 +44,4 @@ class TestCubeWithDates(TestCase):
         self.assertEqual(cdf.ambiguities == True, True)
         self.assertEqual(cdf.ambiguities == 3, True)
         self.assertEqual(any(cdf.ambiguities), True)
-        print(cdf.ambiguities)
+        # print(cdf.ambiguities)

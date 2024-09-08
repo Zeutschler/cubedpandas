@@ -60,18 +60,20 @@ class TestCubeWithDates(TestCase):
     def test_slicing_with_exact_dates(self):
         cube = Cube(self.df, schema=self.schema)
 
+        some_date = datetime(2024, 6, 1)
+        some_non_existing_date = datetime(2019, 3, 24)
+
+        value = cube.date[some_non_existing_date]
+        self.assertEqual(value, 0)
+
         # slicing with dates
         value = cube["date:June 2024"]
         self.assertEqual(value, 100 + 150)  # all sales in June 2024
 
-        some_date = datetime(2024, 6, 1)
-        some_non_existing_date = datetime(2019, 3, 24)
 
         value = cube["date:2024"]
         self.assertEqual(value, 100 + 150 + 300 + 200 + 250)  # all sales in 2024
 
-        value = cube.date[some_non_existing_date]
-        self.assertEqual(value, 0)
 
         value = cube[some_date]
         self.assertEqual(value, 100)

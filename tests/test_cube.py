@@ -2,6 +2,9 @@
 
 import pandas as pd
 from unittest import TestCase
+
+from pyspark.sql.group import dfapi
+
 from cubedpandas import Cube
 from cubedpandas import cubed
 
@@ -11,6 +14,7 @@ class TestCube(TestCase):
         data = {
             "product": ["A", "B", "C", "A", "B", "C"],
             "channel": ["Online", "Online", "Online", "Retail", "Retail", "Retail"],
+            "mailing": [True, True, False, False, True, False],
             "sales": [100, 150, 300, 200, 250, 350]
         }
         self.df = pd.DataFrame.from_dict(data)
@@ -84,6 +88,18 @@ class TestCube(TestCase):
 
         self.assertEqual(df.cubed.A, 100 + 200)
 
+    def test_boolean_dimension(self):
+        cdf = cubed(self.df)
+
+        self.assertEqual(cdf["mailing:True"], 100 + 150 + 250)
+        self.assertEqual(cdf.mailing, 100 + 150 + 250)
+        self.assertEqual(cdf.mailing[True], 100 + 150 + 250)
+        self.assertEqual(cdf.mailing["TrUe"], 100 + 150 + 250)
+        self.assertEqual(cdf.mailing[1], 100 + 150 + 250)
+        self.assertEqual(cdf.mailing["yes"], 100 + 150 + 250)
+        self.assertEqual(cdf.mailing["ON"], 100 + 150 + 250)
+        # self.assertEqual(cdf.mailing_ == True, 100 + 150 + 250)
+
 
     def test_scalar_member_access(self):
         cube = Cube(self.df, schema=self.schema)
@@ -147,6 +163,26 @@ class TestCube(TestCase):
         self.assertEqual(cube["A"].nan, 0)
         self.assertEqual(cube["A"].zero, 0)
         self.assertEqual(cube["A"].nzero, 2)
+
+    def test_cube_primary_aggregation_functions(self):
+        cube = Cube(self.df, schema=self.schema)
+
+        # A: 100 + 200 = 300
+        self.assertEqual(cube["A"], 300)
+        self.assertEqual(cube["A"].sum(), 300)
+        self.assertEqual(cube["A"].min(), 100)
+        self.assertEqual(cube["A"].max(), 200)
+        self.assertEqual(cube["A"].avg(), 150)
+        self.assertEqual(cube["A"].median(), 150)
+        self.assertEqual(cube["A"].std(), 50)
+        self.assertEqual(cube["A"].var(), 2500)
+        self.assertEqual(round(cube["A"].pof(), 5), round(300 / (100 + 150 + 300 + 200 + 250 + 350), 5))
+
+        self.assertEqual(cube["A"].count(), 2)
+        self.assertEqual(cube["A"].an(), 2)
+        self.assertEqual(cube["A"].nan(), 0)
+        self.assertEqual(cube["A"].zero(), 0)
+        self.assertEqual(cube["A"].nzero(), 2)
 
 
     def test_cube_primary_arithmetic(self):
@@ -338,12 +374,9 @@ class TestCube(TestCase):
     def test_cube_address_to_args(self):
         cube = Cube(self.df, schema=self.schema)
 
-        value = cube[cube.channel.Online, "A", "sales"].sum
-        print(value)
+        a = cube[cube.channel.Online, "A", "sales"].sum
+        b = cube["A", "Online"]
+        c = cube["A", "Online", "sales"]
 
-        value = cube["A", "Online"]
-        print(value)
-
-        value = cube["A", "Online", "sales"]
-        print(value)
-
+        self.assertEqual(a, b)
+        self.assertEqual(a, c)

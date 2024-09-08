@@ -326,6 +326,7 @@ class Dimension(Iterable, ABC):
             mask = self._df[self._column] == member
         member_mask = mask[mask].index.to_numpy()
         if member_mask.size == 0:
+            # no records found
             return False, None, None
 
         if self._caching_strategy > CachingStrategy.NONE:
@@ -433,4 +434,5 @@ class Dimension(Iterable, ABC):
         """
         self._load_members()
         return random.sample(self._member_list, k=k, counts=counts)
+
     # endregion

@@ -63,6 +63,7 @@ class CubeSettings:
         self._ignore_member_key_errors: bool = False
         self._ignore_case: bool = False
         self._ignore_key_errors: bool = False
+        self._return_none_for_non_existing_cells: bool = False
         self._eager_evaluation: bool = True
         self._debug_mode: bool = False
 
@@ -156,6 +157,22 @@ class CubeSettings:
         Sets the member key error handling of the Cube.
         """
         self._ignore_member_key_errors = value
+
+    @property
+    def return_none_for_non_existing_cells(self) -> bool:
+        """
+        Returns:
+            True if the Cube is returning None for non-existing cells, otherwise False.
+        """
+        return self._return_none_for_non_existing_cells
+
+    @return_none_for_non_existing_cells.setter
+    def return_none_for_non_existing_cells(self, value: bool):
+        """
+        Sets the return value for non-existing cells.
+        """
+        self._return_none_for_non_existing_cells = value
+
 
     @property
     def ignore_case(self) -> bool:

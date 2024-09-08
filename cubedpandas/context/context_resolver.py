@@ -14,6 +14,7 @@ from cubedpandas.context.datetime_resolver import resolve_datetime
 from cubedpandas.context.expression import Expression
 from cubedpandas.context.filter_context import FilterContext
 from cubedpandas.context.function_context import FunctionContext
+from cubedpandas.context.datetime_resolver import parse_standard_date_token
 
 if TYPE_CHECKING:
     from cubedpandas.schema.dimension import Dimension
@@ -47,9 +48,10 @@ class ContextResolver:
             raise ValueError(f"The context handed in as an address argument refers to a different cube/dataframe. "
                              f"Only contexts from the same cube can be used as address arguments.")
 
+        # A user handed a dimension or measure instance from a schema object in,  why ever?
+        # We will convert it to a string and continue
         if address.__class__.__name__ == 'Measure' or address.__class__.__name__ == 'Dimension':
             address = str(address)
-
 
         # 3. String addresses are resolved by checking for measures, dimensions and members.
         if isinstance(address, str):
@@ -152,6 +154,7 @@ class ContextResolver:
                     # subsequent members from one dimension, e.g., if A, B, C are all members from the
                     # same dimension, then `cube.A.B.C` will require to join the member rows of A, B and C
                     # before we filter the rows from a previous context addressing another or no dimension.
+                    address = ContextResolver.adjust_data_type(address, dim)
                     if ContextResolver.matching_data_type(address, dim):
                         parent_row_mask = parent._get_row_mask(before_dimension=dimension)
                         exists, new_row_mask, member_mask = (
@@ -176,6 +179,75 @@ class ContextResolver:
                                                      measure=measure, dimension=dim,
                                                      members=members, resolve=False)
                     return resolved_context
+
+                # special case for datetime dimensions!
+                if dimension is not None and pd.api.types.is_datetime64_any_dtype(dimension.dtype):
+                    # maybe the address is a datetime token like "today", "last week", "next month", etc.
+                    its_a_valid_date = False
+                    if isinstance(address, datetime.datetime):
+                        from_date = to_date = address
+                        its_a_valid_date = True
+                    elif isinstance(address, str):
+                        # We need to parse the date token, either it's a date string, e.g. "2021-01-01"
+                        # or a date token, e.g. "today", "yesterday", "last week", "next month", etc.
+                        its_a_valid_date, from_date, to_date = parse_standard_date_token(address)
+                        if not its_a_valid_date:
+                            from_date, to_date = resolve_datetime(address)
+                            its_a_valid_date = (from_date, to_date) != (None, None)
+
+                    elif isinstance(address, slice):
+                        # We might have a date range, e.g. "2021-01-01":"2021-12-31" or "last year":"today"
+                        from_date = address.start
+                        to_date = address.stop
+
+                        if isinstance(from_date, datetime.datetime):
+                            its_a_valid_date = True
+                        elif isinstance(from_date, str):
+                            its_a_valid_date, from_date, result_not_of_interest = parse_standard_date_token(from_date)
+                            if not its_a_valid_date:
+                                fd, result_not_of_interest = resolve_datetime(from_date)
+                                its_a_valid_date = (fd, result_not_of_interest) != (None, None)
+                                if its_a_valid_date:
+                                    from_date = fd
+                                else:
+                                    raise ValueError(f"Invalid date token '{from_date}' in address '{address}'.")
+
+                        if isinstance(to_date, datetime.datetime):
+                            its_a_valid_date = True
+                        elif isinstance(to_date, str):
+                            its_a_valid_date, result_not_of_interest, to_date = parse_standard_date_token(to_date)
+                            if not its_a_valid_date:
+                                result_not_of_interest, td = resolve_datetime(to_date)
+                                its_a_valid_date = (result_not_of_interest, td) != (None, None)
+                                if its_a_valid_date:
+                                    to_date = td
+                                else:
+                                    raise ValueError(f"Invalid date token '{to_date}' in address '{address}'.")
+
+                    if its_a_valid_date:
+                        parent_row_mask = parent._get_row_mask(before_dimension=dimension)
+                        exists, new_row_mask, member_mask = dimension._check_exists_and_resolve_member(
+                            (from_date, to_date), parent_row_mask, member_mask, skip_checks=True,
+                            evaluate_as_range=True)
+
+                        # let's create a member context, independent of the result
+                        from cubedpandas.schema.member import Member, MemberSet
+                        member = Member(dim, address)
+                        members = MemberSet(dimension=dim, address=address, row_mask=new_row_mask,
+                                            members=[member])
+                        from cubedpandas.context.member_context import MemberContext
+                        resolved_context = MemberContext(cube=cube, parent=parent, address=address,
+                                                         row_mask=new_row_mask, member_mask=member_mask,
+                                                         measure=measure, dimension=dim,
+                                                         members=members, resolve=False)
+                        if not exists:
+                            # If no records where found, we will return a context with an empty row mask
+                            from cubedpandas.context.member_not_found_context import MemberNotFoundContext
+                            resolved_context = MemberNotFoundContext(cube=cube, parent=parent, address=address,
+                                                                     dimension=dim)
+
+                        return resolved_context
+
 
         if not dynamic_attribute:
             # As we are NOT in a dynamic context like `cube.A.online.sales`, where only exact measure,
@@ -444,14 +516,14 @@ class ContextResolver:
         """Checks if the address matches the data type of the dimension."""
         if isinstance(address, str):
             return pd.api.types.is_string_dtype(dimension.dtype)  # pd.api.types.is_object_dtype((dimension.dtype)
+        elif isinstance(address, bool):
+            return pd.api.types.is_bool_dtype(dimension.dtype)
         elif isinstance(address, int):
             return pd.api.types.is_integer_dtype(dimension.dtype)
         elif isinstance(address, (str, datetime.datetime, datetime.date)):
             return pd.api.types.is_datetime64_any_dtype(dimension.dtype)
         elif isinstance(address, float):
             return pd.api.types.is_float_dtype(dimension.dtype)
-        elif isinstance(address, bool):
-            return pd.api.types.is_bool_dtype(dimension.dtype)
         return False
 
     @staticmethod
@@ -467,7 +539,17 @@ class ContextResolver:
             elif pd.api.types.is_float_dtype(dimension.dtype):
                 return float(address)
             elif pd.api.types.is_bool_dtype(dimension.dtype):
-                return bool(address)
+                if isinstance(address, bool):
+                    return address
+                if isinstance(address, str):
+                    address = address.lower().strip()
+                    return address in ['true', '1', 'yes', 'y', "on", "t", "1.0"]
+                    # everything else will be considered as False
+                else:
+                    try:
+                        return bool(address)  # for other data types, we will just return the boolean value
+                    except ValueError:
+                        return False  # we ignore errors here. error = False
             return address
         except Exception as e:
             # just return the original address if the conversion fails, subsequent checks will be performed

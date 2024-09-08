@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from tkinter.constants import RAISED
 from typing import SupportsFloat, TYPE_CHECKING, Any, Type
 
 import numpy as np
@@ -188,42 +189,10 @@ class Context(SupportsFloat):
     def address(self) -> any:
         """
         Returns:
-            The partial address of the context, as defined by the user
-            This does not include the addresses defined by predecessor
-            cells down to the cube.
+            The address of the current context, as defined by the user
+            This does not represent the full address and context down to the cube.
         """
         return self._address
-
-    @property
-    def cube_address(self) -> str:
-        """
-        Returns:
-            The full address of the context, including all predecessor
-            cells down to the cube.
-        """
-        # todo: requires rework. Best move to a separate class or function for address formatting: text, dict, json
-        token = self._address
-        if isinstance(token, Context):
-            token = token.address
-        if isinstance(token, str):
-            if not token.isidentifier():
-                token = [token,]
-        elif isinstance(token, tuple):
-            token = list(token)
-        elif token is None:
-            token = ""
-            return token
-
-        if self.parent is None:
-            parent_token = ""
-        else:
-            parent_token = self.parent.cube_address
-
-        if isinstance(token, list):
-            return f"{parent_token}{token}"
-        else:
-            return f"{parent_token}.{token}"
-
 
     @property
     def measure(self) -> Measure:
@@ -236,13 +205,31 @@ class Context(SupportsFloat):
         return self._measure
 
     @measure.setter
-    def measure(self, value: Measure):
+    def measure(self, value: Measure | str):
+        """
+        Sets the measure of the context.
+        """
+        if isinstance(value, str):
+            if value in self._cube.schema.measures:
+                self._measure = self._cube.schema.measures[value]
+            else:
+                raise ValueError(f"Failed to set context measure '{value}'. "
+                                 f"The measure is con contained in the cube schema.")
         self._measure = value
 
     @property
     def is_filtered(self) -> bool:
+        """
+        Returns True if the context is somehow filtered and does not represent the full underlying data context.
+        """
         return self._is_filtered
 
+    @property
+    def is_valid(self):
+        """
+        Returns True if the context is valid and can be resolved and evaluated.
+        """
+        return True
 
     @property
     def row_mask(self) -> np.ndarray | None:
@@ -332,8 +319,7 @@ class Context(SupportsFloat):
         """Dynamically resolves member from the cube and predecessor cells."""
         # remark: This pseudo-semaphore is not threadsafe. Needed to prevent infinite __getattr__ loops.
 
-        # special case, If we are called from within a Jupyter Notebook,
-        # we need to ignore certain attributes.
+        # special case: running in Jupyter Notebook, we need to ignore certain attribute requests
         if self._cube._runs_in_jupyter:
             if name == "_ipython_canary_method_should_not_exist_" or name == "shape":
                 raise AttributeError()
@@ -342,12 +328,21 @@ class Context(SupportsFloat):
         else:
             if self._semaphore:
                 raise AttributeError(
-                    f"CubedPandas: Unexpected fatal error while trying to resolve the context for '{name}'.")
+                    f"CubedPandas: Unexpected fatal error while trying to resolve context for '{name}'.")
 
         if name == "_ipython_canary_method_should_not_exist": # pragma: no cover
             raise AttributeError("cubedpandas")
 
         try:
+            # check for callable aggregation functions, e.g. sum(), avg(), etc.
+            from cubedpandas.context.function_context import FunctionContext
+            callable_function = None
+            if name.upper() in FunctionContext.KEYWORDS:
+                agg_function = getattr(self, f"_agg_{name.lower()}")
+                if callable(agg_function):
+                    callable_function = agg_function
+
+            # check for attributes
             from cubedpandas.context.context_resolver import ContextResolver
             self._semaphore = True
             if str(name).endswith("_"):
@@ -361,7 +356,14 @@ class Context(SupportsFloat):
             else:
                 resolved = ContextResolver.resolve(parent=self, address=name, dynamic_attribute=True)
             self._semaphore = False
+
+            if callable_function is not None:
+                from cubedpandas.context.function_context import FunctionContext
+                if isinstance(resolved, FunctionContext):
+                    resolved._callable_function = callable_function
+
             return resolved
+
         except ValueError as e:
             self._semaphore = False
             if self._cube.settings.debug_mode:
@@ -572,12 +574,20 @@ class Context(SupportsFloat):
                     return len(self._df.index)
                 return len(row_mask)
 
-        if row_mask is not None and row_mask.size == 0:  # no records found
-            if ((operation >= ContextFunction.COUNT) or
-                    pd.api.types.is_integer_dtype(self._df[measure.column])):
-                return 0  # return default value
+        if row_mask is not None and row_mask.size == 0:
+            # no records found -> the context does not exist
+            if operation >= ContextFunction.COUNT:
+                return 0
+            elif pd.api.types.is_integer_dtype(self._df[measure.column]):
+                if self._cube.settings.return_none_for_non_existing_cells:
+                    return None
+                else:
+                    return 0
             else:
-                return 0.0  # return default value
+                if self._cube.settings.return_none_for_non_existing_cells:
+                    return None
+                else:
+                    return 0.0  # return default value
 
         # Get and filter the values array by the row mask.
         values = self._df[measure.column].to_numpy()
@@ -619,6 +629,50 @@ class Context(SupportsFloat):
         if self._convert_values_to_python_data_types:
             value = self._convert_to_python_type(value)
         return value
+
+    def _agg_sum(self) -> float | int:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.SUM)
+
+    def _agg_avg(self) -> float:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.AVG)
+
+    def _agg_mean(self) -> float:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.AVG)
+
+    def _agg_median(self) -> float:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.MEDIAN)
+
+    def _agg_min(self) -> float | int:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.MIN)
+
+    def _agg_max(self) -> float | int:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.MAX)
+
+    def _agg_count(self) -> int:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.COUNT)
+
+    def _agg_std(self) -> float:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.STD)
+
+    def _agg_var(self) -> float:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.VAR)
+
+    def _agg_pof(self) -> float:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.POF)
+
+    def _agg_nan(self) -> int:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.NAN)
+
+    def _agg_an(self) -> int:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.AN)
+
+    def _agg_zero(self) -> int:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.ZERO)
+
+    def _agg_nzero(self) -> int:
+        return self._evaluate(self._row_mask, self._measure, ContextFunction.NZERO)
+
+
 
     def _allocate(self, row_mask: np.ndarray | None = None, measure: Measure | None = None, value: Any = None,
                   operation: ContextAllocation = ContextAllocation.DISTRIBUTE):
@@ -707,6 +761,12 @@ class Context(SupportsFloat):
     # endregion
 
     # region Dunder methods, operator overloading, float behaviour etc.
+    def __contains__(self, key):
+        from cubedpandas.context.dimension_context import DimensionContext
+        if isinstance(self, DimensionContext):
+            return key in self.members
+        raise ValueError(f"Context object of type '{type(self)}' does not support the 'in' operator.")
+
     def __float__(self) -> float:  # type conversion to float
         return self.numeric_value
 
