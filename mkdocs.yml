@@ -125,6 +125,7 @@ nav:
       - 'Getting Started': 'getting-started.md'
       - 'Guides':
           - 'Cheatsheet (pdf)': 'guides/cheatsheet.md'
+          - 'Using Custom Schema': 'guides/best-practise-schema.md'
           - 'Aggregations': 'guides/best-practise-aggregations.md'
           - 'Advanced Filtering': 'guides/best-practise-filtering.md'
           - 'DateTime Intelligence': 'guides/best-practise-datetime.md'
