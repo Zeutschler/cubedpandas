@@ -6,14 +6,6 @@ The CubedPandas website & documentation is made with [MkDocs](https://www.mkdocs
 creates a website from markdown files and from the actual source code of the project. The CubedPandas website will 
 be hosted on GitHub pages: [https://zeutschler.github.io/cubedpandas/](https://zeutschler.github.io/cubedpandas/).
 
-The documentation is structured as follows:
-
-* **Homepage** - Short Intro to CubedPandas, features, installation, sample code, etc.
-* **User documentation** - The documentation will be used to explain the usage of the tool to the users.
-* **Developer documentation** - The documentation will be used to explain the architecture and the design of the tool
-  to developers.
-* **Blog** - Posts and news about CubedPandas features, development, best practices, etc.
-
 ## How to build the documentation
 The documentation can be built by using the `mkdocs` command line tool from the root directory of the project: 
 
