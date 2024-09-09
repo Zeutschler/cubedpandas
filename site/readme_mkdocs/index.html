@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en" class="no-js">
 <head>
@@ -447,6 +448,20 @@
   
   <span class="md-ellipsis">
     Cheatsheet (pdf)
+  </span>
+
+
+                                                            </a>
+                                                        </li>
+
+
+                                                        <li class="md-nav__item">
+                                                            <a href="../guides/best-practise-schema/"
+                                                               class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using Custom Schema
   </span>
 
 
@@ -970,42 +985,35 @@
                         CubedPandas website will
                         be hosted on GitHub pages: <a href="https://zeutschler.github.io/cubedpandas/">https://zeutschler.github.io/cubedpandas/</a>.
                     </p>
-                    <p>The documentation is structured as follows:</p>
-                    <ul>
-                        <li><strong>Homepage</strong> - Short Intro to CubedPandas, features, installation, sample code,
-                            etc.
-                        </li>
-                        <li><strong>User documentation</strong> - The documentation will be used to explain the usage of
-                            the tool to the users.
-                        </li>
-                        <li><strong>Developer documentation</strong> - The documentation will be used to explain the
-                            architecture and the design of the tool
-                            to developers.
-                        </li>
-                        <li><strong>Blog</strong> - Posts and news about CubedPandas features, development, best
-                            practices, etc.
-                        </li>
-                    </ul>
                     <h2 id="how-to-build-the-documentation">How to build the documentation<a class="headerlink"
                                                                                              href="#how-to-build-the-documentation"
                                                                                              title="Permanent link">&para;</a>
                     </h2>
                     <p>The documentation can be built by using the <code>mkdocs</code> command line tool from the root
                         directory of the project: </p>
+                    <p>
                     <div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a
                             id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mkdocs<span
                             class="w"> </span>build<span class="w"> </span>--clean<span
                             class="w"> </span>--site-dir<span class="w"> </span><span class="s1">&#39;pages/&#39;</span>
 </span></code></pre>
                     </div>
+                    to rebuild the static site in the <code>site/</code> directory. The <code>--clean</code> option will
+                    remove the old site directory before
+                    <div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a
+                            id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mkdocs<span
+                            class="w"> </span>gh-deploy<span class="w"> </span>--clean<span class="w">  </span>
+</span></code></pre>
+                    </div>
+                    </p>
                     <h2 id="how-to-run-and-view-the-documentation-locally">How to run and view the documentation locally<a
                             class="headerlink" href="#how-to-run-and-view-the-documentation-locally"
                             title="Permanent link">&para;</a></h2>
                     <p>The documentation can be run and viewed locally by using the <code>mkdocs</code> command line
                         tool from the root
                         directory of the project
-                    <div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a
-                            id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mkdocs<span
+                    <div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a
+                            id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mkdocs<span
                             class="w"> </span>serve
 </span></code></pre>
                     </div>
@@ -1013,8 +1021,8 @@
                     be
                     automatically reloaded in the browser. The documentation is the available at the following URL:</p>
                     <p>
-                    <div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a
-                            id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>http://127.0.0.1:8000/data-model-generator/
+                    <div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a
+                            id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>http://127.0.0.1:8000/data-model-generator/
 </span></code></pre>
                     </div>
                     To stop the local web server, press <code>CTRL+C</code> in the command line tool. That's all,

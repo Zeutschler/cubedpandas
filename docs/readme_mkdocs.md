@@ -13,6 +13,18 @@ The documentation can be built by using the `mkdocs` command line tool from the 
 mkdocs build --clean --site-dir 'pages/'
 ```
 
+## How to deploy the documentation
+
+To (re)build the static site in the `site/` directory use the following command.
+Please only create the static content in the `site/` directory, do not commit the `site/` directory to the repository.
+When the command as ask for credentials, just kill the process.
+The actual upload to GitHub Pages will be performed by a GitHub Action 'static-site-upload.yml' which can
+be triggered by pushing to the master branch.
+
+```shell
+mkdocs gh-deploy --clean  
+```
+
 ## How to run and view the documentation locally
 The documentation can be run and viewed locally by using the `mkdocs` command line tool from the root 
 directory of the project
