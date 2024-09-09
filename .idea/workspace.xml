@@ -4,15 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="random dataset tests added">
-      <change afterPath="$PROJECT_DIR$/tests/datasets/006_job_market.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/datasets/007_spotify_tracks.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/datasets/008_tesla_stock.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cubedpandas/context/context.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/context/context.py" afterDir="false" />
+    <list default="true" id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="fixed: NaN values, member names wihth ','">
       <change beforePath="$PROJECT_DIR$/cubedpandas/context/context_resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/context/context_resolver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cubedpandas/schema/dimension.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/schema/dimension.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_real_world_datasets.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_real_world_datasets.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -125,7 +118,7 @@
     "Python tests.Python tests for test_slice.TestSlice.test_default_slice.executor": "Run",
     "Python tests.Python tests for test_slice.TestSlice.test_filter_slice.executor": "Run",
     "Python tests.Python tests in test_real_world_datasets.py.executor": "Debug",
-    "Python tests.Python tests in tests.executor": "Run",
+    "Python tests.Python tests in tests.executor": "Coverage",
     "Python tests.pytest for tests.test_cube.TestCube.test_boolean_dimension.executor": "Run",
     "Python tests.pytest for tests.test_cube.TestCube.test_cube_address_to_args.executor": "Run",
     "Python tests.pytest for tests.test_cube_context.TestCubeContext.test_context_address.executor": "Run",
@@ -175,7 +168,7 @@
       <recent name="$PROJECT_DIR$/docs/guides" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.pytest for tests.test_real_world_datasets.TestRealWorldDatasets">
+  <component name="RunManager" selected="Python tests.Python tests in tests">
     <configuration name="Python tests for test_real_world_datasets.TestRealWorldDatasets" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="cubedpandas" />
       <option name="ENV_FILES" value="" />
@@ -329,15 +322,7 @@
       <workItem from="1725828707480" duration="1421000" />
       <workItem from="1725830216899" duration="25499000" />
       <workItem from="1725888113932" duration="4987000" />
-      <workItem from="1725893116279" duration="6576000" />
-    </task>
-    <task id="LOCAL-00008" summary="build">
-      <option name="closed" value="true" />
-      <created>1724431116582</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1724431116582</updated>
+      <workItem from="1725893116279" duration="6950000" />
     </task>
     <task id="LOCAL-00009" summary="build">
       <option name="closed" value="true" />
@@ -723,7 +708,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725885439288</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="fixed: NaN values, member names wihth ','">
+      <option name="closed" value="true" />
+      <created>1725899757096</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1725899757097</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -748,7 +741,8 @@
     <MESSAGE value="datetime features" />
     <MESSAGE value="docu updated" />
     <MESSAGE value="random dataset tests added" />
-    <option name="LAST_COMMIT_MESSAGE" value="random dataset tests added" />
+    <MESSAGE value="fixed: NaN values, member names wihth ','" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed: NaN values, member names wihth ','" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -758,11 +752,6 @@
           <url>file://$PROJECT_DIR$/tests/test_random_dataframes.py</url>
           <line>42</line>
           <option name="timeStamp" value="47" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cubedpandas/context/context_resolver.py</url>
-          <line>505</line>
-          <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/cubedpandas/context/context.py</url>
@@ -790,7 +779,7 @@
     <SUITE FILE_PATH="coverage/cubedpandas$01a_basic_usage.coverage" NAME="01a_basic_usage Coverage Results" MODIFIED="1725127305254" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
     <SUITE FILE_PATH="coverage/cubedpandas$rounding.coverage" NAME="rounding Coverage Results" MODIFIED="1725699873875" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/research" />
     <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_cube_TestCube_test_boolean_dimension.coverage" NAME="pytest for tests.test_cube.TestCube.test_boolean_dimension Coverage Results" MODIFIED="1725735039070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/cubedpandas$.coverage" NAME=" Coverage Results" MODIFIED="1725899605231" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$.coverage" NAME=" Coverage Results" MODIFIED="1725899789800" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/cubedpandas$Doctests_in_common.coverage" NAME="Doctests in common Coverage Results" MODIFIED="1725697590031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cubedpandas" />
     <SUITE FILE_PATH="coverage/cubedpandas$99_benchmark_01.coverage" NAME="99_benchmark_01 Coverage Results" MODIFIED="1725607787082" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
     <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_measures_TestMeasures_test_measure_methods.coverage" NAME="pytest for tests.test_measures.TestMeasures.test_measure_methods Coverage Results" MODIFIED="1725121808744" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
