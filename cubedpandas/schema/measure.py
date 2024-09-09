@@ -14,6 +14,7 @@ class Measure:
     # todo: add support for aliases
     def __init__(self, df: pd.DataFrame, column, alias: str | None = None, number_format: str | None = None):
         self._df: pd.DataFrame = df
+
         self._column = column
         self._alias: str | None = alias
         self._column_ordinal = df.columns.get_loc(column)

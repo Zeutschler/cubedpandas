@@ -22,7 +22,7 @@ from cubedpandas.schema.member import Member, MemberSet
 from cubedpandas.schema.schema import Schema
 from cubedpandas.settings import CachingStrategy
 
-__version__ = "0.2.29"
+__version__ = "0.2.30"
 VERSION = __version__
 
 __all__ = [

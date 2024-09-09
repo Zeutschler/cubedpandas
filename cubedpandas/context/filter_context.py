@@ -32,7 +32,11 @@ class FilterContext(Context):
                          measure=parent.measure, dimension=parent.dimension, resolve=resolve)
 
     def _compare(self, operator: str, other) -> 'MeasureContext':
+        from cubedpandas.context.context import Context
         from cubedpandas.context.measure_context import MeasureContext
+
+        if isinstance(other, Context):
+            other = other.value
         try:
             match operator:
                 case "<":
