@@ -18,8 +18,8 @@ D-A-CH region. I proudly support mid-sized and large companies in improving thei
 and strategy. And I am honoured to help some well-known software vendors support their products and go-to-market
 strategies market strategies in the area of data & analytics.
 
-I'm a big fan and intense user of open source software. CubedPandas is one of my projects to say thank you to the
-community and to give something back. I hope you enjoy using CubedPandas as much as I enjoy developing it.
+As a big fan and intense user of open source software, CubedPandas is also a projects to say thank you to the
+community and give something back. I hope you enjoy using CubedPandas as much as I enjoy developing it.
 
 Hobbies? Anything on two wheels, with or without an engine, on-road or off-road is my passion.
 
