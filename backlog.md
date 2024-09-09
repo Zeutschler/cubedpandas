@@ -2,6 +2,7 @@
 
 ## Release 0.2.x (Current Scope of Work)
 
+- [ ] Treat int columns with typical ID or code names as dimension columns.
 - [ ] Rewrite documentation based on new syntax
 - [ ] Slice to support and resolve boolean operations to define row and colum dimensions in a single step.
   e.g. `trucks.slice(rows=c.salesrep & c.customer, columns=c.lastmonth & c.actualmonth)`

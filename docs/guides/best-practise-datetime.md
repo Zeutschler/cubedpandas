@@ -1,10 +1,6 @@
-## Sorry, we'll add that later...
+## Coming Soon
 
-The current focus of development is on the core features of CubedPandas.
-Once finished I'll work on this documention...
+This content and the code it relates to is currently under construction.  
+Delivery is planned alongside the first Alpha version (0.3.x) of CubedPandas.
 
-!!! Note:
-To stay tuned for updates and new releases of CubePandas,
-please add a watch to the [CubedPandas GitHub repo](https://github.com/Zeutschler/cubedpandas).
-
-Thomas
+Stay tuned...

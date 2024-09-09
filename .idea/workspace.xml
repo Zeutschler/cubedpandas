@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="docu updated">
+      <change afterPath="$PROJECT_DIR$/.cache/plugin/privacy/assets/external/github.com/zeutschler.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.cache/plugin/privacy/assets/external/github.com/zeutschler.png.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/samples/.ipynb_checkpoints/dynamic_attribute_population-checkpoint.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/datasets/001_supermarket_sales.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/datasets/002_student_performance.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/datasets/003_agriculture_climate_change.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/datasets/004_top_beauty_products.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/datasets/005_click_prediction.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/datasets/readme.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/test_real_world_datasets.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backlog.md" beforeDir="false" afterPath="$PROJECT_DIR$/backlog.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cubedpandas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cubedpandas/context/context_context.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/context/context_context.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cubedpandas/context/filter_context.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/context/filter_context.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cubedpandas/schema/measure.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/schema/measure.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guides/best-practise-aggregations.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/guides/best-practise-aggregations.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guides/best-practise-datetime.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/guides/best-practise-datetime.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guides/best-practise-filtering.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/guides/best-practise-filtering.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guides/best-practise-pivot-tables.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/guides/best-practise-pivot-tables.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guides/best-practise-schema.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/guides/best-practise-schema.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guides/cheatsheet.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/guides/cheatsheet.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="origin/dev" />
+  </component>
+  <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/dev" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Zeutschler&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Zeutschler/cubedpandas&quot;,
+    &quot;accountId&quot;: &quot;404b2cec-8373-4974-9221-31e959245ab6&quot;
+  },
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
+    },
+    &quot;owner&quot;: &quot;Zeutschler&quot;,
+    &quot;repository&quot;: &quot;cubedpandas&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2l144jdCHAaycsuvNXbzeFSmV6x" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python tests.Doctests in common (1).executor": "Run",
+    "Python tests.Doctests in common.executor": "Run",
+    "Python tests.Python tests for test_common.TestPythonizeFunction.executor": "Run",
+    "Python tests.Python tests for test_cube.TestCube.test_boolean_dimension.executor": "Debug",
+    "Python tests.Python tests for test_cube.TestCube.test_cube_access_methods.executor": "Debug",
+    "Python tests.Python tests for test_cube.TestCube.test_cube_address_to_args.executor": "Run",
+    "Python tests.Python tests for test_cube.TestCube.test_cube_primary_aggregation_functions.executor": "Run",
+    "Python tests.Python tests for test_cube.TestCube.test_cube_primary_aggregations.executor": "Run",
+    "Python tests.Python tests for test_cube.TestCube.test_measures_only_cube.executor": "Debug",
+    "Python tests.Python tests for test_cube_aliases.TestCubeAliases.test_cube_aliases.executor": "Run",
+    "Python tests.Python tests for test_cube_context.TestCubeContext.test_context_address.executor": "Debug",
+    "Python tests.Python tests for test_cube_context.TestCubeContext.test_dimension_context_methods.executor": "Debug",
+    "Python tests.Python tests for test_cube_context.TestCubeContext.test_member_context_in_operator.executor": "Debug",
+    "Python tests.Python tests for test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates.executor": "Debug",
+    "Python tests.Python tests for test_date_lookups.TestDateLookUps.test_all_stanard_dateTime_tokens.executor": "Run",
+    "Python tests.Python tests for test_date_lookups.TestDateLookUps.test_standard_dateTime_tokens.executor": "Run",
+    "Python tests.Python tests for test_measures.TestMeasures.test_measure_methods.executor": "Run",
+    "Python tests.Python tests for test_random_dataframes.TestCube.test_measures_only_cube.executor": "Debug",
+    "Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets.executor": "Debug",
+    "Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube.executor": "Debug",
+    "Python tests.Python tests for test_schema.TestSchema.test_infer_schema.executor": "Debug",
+    "Python tests.Python tests for test_schema.TestSchema.test_invalid_schema_duplicate_dimension.executor": "Run",
+    "Python tests.Python tests for test_schema.TestSchema.test_schema_parameters.executor": "Run",
+    "Python tests.Python tests for test_slice.TestSlice.executor": "Run",
+    "Python tests.Python tests for test_slice.TestSlice.test_custom_slice.executor": "Run",
+    "Python tests.Python tests for test_slice.TestSlice.test_default_slice.executor": "Run",
+    "Python tests.Python tests for test_slice.TestSlice.test_filter_slice.executor": "Run",
+    "Python tests.Python tests in test_real_world_datasets.py.executor": "Run",
+    "Python tests.Python tests in tests.executor": "Run",
+    "Python tests.pytest for tests.test_cube.TestCube.test_boolean_dimension.executor": "Run",
+    "Python tests.pytest for tests.test_cube.TestCube.test_cube_address_to_args.executor": "Run",
+    "Python tests.pytest for tests.test_cube_context.TestCubeContext.test_context_address.executor": "Run",
+    "Python tests.pytest for tests.test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates.executor": "Run",
+    "Python tests.pytest for tests.test_measures.TestMeasures.test_measure_methods.executor": "Debug",
+    "Python tests.pytest for tests.test_slice.TestSlice.test_default_slice.executor": "Debug",
+    "Python.00_playground.executor": "Run",
+    "Python.01_basic_usage.executor": "Run",
+    "Python.01a_basic_usage.executor": "Run",
+    "Python.02_direct_member_access.executor": "Run",
+    "Python.04_simple_slice.executor": "Run",
+    "Python.05_large_slice.executor": "Run",
+    "Python.99_benchmark_01.executor": "Run",
+    "Python.app (1).executor": "Run",
+    "Python.app.executor": "Run",
+    "Python.rounding.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "com.codeium.enabled": "true",
+    "git-widget-placeholder": "#84 on dev",
+    "last_opened_file_path": "/Users/thomas/Documents/Coding/cubedpandas/tests/datasets",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/tests/datasets" />
+      <recent name="$PROJECT_DIR$/tests" />
+      <recent name="$PROJECT_DIR$/.github/workflows" />
+      <recent name="$PROJECT_DIR$/docs/guides" />
+      <recent name="$PROJECT_DIR$/gh-pages" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/research/github-actions" />
+      <recent name="$PROJECT_DIR$/research" />
+      <recent name="$PROJECT_DIR$/docs/about" />
+      <recent name="$PROJECT_DIR$/docs/api" />
+      <recent name="$PROJECT_DIR$/docs/guides" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets">
+    <configuration name="Python tests for test_date_lookups.TestDateLookUps.test_all_stanard_dateTime_tokens" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="cubedpandas" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_date_lookups.TestDateLookUps.test_all_stanard_dateTime_tokens&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for test_date_lookups.TestDateLookUps.test_standard_dateTime_tokens" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="cubedpandas" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_date_lookups.TestDateLookUps.test_standard_dateTime_tokens&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for test_real_world_datasets.TestRealWorldDatasets" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="cubedpandas" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_real_world_datasets.TestRealWorldDatasets&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="cubedpandas" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in test_real_world_datasets.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="cubedpandas" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_real_world_datasets.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in tests" type="tests" factoryName="Autodetect" nameIsGenerated="true">
+      <module name="cubedpandas" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets" />
+        <item itemvalue="Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube" />
+        <item itemvalue="Python tests.Python tests in test_real_world_datasets.py" />
+        <item itemvalue="Python tests.Python tests for test_date_lookups.TestDateLookUps.test_standard_dateTime_tokens" />
+        <item itemvalue="Python tests.Python tests for test_date_lookups.TestDateLookUps.test_all_stanard_dateTime_tokens" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-PY-242.20224.428" />
+        <option value="bundled-python-sdk-80e8e15d2b92-39cff9de6eef-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.20224.428" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="" />
+      <created>1724334060362</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1724334060362</updated>
+      <workItem from="1724334061639" duration="282000" />
+      <workItem from="1724334367008" duration="531000" />
+      <workItem from="1724334918494" duration="102000" />
+      <workItem from="1724335115370" duration="2343000" />
+      <workItem from="1724403910122" duration="5539000" />
+      <workItem from="1724409457278" duration="5904000" />
+      <workItem from="1724423305129" duration="11048000" />
+      <workItem from="1724481332225" duration="5394000" />
+      <workItem from="1724491018283" duration="5768000" />
+      <workItem from="1724564686095" duration="6924000" />
+      <workItem from="1724650504958" duration="58000" />
+      <workItem from="1724650570783" duration="1258000" />
+      <workItem from="1724739812275" duration="28349000" />
+      <workItem from="1725206685351" duration="119000" />
+      <workItem from="1725206815813" duration="382000" />
+      <workItem from="1725207272480" duration="1547000" />
+      <workItem from="1725607237167" duration="3042000" />
+      <workItem from="1725610294107" duration="39482000" />
+      <workItem from="1725650675472" duration="1007000" />
+      <workItem from="1725692897695" duration="13052000" />
+      <workItem from="1725713256545" duration="21771000" />
+      <workItem from="1725735059546" duration="29288000" />
+      <workItem from="1725821567947" duration="5492000" />
+      <workItem from="1725828211050" duration="484000" />
+      <workItem from="1725828707480" duration="1421000" />
+      <workItem from="1725830216899" duration="22810000" />
+    </task>
+    <task id="LOCAL-00007" summary="build">
+      <option name="closed" value="true" />
+      <created>1724430672365</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1724430672365</updated>
+    </task>
+    <task id="LOCAL-00008" summary="build">
+      <option name="closed" value="true" />
+      <created>1724431116582</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1724431116582</updated>
+    </task>
+    <task id="LOCAL-00009" summary="build">
+      <option name="closed" value="true" />
+      <created>1724431704414</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1724431704414</updated>
+    </task>
+    <task id="LOCAL-00010" summary="build">
+      <option name="closed" value="true" />
+      <created>1724432189126</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1724432189126</updated>
+    </task>
+    <task id="LOCAL-00011" summary="build">
+      <option name="closed" value="true" />
+      <created>1724433230815</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1724433230815</updated>
+    </task>
+    <task id="LOCAL-00012" summary="build">
+      <option name="closed" value="true" />
+      <created>1724434818038</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1724434818038</updated>
+    </task>
+    <task id="LOCAL-00013" summary="code cleanup">
+      <option name="closed" value="true" />
+      <created>1725128000887</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1725128000887</updated>
+    </task>
+    <task id="LOCAL-00014" summary="code cleanup">
+      <option name="closed" value="true" />
+      <created>1725128507932</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1725128507932</updated>
+    </task>
+    <task id="LOCAL-00015" summary="code cleanup">
+      <option name="closed" value="true" />
+      <created>1725128712094</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1725128712094</updated>
+    </task>
+    <task id="LOCAL-00016" summary="code cleanup">
+      <option name="closed" value="true" />
+      <created>1725129924697</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1725129924697</updated>
+    </task>
+    <task id="LOCAL-00017" summary="code cleanup">
+      <option name="closed" value="true" />
+      <created>1725130262595</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1725130262595</updated>
+    </task>
+    <task id="LOCAL-00018" summary="slice refactored">
+      <option name="closed" value="true" />
+      <created>1725641869406</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1725641869406</updated>
+    </task>
+    <task id="LOCAL-00019" summary="slice refactored">
+      <option name="closed" value="true" />
+      <created>1725642053781</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1725642053781</updated>
+    </task>
+    <task id="LOCAL-00020" summary="slice refactored">
+      <option name="closed" value="true" />
+      <created>1725642372764</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1725642372764</updated>
+    </task>
+    <task id="LOCAL-00021" summary="slice refactored">
+      <option name="closed" value="true" />
+      <created>1725649954671</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1725649954671</updated>
+    </task>
+    <task id="LOCAL-00022" summary="slice refactored">
+      <option name="closed" value="true" />
+      <created>1725650625171</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1725650625171</updated>
+    </task>
+    <task id="LOCAL-00023" summary="slice refactored">
+      <option name="closed" value="true" />
+      <created>1725650918666</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1725650918666</updated>
+    </task>
+    <task id="LOCAL-00024" summary="slice refactored">
+      <option name="closed" value="true" />
+      <created>1725651422352</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1725651422352</updated>
+    </task>
+    <task id="LOCAL-00025" summary="slice refactored">
+      <option name="closed" value="true" />
+      <created>1725651492711</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1725651492711</updated>
+    </task>
+    <task id="LOCAL-00026" summary="datetime features">
+      <option name="closed" value="true" />
+      <created>1725809578886</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1725809578886</updated>
+    </task>
+    <task id="LOCAL-00027" summary="datetime features">
+      <option name="closed" value="true" />
+      <created>1725809852599</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1725809852599</updated>
+    </task>
+    <task id="LOCAL-00028" summary="datetime features">
+      <option name="closed" value="true" />
+      <created>1725810049228</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1725810049228</updated>
+    </task>
+    <task id="LOCAL-00029" summary="datetime features">
+      <option name="closed" value="true" />
+      <created>1725824764279</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1725824764279</updated>
+    </task>
+    <task id="LOCAL-00030" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725825108970</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1725825108970</updated>
+    </task>
+    <task id="LOCAL-00031" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725825424676</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1725825424676</updated>
+    </task>
+    <task id="LOCAL-00032" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725825688239</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1725825688239</updated>
+    </task>
+    <task id="LOCAL-00033" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725826000254</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1725826000254</updated>
+    </task>
+    <task id="LOCAL-00034" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725826909232</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1725826909232</updated>
+    </task>
+    <task id="LOCAL-00035" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725829662135</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1725829662135</updated>
+    </task>
+    <task id="LOCAL-00036" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725830104682</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1725830104682</updated>
+    </task>
+    <task id="LOCAL-00037" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725830770811</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1725830770811</updated>
+    </task>
+    <task id="LOCAL-00038" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725830821479</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1725830821479</updated>
+    </task>
+    <task id="LOCAL-00039" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725831299996</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1725831299996</updated>
+    </task>
+    <task id="LOCAL-00040" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725831542069</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1725831542069</updated>
+    </task>
+    <task id="LOCAL-00041" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725832561213</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1725832561213</updated>
+    </task>
+    <task id="LOCAL-00042" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725833168774</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1725833168774</updated>
+    </task>
+    <task id="LOCAL-00043" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725865406221</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1725865406221</updated>
+    </task>
+    <task id="LOCAL-00044" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725866043713</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1725866043713</updated>
+    </task>
+    <task id="LOCAL-00045" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725866073319</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1725866073319</updated>
+    </task>
+    <task id="LOCAL-00046" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725866970654</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1725866970654</updated>
+    </task>
+    <task id="LOCAL-00047" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725867851108</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1725867851108</updated>
+    </task>
+    <task id="LOCAL-00048" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725867970680</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1725867970680</updated>
+    </task>
+    <task id="LOCAL-00049" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725870044058</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1725870044059</updated>
+    </task>
+    <task id="LOCAL-00050" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725870136983</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1725870136984</updated>
+    </task>
+    <task id="LOCAL-00051" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725870533329</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1725870533330</updated>
+    </task>
+    <task id="LOCAL-00052" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725871110711</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1725871110711</updated>
+    </task>
+    <task id="LOCAL-00053" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725872407793</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1725872407793</updated>
+    </task>
+    <task id="LOCAL-00054" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725872490731</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1725872490731</updated>
+    </task>
+    <task id="LOCAL-00055" summary="docu updated">
+      <option name="closed" value="true" />
+      <created>1725873986623</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1725873986623</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fixes" />
+    <MESSAGE value="build" />
+    <MESSAGE value="code cleanup" />
+    <MESSAGE value="slice refactored" />
+    <MESSAGE value="datetime features" />
+    <MESSAGE value="docu updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="docu updated" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests/test_random_dataframes.py</url>
+          <line>42</line>
+          <option name="timeStamp" value="47" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cubedpandas/context/context_resolver.py</url>
+          <line>462</line>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cubedpandas/context/context.py</url>
+          <line>372</line>
+          <option name="timeStamp" value="94" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cubedpandas/context/context_resolver.py</url>
+          <line>268</line>
+          <option name="timeStamp" value="95" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/cubedpandas$00_playground.coverage" NAME="00_playground Coverage Results" MODIFIED="1724486056128" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
+    <SUITE FILE_PATH="coverage/cubedpandas$02_direct_member_access.coverage" NAME="02_direct_member_access Coverage Results" MODIFIED="1725127315721" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
+    <SUITE FILE_PATH="coverage/cubedpandas$05_large_slice.coverage" NAME="05_large_slice Coverage Results" MODIFIED="1725700247412" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
+    <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_cube_with_dates_TestCubeWithDates_test_slicing_with_exact_dates.coverage" NAME="pytest for tests.test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates Coverage Results" MODIFIED="1725809278748" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$app.coverage" NAME="app Coverage Results" MODIFIED="1725618529006" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples/web_app" />
+    <SUITE FILE_PATH="coverage/cubedpandas$01a_basic_usage.coverage" NAME="01a_basic_usage Coverage Results" MODIFIED="1725127305254" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
+    <SUITE FILE_PATH="coverage/cubedpandas$rounding.coverage" NAME="rounding Coverage Results" MODIFIED="1725699873875" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/research" />
+    <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_cube_TestCube_test_boolean_dimension.coverage" NAME="pytest for tests.test_cube.TestCube.test_boolean_dimension Coverage Results" MODIFIED="1725735039070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$.coverage" NAME=" Coverage Results" MODIFIED="1725885335772" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$Doctests_in_common.coverage" NAME="Doctests in common Coverage Results" MODIFIED="1725697590031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cubedpandas" />
+    <SUITE FILE_PATH="coverage/cubedpandas$99_benchmark_01.coverage" NAME="99_benchmark_01 Coverage Results" MODIFIED="1725607787082" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
+    <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_measures_TestMeasures_test_measure_methods.coverage" NAME="pytest for tests.test_measures.TestMeasures.test_measure_methods Coverage Results" MODIFIED="1725121808744" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$Doctests_in_common__1_.coverage" NAME="Doctests in common (1) Coverage Results" MODIFIED="1725698965075" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cubedpandas" />
+    <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_cube_context_TestCubeContext_test_context_address.coverage" NAME="pytest for tests.test_cube_context.TestCubeContext.test_context_address Coverage Results" MODIFIED="1725737288238" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$01_basic_usage.coverage" NAME="01_basic_usage Coverage Results" MODIFIED="1725127234592" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
+    <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_cube_TestCube_test_cube_address_to_args.coverage" NAME="pytest for tests.test_cube.TestCube.test_cube_address_to_args Coverage Results" MODIFIED="1725734946867" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_slice_TestSlice_test_default_slice.coverage" NAME="pytest for tests.test_slice.TestSlice.test_default_slice Coverage Results" MODIFIED="1725111777455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$04_simple_slice.coverage" NAME="04_simple_slice Coverage Results" MODIFIED="1725639092332" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
+    <SUITE FILE_PATH="coverage/cubedpandas$app__1_.coverage" NAME="app (1) Coverage Results" MODIFIED="1724739832676" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples/web_app" />
+  </component>
+</project>
