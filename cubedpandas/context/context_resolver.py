@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 import pandas as pd
 
+from cubedpandas.context.enums import ContextFunction
 from cubedpandas.context.context import Context
 from cubedpandas.context.datetime_resolver import parse_standard_date_token
 from cubedpandas.context.datetime_resolver import resolve_datetime
@@ -39,6 +40,7 @@ class ContextResolver:
         member_mask = parent.member_mask
         measure = parent.measure
         dimension = parent.dimension
+        address_as_list = None
 
         # 2. If the address is already a context, then we can simply wrap it into a ContextContext and return it.
         if isinstance(address, Context):
@@ -58,15 +60,27 @@ class ContextResolver:
             address_with_whitespaces = None
             if dynamic_attribute:
                 if cube.settings.auto_whitespace and ("_" in address) and (not address.startswith("_")):
-                    # address = address.replace("_", " ")
                     address_with_whitespaces = address.replace("_", " ")
+
 
             # 3.1. Check for function keywords like SUM, AVG, MIN, MAX, etc.
             if address.upper() in FunctionContext.KEYWORDS:
-                function = FunctionContext(parent=parent, function=address)
-                return function
+                function_context = FunctionContext(parent=parent, function=ContextFunction[address.upper()])
 
-            # 3.1. Check for names of measures
+                # Special case NAN:
+                # NAN is a reserved function keyword as well as the alias for missing values,
+                # so we need to check for it if we need to filter for missing values.
+                if function_context.dimension is not None:
+                    if function_context.function == ContextFunction.NAN:
+                        result, row_mask, member_mask = (function_context.dimension.
+                                                         _check_exists_and_resolve_member("nan",
+                                                                                          function_context.row_mask))
+                        if result:
+                            function_context._row_mask = row_mask
+
+                return function_context
+
+            # 3.2. Check for names of measures
             if address_with_whitespaces is not None:
                 address = address_with_whitespaces if address_with_whitespaces in cube.schema.measures else address
             if address in cube.schema.measures:
@@ -77,10 +91,8 @@ class ContextResolver:
                 resolved_context = MeasureContext(cube=cube, parent=parent, address=address, row_mask=row_mask,
                                                   measure=measure, dimension=dimension, resolve=False)
                 return resolved_context
-                # return ContextReference(context=resolved_context, address=address, row_mask=row_mask,
-                #                        measure=measure, dimension=dimension)
 
-            # 3.2. Check for names of dimensions
+            # 3.3. Check for names of dimensions
             if address_with_whitespaces is not None:
                 address = address_with_whitespaces if address_with_whitespaces in cube.schema.dimensions else address
             if address in cube.schema.dimensions:
@@ -99,17 +111,18 @@ class ContextResolver:
                     resolved_context = MemberContext(cube=cube, parent=resolved_context, address=True,
                                                    row_mask=new_row_mask, member_mask=member_mask,
                                                    measure=measure, dimension=dimension, resolve=False)
-
                 return resolved_context
-                # ref = ContextReference(context=resolved_context, address=address, row_mask=row_mask,
-                #                       measure=measure, dimension=dimension)
-                # return ref
 
-            # 3.3. Check if the address contains a list of members, e.g. "A, B, C"
+            # 3.4. Check if the address contains a list of members, e.g. "A, B, C"
             if address_with_whitespaces is not None:
                 address = address_with_whitespaces
 
-            address = ContextResolver.string_address_to_list(cube, address)
+            address, address_as_list = ContextResolver.string_address_to_list(cube, address)
+            if isinstance(address_as_list, list):
+                # The address either represents a member key containing
+                # a comma or it should represent a list of members.
+                # Let's do quick check if the address is a member key.
+                pass
 
         # 4. Check for callable objects, e.g. lambda functions
         if callable(address):
@@ -120,7 +133,21 @@ class ContextResolver:
                 return FilterContext(parent=parent, filter_expression=address, row_mask=row_mask,
                                      measure=measure, dimension=dimension, resolve=False, is_comparison=False)
 
-        # 5. Check for members of all data types over all dimensions in the cube
+        # 5. check for dict addresss like {"product": "A", "channel": "Online"}
+        if isinstance(address, dict):
+            is_valid_context, new_context_ref = ContextResolver.resolve_complex(parent, address, dimension)
+            if is_valid_context:
+                return new_context_ref
+            else:
+                if parent.cube.settings.ignore_member_key_errors:  # and not dynamic_attribute:
+                    if dimension is not None:
+                        if cube.df[dimension.column].dtype == pd.DataFrame([address, ])[0].dtype:
+                            from cubedpandas.context.member_not_found_context import MemberNotFoundContext
+                            return MemberNotFoundContext(cube=cube, parent=parent, address=address, dimension=dimension)
+
+                raise ValueError(new_context_ref.message)
+
+        # 6. Check for members of all data types over all dimensions in the cube
         #    Let's try start with a dimension that was handed in,
         #    if a dimension was handed in from the parent context.
         if not isinstance(address, list | tuple):
@@ -132,7 +159,7 @@ class ContextResolver:
             # Check for dimension hints and leverage them, e.g. "products:apple", "children:1"
             if target_dimension is not None:
                 dimension_list = [target_dimension]
-            elif isinstance(address, str) and (":" in address):
+            elif isinstance(address, str) and (":" in address) and address_as_list is None:
                 dim_name, member_name = address.split(":")
                 if dim_name.strip() in cube.schema.dimensions:
                     new_dimension = cube.schema.dimensions[dim_name.strip()]
@@ -253,7 +280,8 @@ class ContextResolver:
             # As we are NOT in a dynamic context like `cube.A.online.sales`, where only exact measure,
             # dimension and member names are supported, and have not yet found a suitable member, we need
             # to check for complex member set definitions like filter expressions, list, dictionaries etc.
-            is_valid_context, new_context_ref = ContextResolver.resolve_complex(parent, address, dimension)
+            is_valid_context, new_context_ref = ContextResolver.resolve_complex(parent, address, dimension,
+                                                                                address_as_list)
             if is_valid_context:
                 return new_context_ref
             else:
@@ -265,17 +293,30 @@ class ContextResolver:
 
                 raise ValueError(new_context_ref.message)
 
-        # 6. If we've not yet resolved anything meaningful, then we need to raise an error...
+        # 7. If we've not yet resolved anything meaningful, then we need to raise an error...
         raise ValueError(f"Invalid member name or address '{address}'. "
                          f"Tip: check for typos and upper/lower case issues.")
 
     @staticmethod
-    def resolve_complex(context: Context, address, dimension: Dimension | None = None) -> tuple[bool, Context]:
+    def resolve_complex(context: Context, address, dimension: Dimension | None = None,
+                        address_as_list: list | None = None) -> tuple[bool, Context]:
         """ Resolves complex member definitions like filter expressions, lists, dictionaries etc. """
         from cubedpandas.context.cube_context import CubeContext
 
         if dimension is None:
             dimension = context.dimension
+
+        # Check if we need to process a list of address arguments.
+        # This is required as addresses containing a list separator ','
+        # can be interpreted as a list of members or as a member name simply containing a ','.
+        # Example (true):
+        #   "A, B, C" is not an existing member name, so we will check
+        #   if the user ment a list of members: ["A", "B", "C"]
+        # Example (false):
+        #   "Hey, come over." is not an existing member name and also not a valid list of members,
+        #   so we will need to raise an ValueError later on.
+        if address_as_list is not None:
+            address = address_as_list
 
         if isinstance(address, str):
             # 1. try wildcard expressions like "On*" > resolving e.g. to "Online"
@@ -402,6 +443,7 @@ class ContextResolver:
             #    - When applied to MemberContext: NOT SUPPORTED
             #    - When applied to MeasureContext: NOT SUPPORTED
             from cubedpandas.context.dimension_context import DimensionContext
+
             if isinstance(context, DimensionContext):
                 # For increased performance, no individual upfront member checks will be made.
                 # Instead, we the list as a whole will processed by numpy.
@@ -427,7 +469,7 @@ class ContextResolver:
                 return True, resolved_context
 
             elif isinstance(context, CubeContext):
-                # ...for CubeContext we need to check for arbitrary measures, dimensions and members.
+                # ...for CubeContext we need to check for arbitrary measures, dimensions and members one after another
                 for item in address:
                     context = ContextResolver.resolve(context, item)
                 return True, context
@@ -490,12 +532,15 @@ class ContextResolver:
         return True, new_row_mask
 
     @staticmethod
-    def string_address_to_list(cube, address: str):
+    def string_address_to_list(cube, address):
+        if isinstance(address, (list, tuple)):
+            return address, None
+
         delimiter = cube.settings.list_delimiter
         if not delimiter in address:
-            return address
-        address = address.split(delimiter)
-        return [a.strip() for a in address]
+            return address, None
+        address_tokens = address.split(delimiter)
+        return address, [a.strip() for a in address_tokens]
 
     @staticmethod
     def merge_contexts(parent: Context, child: Context) -> Context:

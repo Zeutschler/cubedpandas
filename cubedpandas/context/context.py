@@ -135,7 +135,6 @@ class Context(SupportsFloat):
         Returns:
              The numerical value of the current context from the underlying cube.
         """
-        # value = self._evaluate(self._row_mask, self._measure, self._function)
         value = self.value
         if isinstance(value, (float, np.floating)):
             return float(value)
@@ -314,11 +313,11 @@ class Context(SupportsFloat):
     # region - Dynamic attribute resolving
     def __getattr__(self, name) -> (Context | 'MeasureContext' | 'DimensionContext' | 'MemberContext'
                                     | 'FilterContext' | 'BooleanOperationContext' | 'ContextContext'
-                                    | 'FunctionContext' | 'MemberNotFoundContext' | 'CubeContext'):
+                                    | 'FunctionContext' | 'MemberNotFoundContext' | 'CubeContext' | Any):
         """Dynamically resolves member from the cube and predecessor cells."""
         # remark: This pseudo-semaphore is not threadsafe. Needed to prevent infinite __getattr__ loops.
 
-        # special case: running in Jupyter Notebook, we need to ignore certain attribute requests
+        # Special cases: running in Jupyter Notebook, we need to ignore certain attribute requests
         if self._cube._runs_in_jupyter:
             if name == "_ipython_canary_method_should_not_exist_" or name == "shape":
                 raise AttributeError()
@@ -328,9 +327,22 @@ class Context(SupportsFloat):
             if self._semaphore:
                 raise AttributeError(
                     f"CubedPandas: Unexpected fatal error while trying to resolve context for '{name}'.")
-
         if name == "_ipython_canary_method_should_not_exist": # pragma: no cover
             raise AttributeError("cubedpandas")
+
+        # Very special & ugly case:
+        # Numpy is requesting the '__array_priority__' property. This occurs only, when a Numpy
+        # NDArray contains heterogeneous data types, what is for instance always the case when a
+        # column contains NaN values. When now a comparison between a Numpy scalar value,
+        # e.g. of type float64, and a CubedPandas context object is requested, Numpy tries to
+        # determine the priority in which the left and right arguments of the comparison should
+        # be evaluated. Therefor, it asks for the '__array_priority__' property of the other object,
+        # here our CubedPandas context object, which prings us into the __getattr__ method.
+        # To prevent subsequent errors, we need to catch this request and return a high priority value.
+        # For details further see: https://github.com/numpy/numpy/issues/4766 and
+        # https://stackoverflow.com/questions/49751000/how-does-numpy-determine-the-array-data-type-when-it-contains-multiple-dtypes
+        if name == "__array_priority__":
+            return 1000
 
         try:
             # check for callable aggregation functions, e.g. sum(), avg(), etc.
