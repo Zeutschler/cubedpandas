@@ -2,6 +2,14 @@
 
 ## Release 0.2.x (Current Scope of Work)
 
+- [ ] Rework Time intelligence to support more complex time intelligence, e.g.:
+  - [ ] `ytd`, `qtd`, `mtd`, `wtd`, `yoy`, `qoq`, `mom`, `wow`, `yoy`, `qoq`, `mom`, `wow`, `yoy`, `qoq`, `mom`, `wow`
+  - [ ] 'last 2 days', 'next 3 months', 'last 4 quarters', 'next 5 weeks', 'last 6 years', 'next 7 days'
+  - [ ] 'last Monday', 'next Tuesday', 'last Wednesday', 'next Thursday', 'last Friday', 'next Saturday', 'last Sunday'
+  - [ ] 'on Monday', 'on Tuesday', 'on Wednesday', 'on Thursday', 'on Friday', 'on Saturday', 'on Sunday'
+  - [ ] 'last Monday to last Friday', 'next Tuesday to next Saturday', 'last Wednesday to last Sunday'
+  - [ ] 'last January', 'next February', 'last March', 'next April', 'last May', 'next June', 'last July', ...
+
 - [ ] Treat int columns with typical ID or code names as dimension columns.
 - [ ] Rewrite documentation based on new syntax
 - [ ] Slice to support and resolve boolean operations to define row and colum dimensions in a single step.
