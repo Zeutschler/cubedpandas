@@ -1,6 +1,6 @@
 # CubedPandas Measure Class
 
-::: cubedpandas.schema.schema.Measure
+::: cubedpandas.schema.Measure
 
 
 

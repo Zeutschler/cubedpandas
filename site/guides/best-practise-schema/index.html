@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en" class="no-js">
 <head>
@@ -12,20 +11,20 @@
     <meta name="author" content="Thomas Zeutschler">
 
 
-    <link rel="canonical" href="https://zeutschler.github.io/cubedpandas/about/contributing/">
+    <link rel="canonical" href="https://zeutschler.github.io/cubedpandas/guides/best-practise-schema/">
 
 
-    <link rel="prev" href="../license/">
+    <link rel="prev" href="../cheatsheet/">
 
 
-    <link rel="next" href="../release-notes/">
+    <link rel="next" href="../best-practise-aggregations/">
 
 
     <link rel="icon" href="../../assets/icons/favicon.ico">
     <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.26">
 
 
-    <title>Contributing - cubedpandas</title>
+    <title>Using Custom Schema - cubedpandas</title>
 
 
     <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
@@ -93,6 +92,11 @@
 <label class="md-overlay" for="__drawer"></label>
 <div data-md-component="skip">
 
+
+    <a href="#sorry-well-add-that-later" class="md-skip">
+        Skip to content
+    </a>
+
 </div>
 <div data-md-component="announce">
 
@@ -127,7 +131,7 @@
                 <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Contributing
+              Using Custom Schema
             
           </span>
                 </div>
@@ -249,7 +253,7 @@
             <ul class="md-tabs__list">
 
 
-                <li class="md-tabs__item">
+                <li class="md-tabs__item md-tabs__item--active">
                     <a href="../.." class="md-tabs__link">
 
 
@@ -269,8 +273,8 @@
                 </li>
 
 
-                <li class="md-tabs__item md-tabs__item--active">
-                    <a href="../thomas/" class="md-tabs__link">
+                <li class="md-tabs__item">
+                    <a href="../../about/thomas/" class="md-tabs__link">
 
 
                         About
@@ -323,14 +327,13 @@
                             <ul class="md-nav__list" data-md-scrollfix>
 
 
-                                <li class="md-nav__item md-nav__item--nested">
+                                <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
 
 
-                                    <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox"
-                                           id="__nav_1">
+                                    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
 
 
-                                    <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+                                    <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -342,7 +345,7 @@
                                     </label>
 
                                     <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label"
-                                         aria-expanded="false">
+                                         aria-expanded="true">
                                         <label class="md-nav__title" for="__nav_1">
                                             <span class="md-nav__icon md-icon"></span>
                                             Home
@@ -415,11 +418,11 @@
                                             </li>
 
 
-                                            <li class="md-nav__item md-nav__item--nested">
+                                            <li class="md-nav__item md-nav__item--active md-nav__item--nested">
 
 
-                                                <input class="md-nav__toggle md-toggle md-toggle--indeterminate"
-                                                       type="checkbox" id="__nav_1_6">
+                                                <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_6"
+                                                       checked>
 
 
                                                 <label class="md-nav__link" for="__nav_1_6" id="__nav_1_6_label"
@@ -435,7 +438,7 @@
                                                 </label>
 
                                                 <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_6_label"
-                                                     aria-expanded="false">
+                                                     aria-expanded="true">
                                                     <label class="md-nav__title" for="__nav_1_6">
                                                         <span class="md-nav__icon md-icon"></span>
                                                         Guides
@@ -444,7 +447,7 @@
 
 
                                                         <li class="md-nav__item">
-                                                            <a href="../../guides/cheatsheet/" class="md-nav__link">
+                                                            <a href="../cheatsheet/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -456,9 +459,25 @@
                                                         </li>
 
 
-                                                        <li class="md-nav__item">
-                                                            <a href="../../guides/best-practise-schema/"
-                                                               class="md-nav__link">
+                                                        <li class="md-nav__item md-nav__item--active">
+
+                                                            <input class="md-nav__toggle md-toggle" type="checkbox"
+                                                                   id="__toc">
+
+
+                                                            <label class="md-nav__link md-nav__link--active"
+                                                                   for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Using Custom Schema
+  </span>
+
+
+                                                                <span class="md-nav__icon md-icon"></span>
+                                                            </label>
+
+                                                            <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -467,11 +486,38 @@
 
 
                                                             </a>
+
+
+                                                            <nav class="md-nav md-nav--secondary"
+                                                                 aria-label="Table of contents">
+
+
+                                                                <label class="md-nav__title" for="__toc">
+                                                                    <span class="md-nav__icon md-icon"></span>
+                                                                    Table of contents
+                                                                </label>
+                                                                <ul class="md-nav__list" data-md-component="toc"
+                                                                    data-md-scrollfix>
+
+                                                                    <li class="md-nav__item">
+                                                                        <a href="#sorry-well-add-that-later"
+                                                                           class="md-nav__link">
+    <span class="md-ellipsis">
+      Sorry, we'll add that later...
+    </span>
+                                                                        </a>
+
+                                                                    </li>
+
+                                                                </ul>
+
+                                                            </nav>
+
                                                         </li>
 
 
                                                         <li class="md-nav__item">
-                                                            <a href="../../guides/best-practise-aggregations/"
+                                                            <a href="../best-practise-aggregations/"
                                                                class="md-nav__link">
         
   
@@ -485,8 +531,7 @@
 
 
                                                         <li class="md-nav__item">
-                                                            <a href="../../guides/best-practise-filtering/"
-                                                               class="md-nav__link">
+                                                            <a href="../best-practise-filtering/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -499,8 +544,7 @@
 
 
                                                         <li class="md-nav__item">
-                                                            <a href="../../guides/best-practise-datetime/"
-                                                               class="md-nav__link">
+                                                            <a href="../best-practise-datetime/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -513,7 +557,7 @@
 
 
                                                         <li class="md-nav__item">
-                                                            <a href="../../guides/best-practise-pivot-tables/"
+                                                            <a href="../best-practise-pivot-tables/"
                                                                class="md-nav__link">
         
   
@@ -671,7 +715,7 @@
 
 
                                             <li class="md-nav__item">
-                                                <a href="../thomas/" class="md-nav__link">
+                                                <a href="../../about/thomas/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -829,13 +873,14 @@
                                 </li>
 
 
-                                <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+                                <li class="md-nav__item md-nav__item--nested">
 
 
-                                    <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+                                    <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox"
+                                           id="__nav_3">
 
 
-                                    <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+                                    <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -847,7 +892,7 @@
                                     </label>
 
                                     <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label"
-                                         aria-expanded="true">
+                                         aria-expanded="false">
                                         <label class="md-nav__title" for="__nav_3">
                                             <span class="md-nav__icon md-icon"></span>
                                             About
@@ -856,7 +901,7 @@
 
 
                                             <li class="md-nav__item">
-                                                <a href="../thomas/" class="md-nav__link">
+                                                <a href="../../about/thomas/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -869,7 +914,7 @@
 
 
                                             <li class="md-nav__item">
-                                                <a href="../license/" class="md-nav__link">
+                                                <a href="../../about/license/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -881,12 +926,8 @@
                                             </li>
 
 
-                                            <li class="md-nav__item md-nav__item--active">
-
-                                                <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-
-
-                                                <a href="./" class="md-nav__link md-nav__link--active">
+                                            <li class="md-nav__item">
+                                                <a href="../../about/contributing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -895,12 +936,11 @@
 
 
                                                 </a>
-
                                             </li>
 
 
                                             <li class="md-nav__item">
-                                                <a href="../release-notes/" class="md-nav__link">
+                                                <a href="../../about/release-notes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -933,6 +973,23 @@
                         <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
 
 
+                            <label class="md-nav__title" for="__toc">
+                                <span class="md-nav__icon md-icon"></span>
+                                Table of contents
+                            </label>
+                            <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+                                <li class="md-nav__item">
+                                    <a href="#sorry-well-add-that-later" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sorry, we'll add that later...
+    </span>
+                                    </a>
+
+                                </li>
+
+                            </ul>
+
                         </nav>
                     </div>
                 </div>
@@ -943,18 +1000,19 @@
                 <article class="md-content__inner md-typeset">
 
 
-                    <h1>Contributing</h1>
+                    <h1>Using Custom Schema</h1>
 
-                    <p>You are very welcome to contribute to CubedPandas by reporting bugs, suggesting new features, or
-                        by contributing code.
-                        Please use the <a href="https://github.com/Zeutschler/cubedpandas/issues">CubedPandas GitHub
-                            Issues Page</a>
-                        or the <a href="https://www.reddit.com/r/cubedpandas/">CubedPandas reddit channel</a> to report
-                        bugs, suggest new features and give feedback. If you would like to contribute code, please fork
-                        the
-                        <a href="https://github.com/Zeutschler/cubedpandas">CubedPandas GitHub repo</a> and create a
-                        pull request, or
-                        join me in pushing the CubedPandas project forward.</p>
+                    <h2 id="sorry-well-add-that-later">Sorry, we'll add that later...<a class="headerlink"
+                                                                                        href="#sorry-well-add-that-later"
+                                                                                        title="Permanent link">&para;</a>
+                    </h2>
+                    <p>The current focus of development is on the core features of CubedPandas.
+                        Once finished I'll work on this documention...</p>
+                    <p>!!! Note:
+                        To stay tuned for updates and new releases of CubePandas,
+                        please add a watch to the <a href="https://github.com/Zeutschler/cubedpandas">CubedPandas GitHub
+                            repo</a>.</p>
+                    <p>Thomas</p>
 
 
                 </article>

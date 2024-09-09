@@ -1,6 +1,6 @@
 # Dimension class
 
-::: cubedpandas.schema.schema.Dimension
+::: cubedpandas.schema.Dimension
 
 
 

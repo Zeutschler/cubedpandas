@@ -1,3 +1,4 @@
+
 /* Avoid breaking parameter names, etc. in table cells. */
 .doc-contents td code {
     word-break: normal !important;

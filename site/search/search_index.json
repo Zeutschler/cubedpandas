@@ -207,12 +207,12 @@
     {
       "location": "readme_mkdocs/#introduction",
       "title": "Introduction",
-      "text": "<p>The CubedPandas website &amp; documentation is made with MkDocs. MkDocs is a static site generator that creates a website from markdown files and from the actual source code of the project. The CubedPandas website will  be hosted on GitHub pages: https://zeutschler.github.io/cubedpandas/.</p> <p>The documentation is structured as follows:</p> <ul> <li>Homepage - Short Intro to CubedPandas, features, installation, sample code, etc.</li> <li>User documentation - The documentation will be used to explain the usage of the tool to the users.</li> <li>Developer documentation - The documentation will be used to explain the architecture and the design of the tool   to developers.</li> <li>Blog - Posts and news about CubedPandas features, development, best practices, etc.</li> </ul>"
+      "text": "<p>The CubedPandas website &amp; documentation is made with MkDocs. MkDocs is a static site generator that creates a website from markdown files and from the actual source code of the project. The CubedPandas website will  be hosted on GitHub pages: https://zeutschler.github.io/cubedpandas/.</p>"
     },
     {
       "location": "readme_mkdocs/#how-to-build-the-documentation",
       "title": "How to build the documentation",
-      "text": "<p>The documentation can be built by using the <code>mkdocs</code> command line tool from the root directory of the project: </p> <pre><code>mkdocs build --clean --site-dir 'pages/'\n</code></pre>"
+      "text": "<p>The documentation can be built by using the <code>mkdocs</code> command line tool from the root directory of the project: </p> <p><pre><code>mkdocs build --clean --site-dir 'pages/'\n</code></pre> to rebuild the static site in the <code>site/</code> directory. The <code>--clean</code> option will remove the old site directory before <pre><code>mkdocs gh-deploy --clean  \n</code></pre></p>"
     },
     {
       "location": "readme_mkdocs/#how-to-run-and-view-the-documentation-locally",
@@ -292,7 +292,7 @@
     {
       "location": "about/thomas/",
       "title": "About",
-      "text": "<p>My name is Thomas Zeutschler. I'm located in Germany in the 'Ruhrgebiet' area and love to code in Python due to Python's awesome and endless library ecosystem, great support community and easy extensibility through tools like Numba, Cython or with languages like C, C++ and Rust.</p> <p>Pandas is a tool to which I have a strong love/hate relationship. It's a great tool, but sometimes it's annoyingly complex and tedious to use, that's why I started the CubedPandas project.</p> <p>I'm a professional software architect and developer with focus on data, analytics, AI and modern cloud based data architectures and data processing as well as the development, optimization, modernization and especially speed-up of data-focussed solutions and systems of every size and complexity.</p> <p>In addition, I enjoy to be a senior analytics and fellow at the BARC - Business Analytics Research Center in W\u00fcrzburg, Germany. BARC is the largest independent market analyst for data, analytics &amp; AI, business intelligence and corporate performance management in the D-A-CH region. I proudly support mid-sized and large companies in improving their data &amp; analytics capabilities, setup, and strategy. And I am honoured to help some well-known software vendors support their products and go-to-market strategies market strategies in the area of data &amp; analytics.</p> <p>I'm a big fan and intense user of open source software. CubedPandas is one of my projects to say thank you to the community and to give something back. I hope you enjoy using CubedPandas as much as I enjoy developing it.</p> <p>Hobbies? Anything on two wheels, with or without an engine, on-road or off-road is my passion.</p> <p>If you would like to get in contact, do not hesitate to reach out to me on LinkedIn or reddit or GitHub.</p> <p>Yours Thomas</p>"
+      "text": "<p>My name is Thomas Zeutschler. I'm located in Germany in the 'Ruhrgebiet' area and love to code in Python due to Python's awesome and endless library ecosystem, great support community and easy extensibility through tools like Numba, Cython or with languages like C, C++ and Rust.</p> <p>Pandas is a tool to which I have a strong love/hate relationship. It's a great tool, but sometimes it's annoyingly complex and tedious to use, that's why I started the CubedPandas project.</p> <p>I'm a professional software architect and developer with focus on data, analytics, AI and modern cloud based data architectures and data processing as well as the development, optimization, modernization and especially speed-up of data-focussed solutions and systems of every size and complexity.</p> <p>In addition, I enjoy to be a senior analytics and fellow at the BARC - Business Analytics Research Center in W\u00fcrzburg, Germany. BARC is the largest independent market analyst for data, analytics &amp; AI, business intelligence and corporate performance management in the D-A-CH region. I proudly support mid-sized and large companies in improving their data &amp; analytics capabilities, setup, and strategy. And I am honoured to help some well-known software vendors support their products and go-to-market strategies market strategies in the area of data &amp; analytics.</p> <p>I'm a big fan and intense user of open source software. CubedPandas is one of my projects to say thank you to the community and give something back. I hope you enjoy using CubedPandas as much as I enjoy developing it.</p> <p>Hobbies? Anything on two wheels, with or without an engine, on-road or off-road is my passion.</p> <p>If you would like to get in contact, do not hesitate to reach out to me on LinkedIn or reddit or GitHub.</p> <p>Yours Thomas</p>"
     },
     {
       "location": "api/class-context/",
@@ -300,127 +300,127 @@
       "text": "<p>               Bases: <code>SupportsFloat</code></p> <p>A context represents a multi-dimensional data context or area from within a cube. Context objects can be used to navigate and access the data of a cube and thereby the underlying dataframe.</p> <p>Cells behave like Python floats and return a numeric aggregation of the underlying data. They are intended to be used in mathematical operations.</p> Samples <p>cdf = cubed(df) value = cdf.A + cdf.B / 2 200 cdf.A *= 2</p>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.function",
+      "location": "api/class-context/#cubedpandas.context.Context.function",
       "title": "<code>function: ContextFunction</code>  <code>property</code>",
       "text": "<p>Returns:</p> <ul> <li> <code>ContextFunction</code>           \u2013            <p>The aggregation function that will be applied to the current context.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.value",
+      "location": "api/class-context/#cubedpandas.context.Context.value",
       "title": "<code>value</code>  <code>property</code> <code>writable</code>",
       "text": "<p>Returns:</p> <ul> <li>           \u2013            <p>The sum value of the current context from the underlying cube.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.numeric_value",
+      "location": "api/class-context/#cubedpandas.context.Context.numeric_value",
       "title": "<code>numeric_value: float</code>  <code>property</code>",
       "text": "<p>Returns:</p> <ul> <li> <code>float</code>           \u2013            <p>The numerical value of the current context from the underlying cube.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.cube",
+      "location": "api/class-context/#cubedpandas.context.Context.cube",
       "title": "<code>cube: Cube</code>  <code>property</code>",
       "text": "<p>Returns:</p> <ul> <li> <code>Cube</code>           \u2013            <p>The Cube object the Context belongs to.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.dimension",
+      "location": "api/class-context/#cubedpandas.context.Context.dimension",
       "title": "<code>dimension: Dimension</code>  <code>property</code>",
       "text": "<p>Returns:</p> <ul> <li> <code>Dimension</code>           \u2013            <p>The Cube object the Context belongs to.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.parent",
+      "location": "api/class-context/#cubedpandas.context.Context.parent",
       "title": "<code>parent: Context</code>  <code>property</code>",
       "text": "<p>Returns:</p> <ul> <li> <code>Context</code>           \u2013            <p>The parent Context of the current Context. If the current Context is the root Context of the cube,</p> </li> <li> <code>Context</code>           \u2013            <p>then the parent Context will be <code>None</code>.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.df",
+      "location": "api/class-context/#cubedpandas.context.Context.df",
       "title": "<code>df: pd.DataFrame</code>  <code>property</code>",
       "text": "<p>Returns: Returns a new Pandas dataframe with all column of the underlying dataframe of the Cube, but only with the rows that are represented by the current context.</p> <p>The returned dataframe is always a copy of the original dataframe, even if the context is not filtering any rows from the underlying dataframe. The returned dataframe can be used for further processing outside the cube.</p>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.address",
+      "location": "api/class-context/#cubedpandas.context.Context.address",
       "title": "<code>address: any</code>  <code>property</code>",
       "text": "<p>Returns:</p> <ul> <li> <code>any</code>           \u2013            <p>The partial address of the context, as defined by the user</p> </li> <li> <code>any</code>           \u2013            <p>This does not include the addresses defined by predecessor</p> </li> <li> <code>any</code>           \u2013            <p>cells down to the cube.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.cube_address",
+      "location": "api/class-context/#cubedpandas.context.Context.cube_address",
       "title": "<code>cube_address: str</code>  <code>property</code>",
       "text": "<p>Returns:</p> <ul> <li> <code>str</code>           \u2013            <p>The full address of the context, including all predecessor</p> </li> <li> <code>str</code>           \u2013            <p>cells down to the cube.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.measure",
+      "location": "api/class-context/#cubedpandas.context.Context.measure",
       "title": "<code>measure: Measure</code>  <code>property</code> <code>writable</code>",
       "text": "<p>Returns:</p> <ul> <li> <code>Measure</code>           \u2013            <p>The Measure object the Context is currently referring to.</p> </li> <li> <code>Measure</code>           \u2013            <p>The measure refers to a column in the underlying dataframe</p> </li> <li> <code>Measure</code>           \u2013            <p>that is used to calculate the value of the context.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.row_mask",
+      "location": "api/class-context/#cubedpandas.context.Context.row_mask",
       "title": "<code>row_mask: np.ndarray | None</code>  <code>property</code>",
       "text": "<p>Returns:</p> <ul> <li> <code>ndarray | None</code>           \u2013            <p>The row mask of the context. The row mask is represented by a Numpy ndarray</p> </li> <li> <code>ndarray | None</code>           \u2013            <p>of the indexes of the rows represented by the current context. The row mask can be used</p> </li> <li> <code>ndarray | None</code>           \u2013            <p>for subsequent processing of the underlying dataframe outside the cube.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.member_mask",
+      "location": "api/class-context/#cubedpandas.context.Context.member_mask",
       "title": "<code>member_mask: np.ndarray | None</code>  <code>property</code>",
       "text": "<p>Returns:</p> <ul> <li> <code>ndarray | None</code>           \u2013            <p>The member mask of the context. If the context refers to a member or a set of members from a dimension.</p> </li> <li> <code>ndarray | None</code>           \u2013            <p>then a Numpy ndarray containing the indexes of the rows representing the members is returned.</p> </li> <li> <code>ndarray | None</code>           \u2013            <p><code>None</code> is returned otherwise.</p> </li> <li> <code>ndarray | None</code>           \u2013            <p>The row mask can be used for subsequent processing of the underlying dataframe outside the cube.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.row_mask_inverse",
+      "location": "api/class-context/#cubedpandas.context.Context.row_mask_inverse",
       "title": "<code>row_mask_inverse: np.ndarray</code>  <code>property</code>",
       "text": "<p>Returns:</p> <ul> <li> <code>ndarray</code>           \u2013            <p>The inverted row mask of the context. The inverted row mask is represented by a Numpy ndarray</p> </li> <li> <code>ndarray</code>           \u2013            <p>of the indexes of the rows NOT represented by the current context. The inverted row mask</p> </li> <li> <code>ndarray</code>           \u2013            <p>can be used for subsequent processing of the underlying dataframe outside the cube.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.__init__",
+      "location": "api/class-context/#cubedpandas.context.Context.__init__",
       "title": "<code>__init__(cube, address, parent=None, row_mask=None, member_mask=None, measure=None, dimension=None, function=ContextFunction.SUM, resolve=True, filtered=False, dynamic_attribute=False)</code>",
       "text": "<p>Initializes a new Context object. For internal use only. Raises:     ValueError:         If the address is invalid and does not refer to a         dimension, member or measure of the cube.</p>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.set_value",
+      "location": "api/class-context/#cubedpandas.context.Context.set_value",
       "title": "<code>set_value(value, allocation_function=ContextAllocation.DISTRIBUTE)</code>",
       "text": "<p>Writes a value to the current context of the cube down to the underlying dataframe. The allocation method can be chosen.</p> <p>Parameters:</p> <ul> <li> <code>value</code>           \u2013            <p>The value to be written to the cube.</p> </li> <li> <code>allocation_function</code>               (<code>ContextAllocation</code>, default:                   <code>DISTRIBUTE</code> )           \u2013            <p>The allocation function to be used for writing the value to the cube.</p> </li> </ul> <p>Returns:     The new value of the current context from the underlying cube.</p>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.top",
+      "location": "api/class-context/#cubedpandas.context.Context.top",
       "title": "<code>top(n)</code>",
       "text": "<p>Returns the top n members of the current context. Args:     n:         The number of top members to be returned. Returns:     A list of the top n members of the current context.</p>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.bottom",
+      "location": "api/class-context/#cubedpandas.context.Context.bottom",
       "title": "<code>bottom(n)</code>",
       "text": "<p>Returns the bottom n members of the current context. Args:     n:         The number of bottom members to be returned. Returns:     A list of the bottom n members of the current context.</p>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.__getattr__",
+      "location": "api/class-context/#cubedpandas.context.Context.__getattr__",
       "title": "<code>__getattr__(name)</code>",
       "text": "<p>Dynamically resolves member from the cube and predecessor cells.</p>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.__getitem__",
+      "location": "api/class-context/#cubedpandas.context.Context.__getitem__",
       "title": "<code>__getitem__(address)</code>",
       "text": "<p>Returns a nested context of the cube and for a given address. Subsequent nested cells can bee seen as subsequent filters upon the underlying dataframe.</p> <p>Parameters:</p> <ul> <li> <code>address</code>           \u2013            <p>A valid cube address. Please refer the documentation for further details.</p> </li> </ul> <p>Returns:</p> <ul> <li>           \u2013            <p>A Context object that represents the cube data related to the address</p> </li> <li>           \u2013            <p>and all predecessor cells down to the cube.</p> </li> </ul> <p>Raises:</p> <ul> <li> <code>ValueError</code>             \u2013            <p>If the address is not valid or can not be resolved.</p> </li> </ul>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.__setitem__",
+      "location": "api/class-context/#cubedpandas.context.Context.__setitem__",
       "title": "<code>__setitem__(address, value)</code>",
       "text": "<p>Sets a value for a given address in the cube. Args:     address:         A valid cube address.         Please refer the documentation for further details.     value:         The value to be set for the data represented by the address. Raises:     PermissionError:         If write back is attempted on a read-only Cube.</p>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.__delitem__",
+      "location": "api/class-context/#cubedpandas.context.Context.__delitem__",
       "title": "<code>__delitem__(address)</code>",
       "text": "<p>Deletes the records represented by the given address from the underlying dataframe of the cube. Args:     address:         A valid cube address.         Please refer the documentation for further details. Raises:     PermissionError:         If write back is attempted on a read-only Cube.</p>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.slice",
+      "location": "api/class-context/#cubedpandas.context.Context.slice",
       "title": "<code>slice(rows=None, columns=None, config=None)</code>",
       "text": "<p>Returns a new slice for the context. A slice represents a table-alike view to data in the cube. Typically, a slice has rows, columns and filters, comparable to an Excel PivotTable. Useful for printing in Jupyter, visual data analysis and reporting purposes. Slices can be easily 'navigated' by setting and changing rows, columns and filters.</p> <p>Please refer to the documentation of the Slice class for further details.</p> <p>Parameters:</p> <ul> <li> <code>rows</code>           \u2013            <p>The rows of the slice. Can be one or more dimensions with or without a member definition, or no dimension.</p> </li> <li> <code>columns</code>           \u2013            <p>The columns of the slice. Can be one or more dimensions with or without a member definition, or no dimension.</p> </li> <li> <code>filters</code>           \u2013            <p>The filters of the slice. Can be one or more dimensions with or without a member definition, or no dimension.</p> </li> <li> <code>config</code>           \u2013            <p>(optional) A slice configuration as a dictionary, a json string or a path to an existing file containing the configuration. Slice configurations can be used to define a more complex layout. Please refer to the documentation of the Slice class for further details.</p> </li> </ul> Samples <p>cdf = cubed(df) cdf.slice(rows=\"product\", columns=\"region\", filters={\"year\": 2020})</p>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.slice--year-2000",
+      "location": "api/class-context/#cubedpandas.context.Context.slice--year-2000",
       "title": "year: 2000",
       "text": ""
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.slice--all-north-south",
+      "location": "api/class-context/#cubedpandas.context.Context.slice--all-north-south",
       "title": "|         | (all) | North | South |",
       "text": "<p>| (all)   |   550 |   300 |   250 | | Apple   |   200 |   100 |   100 | | Banana  |   350 |   200 |   150 |</p>"
     },
     {
-      "location": "api/class-context/#cubedpandas.context.context.Context.filter",
+      "location": "api/class-context/#cubedpandas.context.Context.filter",
       "title": "<code>filter(filter)</code>",
       "text": "<p>Filters the current context by a given filter expression, criteria or callable function. Args:     filter:         The filter expression, criteria or callable function to be used for filtering the context. Returns:     A new context with the filtered data.</p>"
     },
@@ -750,6 +750,16 @@
     },
     {
       "location": "guides/best-practise-pivot-tables/#sorry-well-add-that-later",
+      "title": "Sorry, we'll add that later...",
+      "text": "<p>The current focus of development is on the core features of CubedPandas. Once finished I'll work on this documention...</p> <p>!!! Note: To stay tuned for updates and new releases of CubePandas, please add a watch to the CubedPandas GitHub repo.</p> <p>Thomas</p>"
+    },
+    {
+      "location": "guides/best-practise-schema/",
+      "title": "Using Custom Schema",
+      "text": ""
+    },
+    {
+      "location": "guides/best-practise-schema/#sorry-well-add-that-later",
       "title": "Sorry, we'll add that later...",
       "text": "<p>The current focus of development is on the core features of CubedPandas. Once finished I'll work on this documention...</p> <p>!!! Note: To stay tuned for updates and new releases of CubePandas, please add a watch to the CubedPandas GitHub repo.</p> <p>Thomas</p>"
     },
