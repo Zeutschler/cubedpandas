@@ -1,6 +1,6 @@
 # CubedPandas Context Class
 
-::: cubedpandas.context.context.Context
+::: cubedpandas.context.Context
 
 
 
