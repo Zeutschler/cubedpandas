@@ -4,5 +4,6 @@
 
 docs/** linguist-vendored
 pages/** linguist-vendored
+site/** linguist-vendored
 samples/** linguist-vendored
 research/** linguist-vendored
