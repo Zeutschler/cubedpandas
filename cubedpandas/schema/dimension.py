@@ -322,6 +322,9 @@ class Dimension(Iterable, ABC):
                 mask = self._df[self._column].between(member[0], member[1])
             else:
                 mask = self._df[self._column].isin(member, )
+        elif str(member).lower().strip() == 'nan':
+            # special case for NaN values
+            mask = self._df[self._column].isna()
         else:
             mask = self._df[self._column] == member
         member_mask = mask[mask].index.to_numpy()

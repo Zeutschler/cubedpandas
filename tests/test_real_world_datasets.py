@@ -1,6 +1,7 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 import random
 
+import numpy as np
 import pandas as pd
 from unittest import TestCase
 
@@ -55,7 +56,8 @@ class TestRealWorldDatasets(TestCase):
                 df = pd.read_csv(file["path"])
             except pd.errors.ParserError:
                 continue  # skip files that cannot be loaded by Pandas, not of interest for testing
-
+            if self.debug:
+                print(f"\n{file['name']} {'#' * (80 - len(file['name']))}")
             self.do_test_dataset(file["name"], df)
 
     def do_test_dataset(self, file_name, df):
@@ -75,12 +77,17 @@ class TestRealWorldDatasets(TestCase):
             if self.debug:
                 print(f"{file_name}: Sum of values below average for measure '{measure}' = {test_value}")
 
-        # 3. filter on a random member and measure combination per dimension
-        for dimension in cube.schema.dimensions:
-            member = random.choice(list(dimension.members))
-            measure = random.choice(cube.schema.measures)
-            a = df[df[dimension.name] == member][measure.column].sum()
-            b = cube[{dimension.name: member}, measure.column].numeric_value
-            if self.debug:
-                print(f"{file_name}: cube[{{'{dimension.name}:{member}'}}, '{measure}'] = {a}")
-            self.assertEqual(a, b)
+        # 3. read values from max. 4x random members from all dimensions for all measures
+        for measure in cube.schema.measures:
+            for dimension in cube.schema.dimensions:
+                members = random.sample(list(dimension.members), min(4, len(dimension.members)))
+                for member in members:
+                    if str(member).lower().strip() == 'nan':
+                        a = df[df[dimension.name].isna()][measure.column].sum()
+                    else:
+                        a = df[df[dimension.name] == member][measure.column].sum()
+                    b = cube[{dimension.name: member}, measure.column].sum()
+
+                    if self.debug:
+                        print(f"{file_name}: cube[{{'{dimension.name}:{member}'}}, '{measure}'] = {a}")
+                    self.assertEqual(a, b)
