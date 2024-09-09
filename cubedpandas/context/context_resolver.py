@@ -504,8 +504,9 @@ class ContextResolver:
 
             context.message = (f"'{address}'(bool) is not a valid member, dimension or measure name. "
                                f"Tip: If you want to filter a context, ensure to add an underscore member name, "
-                               f"e.g., as in 'cdf.sales[cdf.cost_ > 100]', otherwise just would just try to filter for "
-                               f"the boolean result of a value comparison 'cdf.cost_ > 100'.")
+                               f"e.g., as in 'cdf.sales[cdf.cost_ > 100]', otherwise would just try to filter for "
+                               f"the boolean value 'True' or 'False' as a result of a value comparison "
+                               f"like 'cdf.cost_ > 100'.")
         else:
             # 7. If we've not yet resolved anything meaningful, then we need to raise an error...
             context.message = (f"'{address}' is not a valid member, dimension or measure name. "
