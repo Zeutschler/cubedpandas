@@ -1,8 +1,9 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import cubedpandas.context as context
-from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.common import cubed
+from cubedpandas.datetext.parser import parse, Parser
+from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.context.context import Context
 from cubedpandas.context.context_context import ContextContext
 from cubedpandas.context.cube_context import CubeContext
@@ -49,6 +50,8 @@ __all__ = [
     "MemberContext",
     "MemberNotFoundContext",
     "MemberSet",
+    "parse",
+    "Parser",
     "Schema",
     "VERSION"
 ]

@@ -2,7 +2,9 @@
 
 ## Release 0.2.x (Current Scope of Work)
 
-- [ ] Rework Time intelligence to support more complex time intelligence, e.g.:
+- [ ] Full Rework Time intelligence to support more complex time intelligence, e.g.:
+  A dedicated parser/interpreter is required to support more complex time intelligence. like
+  - [ ] actual day, week, month, quarter, year, hour, minute, second
   - [ ] `ytd`, `qtd`, `mtd`, `wtd`, `yoy`, `qoq`, `mom`, `wow`, `yoy`, `qoq`, `mom`, `wow`, `yoy`, `qoq`, `mom`, `wow`
   - [ ] 'last 2 days', 'next 3 months', 'last 4 quarters', 'next 5 weeks', 'last 6 years', 'next 7 days'
   - [ ] 'last Monday', 'next Tuesday', 'last Wednesday', 'next Thursday', 'last Friday', 'next Saturday', 'last Sunday'

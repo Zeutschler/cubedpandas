@@ -183,6 +183,19 @@ class Context(SupportsFloat):
             return self._cube.df  #
         return self._cube.df.iloc[self._row_mask]
 
+    def cubed(self) -> Cube:
+        """
+        Returns:
+            If the current context is filtered, a new Pandas dataframe with all columns
+            of the underlying dataframe of the current Cube, containing only the filtered rows will
+            be created, wrapped in Cube and returned. If the current context is not filtered, the
+            initial dataframe will be reused.
+
+            Note Calling this method `cdf.Apple.cubed() is identical to calling `cubed(cdf.Apple.df)`.
+        """
+        from cubedpandas.common import cubed as cubed_method
+        return cubed_method(self.df)
+
     @property
     def address(self) -> any:
         """

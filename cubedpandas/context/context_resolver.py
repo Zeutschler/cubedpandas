@@ -50,8 +50,8 @@ class ContextResolver:
             raise ValueError(f"The context handed in as an address argument refers to a different cube/dataframe. "
                              f"Only contexts from the same cube can be used as address arguments.")
 
-        # A user handed a dimension or measure instance from a schema object in,  why ever?
-        # We will convert it to a string and continue
+        # A user handed a dimension or measure instance from a schema object in,
+        # we need to convert it to a string and continue.
         if address.__class__.__name__ == 'Measure' or address.__class__.__name__ == 'Dimension':
             address = str(address)
 
@@ -589,7 +589,7 @@ class ContextResolver:
                     return address
                 if isinstance(address, str):
                     address = address.lower().strip()
-                    return address in ['true', '1', 'yes', 'y', "on", "t", "1.0"]
+                    return address in ["true", "t", "1", "yes", "y", "on", "1", "active", "enabled", "ok", "done"]
                     # everything else will be considered as False
                 else:
                     try:
