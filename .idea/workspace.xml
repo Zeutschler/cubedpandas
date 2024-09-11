@@ -4,20 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="docu">
-      <change afterPath="$PROJECT_DIR$/changelog.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/base_parser.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/methods.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/parser.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/parser_en.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/research/testing_dates.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_datetext_parser.py" afterDir="false" />
+    <list default="true" id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="datetext class added">
+      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/iceland_tokenizer/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/iceland_tokenizer/abbrev.conf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/iceland_tokenizer/abbrev.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/iceland_tokenizer/abbreviations.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/iceland_tokenizer/definitions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/iceland_tokenizer/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/iceland_tokenizer/py.typed" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/iceland_tokenizer/tokenizer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cubedpandas/datetext/tokenizer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/assets/cube.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backlog.md" beforeDir="false" afterPath="$PROJECT_DIR$/backlog.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/changelog.md" beforeDir="false" afterPath="$PROJECT_DIR$/changelog.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cubedpandas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cubedpandas/context/context.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/context/context.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cubedpandas/context/context_resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/context/context_resolver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cubedpandas/datetext/parser_en.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/datetext/parser_en.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_datetext_parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_datetext_parser.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,10 +91,10 @@
     &quot;repository&quot;: &quot;cubedpandas&quot;
   }
 }</component>
-  <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 1
-}</component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "3589e7ea",
+  "associatedIndex": 1
+}]]></component>
   <component name="ProjectId" id="2l144jdCHAaycsuvNXbzeFSmV6x" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -100,94 +103,119 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python tests.Doctests in common (1).executor": "Run",
-    "Python tests.Doctests in common.executor": "Run",
-    "Python tests.Python tests for test_common.TestPythonizeFunction.executor": "Run",
-    "Python tests.Python tests for test_cube.TestCube.test_boolean_dimension.executor": "Debug",
-    "Python tests.Python tests for test_cube.TestCube.test_cube_access_methods.executor": "Debug",
-    "Python tests.Python tests for test_cube.TestCube.test_cube_address_to_args.executor": "Run",
-    "Python tests.Python tests for test_cube.TestCube.test_cube_primary_aggregation_functions.executor": "Run",
-    "Python tests.Python tests for test_cube.TestCube.test_cube_primary_aggregations.executor": "Run",
-    "Python tests.Python tests for test_cube.TestCube.test_measures_only_cube.executor": "Debug",
-    "Python tests.Python tests for test_cube_aliases.TestCubeAliases.test_cube_aliases.executor": "Run",
-    "Python tests.Python tests for test_cube_context.TestCubeContext.test_context_address.executor": "Debug",
-    "Python tests.Python tests for test_cube_context.TestCubeContext.test_dimension_context_methods.executor": "Debug",
-    "Python tests.Python tests for test_cube_context.TestCubeContext.test_member_context_in_operator.executor": "Debug",
-    "Python tests.Python tests for test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates.executor": "Debug",
-    "Python tests.Python tests for test_date_lookups.TestDateLookUps.test_all_stanard_dateTime_tokens.executor": "Run",
-    "Python tests.Python tests for test_date_lookups.TestDateLookUps.test_standard_dateTime_tokens.executor": "Run",
-    "Python tests.Python tests for test_datetext.TestDateTextParser.test_Creation.executor": "Run",
-    "Python tests.Python tests for test_datetext_parser.TestDateTextParser.executor": "Debug",
-    "Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_Creation.executor": "Run",
-    "Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word.executor": "Run",
-    "Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word_month.executor": "Debug",
-    "Python tests.Python tests for test_measures.TestMeasures.test_measure_methods.executor": "Run",
-    "Python tests.Python tests for test_random_dataframes.TestCube.test_measures_only_cube.executor": "Debug",
-    "Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets.executor": "Debug",
-    "Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube.executor": "Debug",
-    "Python tests.Python tests for test_schema.TestSchema.test_infer_schema.executor": "Debug",
-    "Python tests.Python tests for test_schema.TestSchema.test_invalid_schema_duplicate_dimension.executor": "Run",
-    "Python tests.Python tests for test_schema.TestSchema.test_schema_parameters.executor": "Run",
-    "Python tests.Python tests for test_slice.TestSlice.executor": "Run",
-    "Python tests.Python tests for test_slice.TestSlice.test_custom_slice.executor": "Run",
-    "Python tests.Python tests for test_slice.TestSlice.test_default_slice.executor": "Run",
-    "Python tests.Python tests for test_slice.TestSlice.test_filter_slice.executor": "Run",
-    "Python tests.Python tests in test_datetext_parser.py.executor": "Debug",
-    "Python tests.Python tests in test_real_world_datasets.py.executor": "Debug",
-    "Python tests.Python tests in tests.executor": "Run",
-    "Python tests.pytest for tests.test_cube.TestCube.test_boolean_dimension.executor": "Run",
-    "Python tests.pytest for tests.test_cube.TestCube.test_cube_address_to_args.executor": "Run",
-    "Python tests.pytest for tests.test_cube_context.TestCubeContext.test_context_address.executor": "Run",
-    "Python tests.pytest for tests.test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates.executor": "Run",
-    "Python tests.pytest for tests.test_measures.TestMeasures.test_measure_methods.executor": "Debug",
-    "Python tests.pytest for tests.test_real_world_datasets.TestRealWorldDatasets.executor": "Debug",
-    "Python tests.pytest for tests.test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube.executor": "Debug",
-    "Python tests.pytest for tests.test_real_world_datasets.executor": "Debug",
-    "Python tests.pytest for tests.test_slice.TestSlice.test_default_slice.executor": "Debug",
-    "Python.00_playground.executor": "Run",
-    "Python.01_basic_usage.executor": "Run",
-    "Python.01a_basic_usage.executor": "Run",
-    "Python.02_direct_member_access.executor": "Run",
-    "Python.04_simple_slice.executor": "Run",
-    "Python.05_large_slice.executor": "Run",
-    "Python.99_benchmark_01.executor": "Run",
-    "Python.app (1).executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.rounding.executor": "Run",
-    "Python.testing_dates.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "com.codeium.enabled": "true",
-    "git-widget-placeholder": "dev",
-    "last_opened_file_path": "/Users/thomas/Documents/Coding/cubedpandas/tests",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Doctests in common (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Doctests in common.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_common.TestPythonizeFunction.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_boolean_dimension.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_cube_access_methods.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_cube_address_to_args.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_cube_primary_aggregation_functions.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_cube_primary_aggregations.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_measures_only_cube.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube_aliases.TestCubeAliases.test_cube_aliases.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cube_context.TestCubeContext.test_context_address.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube_context.TestCubeContext.test_dimension_context_methods.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube_context.TestCubeContext.test_member_context_in_operator.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_date_lookups.TestDateLookUps.test_all_stanard_dateTime_tokens.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_date_lookups.TestDateLookUps.test_standard_dateTime_tokens.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_datetext.TestDateTextParser.test_Creation.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_datetext_parser.TestDateTextParser.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_Creation.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word_month.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_tokenizer.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_measures.TestMeasures.test_measure_methods.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_random_dataframes.TestCube.test_measures_only_cube.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_schema.TestSchema.test_infer_schema.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_schema.TestSchema.test_invalid_schema_duplicate_dimension.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_schema.TestSchema.test_schema_parameters.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_slice.TestSlice.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_slice.TestSlice.test_custom_slice.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_slice.TestSlice.test_default_slice.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_slice.TestSlice.test_filter_slice.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_datetext_parser.py.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests in test_real_world_datasets.py.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.test_cube.TestCube.test_boolean_dimension.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.test_cube.TestCube.test_cube_address_to_args.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.test_cube_context.TestCubeContext.test_context_address.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.test_measures.TestMeasures.test_measure_methods.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.test_real_world_datasets.TestRealWorldDatasets.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.test_real_world_datasets.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.test_slice.TestSlice.test_default_slice.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.00_playground.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01_basic_usage.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01a_basic_usage.executor&quot;: &quot;Run&quot;,
+    &quot;Python.02_direct_member_access.executor&quot;: &quot;Run&quot;,
+    &quot;Python.04_simple_slice.executor&quot;: &quot;Run&quot;,
+    &quot;Python.05_large_slice.executor&quot;: &quot;Run&quot;,
+    &quot;Python.99_benchmark_01.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.rounding.executor&quot;: &quot;Run&quot;,
+    &quot;Python.testing_dates.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tokenizer.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/thomas/Documents/Coding/cubedpandas/cubedpandas/datetext/tokenizer&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cubedpandas/datetext/tokenizer" />
       <recent name="$PROJECT_DIR$/tests" />
       <recent name="$PROJECT_DIR$/tests/datasets" />
       <recent name="$PROJECT_DIR$/.github/workflows" />
       <recent name="$PROJECT_DIR$/docs/guides" />
-      <recent name="$PROJECT_DIR$/gh-pages" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs/assets" />
       <recent name="$PROJECT_DIR$/research/github-actions" />
       <recent name="$PROJECT_DIR$/research" />
       <recent name="$PROJECT_DIR$/docs/about" />
       <recent name="$PROJECT_DIR$/docs/api" />
-      <recent name="$PROJECT_DIR$/docs/guides" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word_month">
+  <component name="RunManager" selected="Python tests.Python tests in tests">
+    <configuration name="tokenizer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="cubedpandas" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/research" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/research/tokenizer.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="Python tests for test_datetext_parser.TestDateTextParser" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="cubedpandas" />
       <option name="ENV_FILES" value="" />
@@ -201,22 +229,6 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;test_datetext_parser.TestDateTextParser&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Python tests for test_datetext_parser.TestDateTextParser.test_Creation" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="cubedpandas" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_datetext_parser.TestDateTextParser.test_Creation&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -252,7 +264,7 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests in test_datetext_parser.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_datetext_parser.TestDateTextParser.test_tokenizer" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="cubedpandas" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -264,8 +276,8 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_datetext_parser.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <option name="_new_target" value="&quot;test_datetext_parser.TestDateTextParser.test_tokenizer&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
     <configuration name="Python tests in tests" type="tests" factoryName="Autodetect" nameIsGenerated="true">
@@ -286,11 +298,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word_month" />
+        <item itemvalue="Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_tokenizer" />
         <item itemvalue="Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word" />
+        <item itemvalue="Python.tokenizer" />
+        <item itemvalue="Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word_month" />
         <item itemvalue="Python tests.Python tests for test_datetext_parser.TestDateTextParser" />
-        <item itemvalue="Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_Creation" />
-        <item itemvalue="Python tests.Python tests in test_datetext_parser.py" />
       </list>
     </recent_temporary>
   </component>
@@ -341,23 +353,9 @@
       <workItem from="1725900409877" duration="8265000" />
       <workItem from="1725948193771" duration="9652000" />
       <workItem from="1725959067275" duration="6503000" />
-      <workItem from="1725967529603" duration="5870000" />
-    </task>
-    <task id="LOCAL-00012" summary="build">
-      <option name="closed" value="true" />
-      <created>1724434818038</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1724434818038</updated>
-    </task>
-    <task id="LOCAL-00013" summary="code cleanup">
-      <option name="closed" value="true" />
-      <created>1725128000887</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1725128000887</updated>
+      <workItem from="1725967529603" duration="8341000" />
+      <workItem from="1726037452800" duration="22405000" />
+      <workItem from="1726072109815" duration="6442000" />
     </task>
     <task id="LOCAL-00014" summary="code cleanup">
       <option name="closed" value="true" />
@@ -735,7 +733,23 @@
       <option name="project" value="LOCAL" />
       <updated>1725908676090</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="datetext class added">
+      <option name="closed" value="true" />
+      <created>1725975100711</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1725975100712</updated>
+    </task>
+    <task id="LOCAL-00062" summary="datetext class added">
+      <option name="closed" value="true" />
+      <created>1725975152722</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1725975152722</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -762,7 +776,8 @@
     <MESSAGE value="random dataset tests added" />
     <MESSAGE value="fixed: NaN values, member names wihth ','" />
     <MESSAGE value="docu" />
-    <option name="LAST_COMMIT_MESSAGE" value="docu" />
+    <MESSAGE value="datetext class added" />
+    <option name="LAST_COMMIT_MESSAGE" value="datetext class added" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -778,6 +793,11 @@
           <line>397</line>
           <option name="timeStamp" value="94" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/cubedpandas/datetext/iceland_tokenizer/main.py</url>
+          <line>222</line>
+          <option name="timeStamp" value="99" />
+        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -790,25 +810,26 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/cubedpandas$00_playground.coverage" NAME="00_playground Coverage Results" MODIFIED="1724486056128" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
-    <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_real_world_datasets.coverage" NAME="pytest for tests.test_real_world_datasets Coverage Results" MODIFIED="1725897895227" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_real_world_datasets_TestRealWorldDatasets.coverage" NAME="pytest for tests.test_real_world_datasets.TestRealWorldDatasets Coverage Results" MODIFIED="1725899631131" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/cubedpandas$02_direct_member_access.coverage" NAME="02_direct_member_access Coverage Results" MODIFIED="1725127315721" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
     <SUITE FILE_PATH="coverage/cubedpandas$05_large_slice.coverage" NAME="05_large_slice Coverage Results" MODIFIED="1725700247412" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
     <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_cube_with_dates_TestCubeWithDates_test_slicing_with_exact_dates.coverage" NAME="pytest for tests.test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates Coverage Results" MODIFIED="1725809278748" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/cubedpandas$app.coverage" NAME="app Coverage Results" MODIFIED="1725618529006" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples/web_app" />
-    <SUITE FILE_PATH="coverage/cubedpandas$01a_basic_usage.coverage" NAME="01a_basic_usage Coverage Results" MODIFIED="1725127305254" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
-    <SUITE FILE_PATH="coverage/cubedpandas$rounding.coverage" NAME="rounding Coverage Results" MODIFIED="1725699873875" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/research" />
     <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_cube_TestCube_test_boolean_dimension.coverage" NAME="pytest for tests.test_cube.TestCube.test_boolean_dimension Coverage Results" MODIFIED="1725735039070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/cubedpandas$.coverage" NAME=" Coverage Results" MODIFIED="1725974786070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/cubedpandas$Doctests_in_common.coverage" NAME="Doctests in common Coverage Results" MODIFIED="1725697590031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cubedpandas" />
-    <SUITE FILE_PATH="coverage/cubedpandas$99_benchmark_01.coverage" NAME="99_benchmark_01 Coverage Results" MODIFIED="1725607787082" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
-    <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_measures_TestMeasures_test_measure_methods.coverage" NAME="pytest for tests.test_measures.TestMeasures.test_measure_methods Coverage Results" MODIFIED="1725121808744" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$01a_basic_usage.coverage" NAME="01a_basic_usage Coverage Results" MODIFIED="1725127305254" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
     <SUITE FILE_PATH="coverage/cubedpandas$Doctests_in_common__1_.coverage" NAME="Doctests in common (1) Coverage Results" MODIFIED="1725698965075" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cubedpandas" />
     <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_cube_context_TestCubeContext_test_context_address.coverage" NAME="pytest for tests.test_cube_context.TestCubeContext.test_context_address Coverage Results" MODIFIED="1725737288238" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/cubedpandas$01_basic_usage.coverage" NAME="01_basic_usage Coverage Results" MODIFIED="1725127234592" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
     <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_cube_TestCube_test_cube_address_to_args.coverage" NAME="pytest for tests.test_cube.TestCube.test_cube_address_to_args Coverage Results" MODIFIED="1725734946867" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_slice_TestSlice_test_default_slice.coverage" NAME="pytest for tests.test_slice.TestSlice.test_default_slice Coverage Results" MODIFIED="1725111777455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_real_world_datasets_TestRealWorldDatasets_test_measures_only_cube.coverage" NAME="pytest for tests.test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube Coverage Results" MODIFIED="1725886505115" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_real_world_datasets.coverage" NAME="pytest for tests.test_real_world_datasets Coverage Results" MODIFIED="1725897895227" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$02_direct_member_access.coverage" NAME="02_direct_member_access Coverage Results" MODIFIED="1725127315721" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
+    <SUITE FILE_PATH="coverage/cubedpandas$rounding.coverage" NAME="rounding Coverage Results" MODIFIED="1725699873875" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/research" />
+    <SUITE FILE_PATH="coverage/cubedpandas$.coverage" NAME=" Coverage Results" MODIFIED="1726078433860" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$Doctests_in_common.coverage" NAME="Doctests in common Coverage Results" MODIFIED="1725697590031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cubedpandas" />
+    <SUITE FILE_PATH="coverage/cubedpandas$99_benchmark_01.coverage" NAME="99_benchmark_01 Coverage Results" MODIFIED="1725607787082" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
+    <SUITE FILE_PATH="coverage/cubedpandas$tokenizer.coverage" NAME="tokenizer Coverage Results" MODIFIED="1726045589472" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/research" />
+    <SUITE FILE_PATH="coverage/cubedpandas$pytest_for_tests_test_measures_TestMeasures_test_measure_methods.coverage" NAME="pytest for tests.test_measures.TestMeasures.test_measure_methods Coverage Results" MODIFIED="1725121808744" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/cubedpandas$01_basic_usage.coverage" NAME="01_basic_usage Coverage Results" MODIFIED="1725127234592" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
     <SUITE FILE_PATH="coverage/cubedpandas$04_simple_slice.coverage" NAME="04_simple_slice Coverage Results" MODIFIED="1725639092332" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples" />
     <SUITE FILE_PATH="coverage/cubedpandas$app__1_.coverage" NAME="app (1) Coverage Results" MODIFIED="1724739832676" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples/web_app" />
     <SUITE FILE_PATH="coverage/cubedpandas$testing_dates.coverage" NAME="testing_dates Coverage Results" MODIFIED="1725951180312" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/research" />

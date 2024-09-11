@@ -1,7 +1,6 @@
 # Cubed Pandas Backlog
 
 ## Release 0.2.x (Current Scope of Work)
-
 - [ ] Full Rework Time intelligence to support more complex time intelligence, e.g.:
   A dedicated parser/interpreter is required to support more complex time intelligence. like
   - [ ] actual day, week, month, quarter, year, hour, minute, second

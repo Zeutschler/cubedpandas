@@ -24,6 +24,9 @@ from cubedpandas.schema.schema import Schema
 from cubedpandas.settings import CachingStrategy
 
 __version__ = "0.2.31"
+__author__ = "Thomas Zeutschler"
+__copyright__ = "(C) 2024 Thomas Zeutschler"
+
 VERSION = __version__
 
 __all__ = [
