@@ -474,7 +474,10 @@ class Tokenizer:
                 continue
             try:
                 date = dateutil_parse(text, parser_info, fuzzy=True)
-                tokens.append(Token(text, TokenType.DATE, date))
+                if date.time() == time(0, 0, 0):
+                    tokens.append(Token(text, TokenType.DATE, date))
+                else:
+                    tokens.append(Token(text, TokenType.DATE_TIME, date))
                 continue
 
             except (ParserError, OverflowError):

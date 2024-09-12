@@ -9,7 +9,11 @@ Categories: Added, Changed, Fixed, Deprecated, Removed, Security, Fixed, Securit
 ## [0.2.32] - in progress
 
 ### Added
-- Class DateText added to resolve date keywords.
+
+- DateFilter class added to parse and filter by time text like "today", "yesterday", "last week", etc.
+  and direct support for lambda function to filter Pandas or Numpy arrays or lambdas for Python internal use.
+- Tokenizer and parser classes for time text parsing.
+- DateSpan class added for handling of begin-end time spans.
 - Added cubed() method to Context to create new cube from filtered cube.
 ### Changed
 ### Fixed

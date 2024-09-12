@@ -6,13 +6,14 @@ from dateutil.parser import parse as dateutil_parse, parserinfo
 from dateutil.parser import ParserError
 from dateutil.relativedelta import relativedelta
 
-from cubedpandas.datetext.base_parser import DateTextLanguageParser
-from cubedpandas.datetext.tokenizer import Tokenizer, Token, TokenType
-import cubedpandas.datetext.methods as dtm
+from cubedpandas.datefilter.base_parser import DateTextLanguageParser
+from cubedpandas.datefilter.date_span import DateSpan
+from cubedpandas.datefilter.tokenizer import Tokenizer, Token, TokenType
+import cubedpandas.datefilter.date_methods as dtm
 
 resolvers = {"now": dtm.now, "tomorrow": dtm.tomorrow, "today": dtm.today, "yesterday": dtm.yesterday,
-             "ytd": dtm.ytd, "mtd": dtm.mtd, "qtd": dtm.qtd, "wtd": dtm.wtd,
-             "month": dtm.month, "week": dtm.week, "quarter": dtm.quarter, "year": dtm.year,
+             "ytd": dtm.actual_ytd, "mtd": dtm.actual_mtd, "qtd": dtm.actual_qtd, "wtd": dtm.actual_wtd,
+             "month": dtm.actual_month, "week": dtm.actual_week, "quarter": dtm.actual_quarter, "year": dtm.actual_year,
              "monday": dtm.monday, "tuesday": dtm.tuesday, "wednesday": dtm.wednesday, "thursday": dtm.thursday,
              "friday": dtm.friday, "saturday": dtm.saturday, "sunday": dtm.sunday,
              "january": dtm.january, "february": dtm.february, "march": dtm.march, "april": dtm.april,
@@ -37,14 +38,13 @@ class DateTextParser(DateTextLanguageParser):
     def language(self) -> str:
         return self.LANGUAGE
 
-    def parse(self, text: str, parser_info: parserinfo | None = None) \
-            -> (tuple[datetime | None, datetime | None] |
-                list[tuple[datetime | None, datetime | None]]):
+    def parse(self, text: str, parser_info: parserinfo | None = None) -> DateSpan | tuple[DateSpan]:
 
         # First, we try to parse the text with dateutil.
         tokens = self.tokenizer.tokenize(text, parser_info)
         if len(tokens) == 0:
-            raise ValueError("Failed to parse empty date text string.")
+            # todo: should better we return now() ?
+            raise ValueError("Empty date text string.")
         result = self.parse_tokens(tokens, parser_info)
         if result != (None, None):
             return result
@@ -56,20 +56,26 @@ class DateTextParser(DateTextLanguageParser):
         #       to the next Monday, but want it to be the monday of this week.
         try:
             result = dateutil_parse(text, fuzzy=True)
-            return result, None
+            return DateSpan(result)
         except (ParserError, OverflowError) as e:
-            return None, None
+            return DateSpan(None)
 
     def parse_tokens(self, tokens: list[Token], parser_info: parserinfo | None = None):
         """ Parses a list of tokens into a (`datetime`, `datetime`) time-span tuple."""
 
         # Special case: 1-word date text, e.g. "today", "yesterday" etc.
         if len(tokens) == 1:
-            if tokens[0].text in resolvers:
+            t = tokens[0]
+            if t.type == TokenType.DATE:
+                return DateSpan(t.value).full_day()
+            elif t.type == TokenType.TIME:
+                return DateSpan.now().with_time(t.value)
+
+            if t.text in resolvers:
                 return resolvers[tokens[0].text]()
 
         # Failed to parse the text
-        return None, None
+        return DateSpan.undefined()
 
 
 
