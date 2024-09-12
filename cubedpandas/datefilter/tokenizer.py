@@ -3,7 +3,6 @@ from typing import Any
 import re
 from datetime import datetime, time
 from dateutil.parser import parse as dateutil_parse, ParserError, parserinfo
-from pydantic.schema import datetime
 
 
 class TokenType(IntEnum):

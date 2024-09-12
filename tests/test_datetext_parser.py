@@ -56,7 +56,7 @@ class TestDateTextParser(TestCase):
         sql = df.to_sql("order date")
         f_func = df.to_function()
         f_lambda = df.to_lambda()
-        f_numpy = df.to_numpy_lambda()
+        f_numpy = df.to_pd_lambda()
         n_array = np.array([datetime.now() for _ in range(100)], dtype=np.datetime64)
         df = pd.DataFrame(n_array, columns=["order date"])
 
