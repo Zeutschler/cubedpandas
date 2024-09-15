@@ -22,7 +22,7 @@ from cubedpandas.schema.member import Member, MemberSet
 from cubedpandas.schema.schema import Schema
 from cubedpandas.settings import CachingStrategy
 
-__version__ = "0.2.31"
+__version__ = "0.2.32"
 __author__ = "Thomas Zeutschler"
 __copyright__ = "(C) 2024 Thomas Zeutschler"
 
