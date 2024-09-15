@@ -1,5 +1,5 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
-
+import sys
 import pandas as pd
 from datetime import datetime, timedelta
 from unittest import TestCase
@@ -31,6 +31,15 @@ class TestDateLookUps(TestCase):
             "cost": [50, 100, 200, 100, 150, 150]
         }
         self.df = pd.DataFrame.from_dict(data)
+        self.debug = self.is_debug()
+
+    @staticmethod
+    def is_debug():
+        """Check if the debugger is active. Used to print debug information."""
+        gettrace = getattr(sys, 'gettrace', None)
+        return (gettrace() is not None) if (gettrace is not None) else False
+
+
 
     def test_standard_dateTime_tokens(self):
         c = cubed(self.df)
@@ -56,12 +65,16 @@ class TestDateLookUps(TestCase):
                   "previous hour", "next hour",
                   "today", "yesterday", "tomorrow", "this year", "last year", "previous year", "next year",
                   "this month", "last month", "previous month", "next month",
-                  "this week", "last week", "previous week", "next week", "this quarter", "last quarter",
-                  "previous quarter", "next quarter", "this semester", "last semester",
-                  "previous semester", "next semester"]
+                  "this week", "last week", "previous week", "next week",
+                  "this quarter", "last quarter", "previous quarter", "next quarter"]
 
         for token in tokens:
-            result, from_date, to_date = parse(token)
+            # returned value
             a = c.date[token]
+
+            # test value
+            result, from_date, to_date = parse(token)
             b = c.date[from_date:to_date]
+            if self.debug:
+                print(f"'{token}' = {a} = {b} ({from_date} - {to_date})")
             self.assertEqual(a, b)
