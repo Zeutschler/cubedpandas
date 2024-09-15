@@ -1,8 +1,8 @@
 # CubedPandas - Copyright (c)2024, Thomas Zeutschler, see LICENSE file
 
 import cubedpandas.context as context
-from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.common import cubed
+from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.context.context import Context
 from cubedpandas.context.context_context import ContextContext
 from cubedpandas.context.cube_context import CubeContext
@@ -22,7 +22,10 @@ from cubedpandas.schema.member import Member, MemberSet
 from cubedpandas.schema.schema import Schema
 from cubedpandas.settings import CachingStrategy
 
-__version__ = "0.2.31"
+__version__ = "0.2.32"
+__author__ = "Thomas Zeutschler"
+__copyright__ = "(C) 2024 Thomas Zeutschler"
+
 VERSION = __version__
 
 __all__ = [

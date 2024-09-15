@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
+from datespanlib import DateSpanSet
 
 from cubedpandas.context.enums import ContextFunction
 from cubedpandas.context.context import Context
@@ -50,8 +51,8 @@ class ContextResolver:
             raise ValueError(f"The context handed in as an address argument refers to a different cube/dataframe. "
                              f"Only contexts from the same cube can be used as address arguments.")
 
-        # A user handed a dimension or measure instance from a schema object in,  why ever?
-        # We will convert it to a string and continue
+        # A user handed a dimension or measure instance from a schema object in,
+        # we need to convert it to a string and continue.
         if address.__class__.__name__ == 'Measure' or address.__class__.__name__ == 'Dimension':
             address = str(address)
 
@@ -211,16 +212,27 @@ class ContextResolver:
                 if dimension is not None and pd.api.types.is_datetime64_any_dtype(dimension.dtype):
                     # maybe the address is a datetime token like "today", "last week", "next month", etc.
                     its_a_valid_date = False
+                    dss: DateSpanSet | None = None
+
                     if isinstance(address, datetime.datetime):
                         from_date = to_date = address
                         its_a_valid_date = True
                     elif isinstance(address, str):
-                        # We need to parse the date token, either it's a date string, e.g. "2021-01-01"
-                        # or a date token, e.g. "today", "yesterday", "last week", "next month", etc.
-                        its_a_valid_date, from_date, to_date = parse_standard_date_token(address)
-                        if not its_a_valid_date:
-                            from_date, to_date = resolve_datetime(address)
-                            its_a_valid_date = (from_date, to_date) != (None, None)
+                        # NEW Implementation using datespanlib (https://github.com/Zeutschler/DateSpanLib):
+                        try:
+                            dss = DateSpanSet(address)
+                            its_a_valid_date = True
+                        except ValueError as e:
+                            ValueError(e)
+                            its_a_valid_date = False
+
+                        # OLD Implementation:
+                        # # We need to parse the date token, either it's a date string, e.g. "2021-01-01"
+                        # # or a date token, e.g. "today", "yesterday", "last week", "next month", etc.
+                        # its_a_valid_date, from_date, to_date = parse_standard_date_token(address)
+                        # if not its_a_valid_date:
+                        #     from_date, to_date = resolve_datetime(address)
+                        #     its_a_valid_date = (from_date, to_date) != (None, None)
 
                     elif isinstance(address, slice):
                         # We might have a date range, e.g. "2021-01-01":"2021-12-31" or "last year":"today"
@@ -253,9 +265,21 @@ class ContextResolver:
 
                     if its_a_valid_date:
                         parent_row_mask = parent._get_row_mask(before_dimension=dimension)
-                        exists, new_row_mask, member_mask = dimension._check_exists_and_resolve_member(
-                            (from_date, to_date), parent_row_mask, member_mask, skip_checks=True,
-                            evaluate_as_range=True)
+                        if dss is not None:
+                            filter_func = dss.to_df_lambda()
+                            filter_func_Source = dss.to_df_lambda(return_source_code=True)
+                            if parent_row_mask is not None:
+                                series = cube.df[dimension.column][parent_row_mask]
+                                bool_mask = filter_func(series)
+                            else:
+                                series = cube.df[dimension.column]
+                                bool_mask = filter_func(series)
+                            new_row_mask = cube.df[bool_mask].index.to_numpy()
+                            exists = len(new_row_mask) > 0
+                        else:
+                            exists, new_row_mask, member_mask = dimension._check_exists_and_resolve_member(
+                                (from_date, to_date), parent_row_mask, member_mask, skip_checks=True,
+                                evaluate_as_range=True)
 
                         # let's create a member context, independent of the result
                         from cubedpandas.schema.member import Member, MemberSet
@@ -589,7 +613,7 @@ class ContextResolver:
                     return address
                 if isinstance(address, str):
                     address = address.lower().strip()
-                    return address in ['true', '1', 'yes', 'y', "on", "t", "1.0"]
+                    return address in ["true", "t", "1", "yes", "y", "on", "1", "active", "enabled", "ok", "done"]
                     # everything else will be considered as False
                 else:
                     try:

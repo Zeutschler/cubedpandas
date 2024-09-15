@@ -35,7 +35,8 @@ maintainers = [
 dependencies = [
     "pandas",
     "numpy",
-    "python-dateutil"
+    "python-dateutil",
+    "datespanlib"
 ]
 
 [project.urls]

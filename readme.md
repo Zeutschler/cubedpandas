@@ -11,7 +11,7 @@
 ![build](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/python-package.yml?logo=GitHub&logoColor=979DA4&color=A1C547)
 ![documentation](https://img.shields.io/github/actions/workflow/status/zeutschler/cubedpandas/static-site-upload.yml?logo=GitHub&logoColor=979DA4&label=docs&color=A1C547&link=https%3A%2F%2Fzeutschler.github.io%2Fcubedpandas%2F)
 ![codecov](https://codecov.io/github/Zeutschler/cubedpandas/graph/badge.svg?token=B12O0B6F10)
-![sponsor](https://img.shields.io/github/sponsors/zeutschler)
+
 
 -----------------
 

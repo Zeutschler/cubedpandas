@@ -2,6 +2,7 @@
 
 import calendar
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from typing import Any
 
 from dateutil.parser import parse, ParserError
@@ -163,38 +164,34 @@ def parse_standard_date_token(value, language="en") -> (bool, datetime | None, d
         return (datetime(datetime.now().year, 1, 1),
                 datetime(datetime.now().year, 12, 31, 23, 59, 59, 999999))
 
-    def last_year():
-        return (datetime(datetime.now().year - 1, 1, 1),
+    def last_year(years: int = 1):
+        return (datetime(datetime.now().year - years, 1, 1),
                 datetime(datetime.now().year - 1, 12, 31, 23, 59, 59, 999999))
 
-    def next_year():
+    def next_year(years: int = 1):
         return (datetime(datetime.now().year + 1, 1, 1),
-                datetime(datetime.now().year + 1, 12, 31, 23, 59))
+                datetime(datetime.now().year + years, 12, 31, 23, 59))
 
     def this_month():
         return (datetime(datetime.now().year, datetime.now().month, 1),
                 datetime(datetime.now().year, datetime.now().month,
                          calendar.monthrange(datetime.now().year, datetime.now().month)[1], 23, 59, 59, 999999))
 
-    def last_month():
-        last_month = datetime.now().month - 1
-        last_year = datetime.now().year
-        if last_month == 0:
-            last_month = 12
-            last_year -= 1
-        return (datetime(last_year, last_month, 1),
-                datetime(last_year, last_month,
-                         calendar.monthrange(last_year, last_month)[1], 23, 59, 59, 99999))
+    def last_month(months: int = 1):
+        today = datetime.now()
+        last_month = today - relativedelta(months=1)
+        first_month = today - relativedelta(months=months)
+        date_from = first_month.replace(day=1)
+        date_to = last_month + relativedelta(day=31)
+        return date_from, date_to
 
-    def next_month():
-        next_month = datetime.now().month + 1
-        next_year = datetime.now().year
-        if next_month == 13:
-            next_month = 1
-            next_year += 1
-        return (datetime(next_year, next_month, 1),
-                datetime(next_year, next_month,
-                         calendar.monthrange(next_year, next_month)[1], 23, 59, 59, 999999))
+    def next_month(months: int = 1):
+        today = datetime.now()
+        first_month = today + relativedelta(months=1)
+        last_month = today + relativedelta(months=months)
+        date_from = first_month.replace(day=1)
+        date_to = last_month + relativedelta(day=31)
+        return date_from, date_to
 
     def this_week():
         today = datetime.now()
