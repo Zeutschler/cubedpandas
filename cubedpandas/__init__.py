@@ -2,7 +2,6 @@
 
 import cubedpandas.context as context
 from cubedpandas.common import cubed
-from cubedpandas.datefilter.date_filter import DateFilter
 from cubedpandas.ambiguities import Ambiguities
 from cubedpandas.context.context import Context
 from cubedpandas.context.context_context import ContextContext
@@ -53,7 +52,6 @@ __all__ = [
     "MemberContext",
     "MemberNotFoundContext",
     "MemberSet",
-    "DateFilter",
     "Schema",
     "VERSION"
 ]

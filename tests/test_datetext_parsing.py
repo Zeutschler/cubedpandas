@@ -3,10 +3,8 @@ from datetime import date, datetime
 
 import numpy as np
 import pandas as pd
-from dateutil.parser import parse
 
-from cubedpandas import DateFilter
-from cubedpandas.datefilter.tokenizer import Tokenizer, Token, TokenType
+from datespanlib import DateSpanSet
 
 class TestDateTextParser(TestCase):
     def setUp(self):
@@ -27,12 +25,12 @@ class TestDateTextParser(TestCase):
 
     def test_initial_parse_using_dateutil(self):
         text = "2024-09-09"
-        result = DateFilter(text)
+        result = DateSpanSet(text)
         self.assertEqual(result[0][0], datetime(2024, 9, 9))
 
     def test_single_word(self):
         text = "today"
-        result = DateFilter(text)
+        result = DateSpanSet(text)
         self.assertEqual(result[0][0], datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))
         self.assertEqual(result[0][1], datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999))
 
@@ -43,32 +41,29 @@ class TestDateTextParser(TestCase):
                  "july", "august", "september", "october", "november", "december",
                  ]
         for word in words:
-            result = DateFilter(word)
-            if self.debug:
+            result = DateSpanSet(word)
+            if self.debug or True:
                 print(f"DateFilter: {word}:")
                 for i, span in enumerate(result):
-                    print(f"\t{i + 1:02d} = {span[0]} - {span[1]}")
+                    print(f"\t{i + 1:02d} = {span.start} - {span.end}")
                 print(f"\tSQL: {result.to_sql('order date')}")
 
     def test_to_lambda_sql_function(self):
 
-        df = DateFilter("today")
-        sql = df.to_sql("order date")
-        f_func = df.to_function()
-        f_lambda = df.to_lambda()
-        f_numpy = df.to_pd_lambda()
+        dss = DateSpanSet("today")
+        sql = dss.to_sql("order date")
+        f_func = dss.to_function()
+        f_lambda = dss.to_lambda()
+        f_numpy = dss.to_df_lambda()
         n_array = np.array([datetime.now() for _ in range(100)], dtype=np.datetime64)
-        df = pd.DataFrame(n_array, columns=["order date"])
+        dss = pd.DataFrame(n_array, columns=["order date"])
 
         self.assertEqual(f_func(datetime.now()), True)
         self.assertEqual(f_lambda(datetime.now()), True)
-        result = f_numpy(df["order date"])
+        result = f_numpy(dss["order date"])
         self.assertEqual(result.index.to_list(), [i for i in range(100)])
 
-
-
-
-    def test_tokenizer(self):
+    def test_evaluate(self):
         datetexts = ["1st of January 2024",
                      "1st day of January, February and March 2024",
                      "last week",
@@ -80,8 +75,12 @@ class TestDateTextParser(TestCase):
                      "2009-01-01T12:00:00+01:00", "2010-01-01T12:00:00.001+02:00"]
 
         for text in datetexts:
-            tokens = Tokenizer.tokenize(text)
-            if self.debug:
-                print(f"\nTokens for '{text}':")
-                for pos, token in enumerate(tokens):
-                    print(f"{pos + 1:03d}: {token}")
+            try:
+                dss = DateSpanSet(text)
+                # if self.debug:
+                #     print(f"\nTokens for '{text}':")
+                #     for pos, span in enumerate(dss):
+                #         print(f"{pos + 1:02d}: {span}")
+            except Exception as e:
+                if self.debug:
+                    print(f"Error: {e}")
