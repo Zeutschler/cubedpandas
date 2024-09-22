@@ -71,7 +71,7 @@ setup(
         'numpy',
         'pandas',
         'python-dateutil',
-        'datespanlib',
+        'datespan',
     ],
     test_suite="cubedpandas.tests",
     packages=['cubedpandas', 'cubedpandas.context', 'cubedpandas.schema', 'tests'],

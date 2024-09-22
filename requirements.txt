@@ -1,8 +1,8 @@
 # for core cubedpandas library
-numpy
-pandas
-python-dateutil
-datespanlib >= 0.1.6
+numpy>=1.26.1
+pandas>=1.5.2
+python-dateutil>=2.8.2
+datespan>=0.2.4
 
 # for future use
 matplotlib
@@ -11,15 +11,15 @@ scikit-learn
 
 
 # for server sample
-fastapi
-uvicorn
+fastapi>=0.88.0
+uvicorn>=0.20.0
 
 
 # for deployment
 build
 wheel
 twine
-setuptools
+setuptools>65.5.0
 pytest
 
 # documentation related requirements
@@ -29,3 +29,5 @@ mkdocs-exclude
 mkdocstrings
 mkdocstrings-python
 mike
+cubedpandas~=0.2.19
+joblib~=1.4.2

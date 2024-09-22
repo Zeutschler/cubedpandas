@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
-from datespanlib import DateSpanSet
+from datespan import DateSpanSet
 
 from cubedpandas.context.enums import ContextFunction
 from cubedpandas.context.context import Context
@@ -218,7 +218,7 @@ class ContextResolver:
                         from_date = to_date = address
                         its_a_valid_date = True
                     elif isinstance(address, str):
-                        # NEW Implementation using datespanlib (https://github.com/Zeutschler/DateSpanLib):
+                        # NEW Implementation using datespan package (https://github.com/Zeutschler/datespan):
                         try:
                             dss = DateSpanSet(address)
                             its_a_valid_date = True

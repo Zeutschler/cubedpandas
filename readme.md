@@ -1,6 +1,6 @@
 # CubedPandas 
 
-## OLAP comfort meets Pandas power!
+## Expressive filtering and data analysis for Pandas
 
 ![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas?color=A1C547)
 ![PyPI version](https://img.shields.io/pypi/v/cubedpandas?logo=pypi&logoColor=979DA4&color=A1C547)
@@ -15,33 +15,36 @@
 
 -----------------
 
-CubedPandas offer a new ***easy, fast & fun approach to navigate and analyze Pandas dataframes***.
-CubedPandas is inspired by the powerful concepts of OLAP (Online Analytical Processing) and MDX (Multi-Dimensional
-Expressions) and aims to bring the comfort and power of OLAP to Pandas dataframes.
+CubedPandas offer a new ***easy, fast & fun approach to filter, navigate and analyze Pandas dataframes***.
+CubedPandas is inspired by the concept of [OLAP databases](https://en.wikipedia.org/wiki/Online_analytical_processing)
+and aims to bring add comfort and power to Pandas dataframe handling.
 
-For novice users, CubedPandas can be a great help to get started with Pandas, as it hides some
-of the complexity and verbosity of Pandas dataframes. For experienced users, CubedPandas
-can be a productivity booster, as it allows you to write more compact, readable and
-maintainable code. Just to give you a first idea, this Pandas code
+For novice users, CubedPandas can be a great help to get started with Pandas, as it hides
+the complexity and verbosity of Pandas dataframes. For experienced users, CubedPandas
+can be a productivity booster, as it allows you to write more compact, explicit, readable and
+maintainable code, e.g. this Pandas code:
 
 ```python
 # Pandas: calculate the total revenue of all hybrid Audi cars
 value = df.loc[(df['make'] == 'Audi') & (df['engine'] == 'hybrid'), 'price'].sum()
 ```
 
-turns into this CubedPandas code
+can turn into this equivalent CubedPandas code:
 
 ```python
 # CubedPandas: calculate the total revenue of all hybrid Audi cars
+value = df.cubed.make.Audi.engine.hybrid.price
+# or shorter
 value = df.cubed.Audi.hybrid.price
 ```
 
-As CubedPandas does not duplicate data or modifies the underlying dataframe and does not add
-any performance penalty - in some cases can even boost Pandas performance by factors - it can be
-used in production without any concerns and should be of great help in many use cases.
+CubedPandas offers a fluent interface based on the data in the DataFrame for easy filtering,
+navigation and analysis of Pandas dataframes. CubedPandas does not duplicate any data,  
+does not modify the underlying dataframe and does not introduce any performance penalty,  
+it rather can help to speed up your dat processing by factors.
 
-In [Jupyter notebooks](https://jupyter.org), CubedPandas will really start to shine. For further
-information, please visit the [CubedPandas Documentation](https://zeutschler.github.io/cubedpandas/)
+[Jupyter notebooks](https://jupyter.org) is the perfect habitat for CubedPandas.
+For further information, please visit the [CubedPandas Documentation](https://zeutschler.github.io/cubedpandas/)
 or try the included samples.
 
 ### Getting Started
