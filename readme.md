@@ -1,6 +1,6 @@
 # CubedPandas 
 
-## Expressive filtering and data analysis for Pandas
+## Filter faster, analyze smarter – because your DataFrames deserve it!
 
 ![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas?color=A1C547)
 ![PyPI version](https://img.shields.io/pypi/v/cubedpandas?logo=pypi&logoColor=979DA4&color=A1C547)
@@ -25,23 +25,27 @@ can be a productivity booster, as it allows you to write more compact, explicit,
 maintainable code, e.g. this Pandas code:
 
 ```python
-# Pandas: calculate the total revenue of all hybrid Audi cars
-value = df.loc[(df['make'] == 'Audi') & (df['engine'] == 'hybrid'), 'price'].sum()
+# Pandas: calculate the total revenue of all hybrid Audi cars in September 2024
+value = df.loc[(df['make'] == 'Audi') &
+               (df['engine'] == 'hybrid') &
+               (df['date'] >= '2024-09-01') & (df['date'] <= '2024-09-30'),
+'price'].sum()
 ```
 
 can turn into this equivalent CubedPandas code:
 
 ```python
-# CubedPandas: calculate the total revenue of all hybrid Audi cars
-value = df.cubed.make.Audi.engine.hybrid.price
-# or shorter
-value = df.cubed.Audi.hybrid.price
+# CubedPandas: calculate the total revenue of all hybrid Audi cars in September 2024
+value = df.cubed.make.Audi.engine.hybrid.date.september_2024.price.sum
+# or even shorter
+value = df.cubed.Audi.hybrid.sep_2024.price
 ```
 
-CubedPandas offers a fluent interface based on the data in the DataFrame for easy filtering,
-navigation and analysis of Pandas dataframes. CubedPandas does not duplicate any data,  
-does not modify the underlying dataframe and does not introduce any performance penalty,  
-it rather can help to speed up your dat processing by factors.
+CubedPandas offers a fluent interface based on the data available in the underlying DataFrame
+for easy filtering, navigation and analysis of Pandas dataframes.
+
+CubedPandas neither duplicates data nor modifies the underlying DataFrame, and it introduces no
+performance penalty. In fact, it can significantly speed up your data processing.
 
 [Jupyter notebooks](https://jupyter.org) is the perfect habitat for CubedPandas.
 For further information, please visit the [CubedPandas Documentation](https://zeutschler.github.io/cubedpandas/)
