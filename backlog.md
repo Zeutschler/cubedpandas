@@ -1,6 +1,11 @@
 # Cubed Pandas Backlog
 
 ## Release 0.2.x (Current Scope of Work)
+
+- [ ] Sampling for all column types - see function body 'sample' in class Context.
+
+- [ ] to_df_code() - Creates a code snippet to recreate the current context with plain Pandas.
+
 - [ ] Full Rework Time intelligence to support more complex time intelligence, e.g.:
   A dedicated parser/interpreter is required to support more complex time intelligence. like
   - [ ] actual day, week, month, quarter, year, hour, minute, second

@@ -1,6 +1,6 @@
-
 import pandas as pd
-from cubedpandas import cubed, Context, CubeContext, MeasureContext
+
+from cubedpandas import cubed
 
 df = pd.DataFrame({"product": ["Apple", "Pear", "Banana", "Apple", "Pear", "Banana"],
                    "channel": ["Online", "Online", "Online", "Retail", "Retail", "Retail"],
@@ -12,6 +12,4 @@ cdf = cubed(df)
 
 cdf.settings.debug_mode = True
 context = cdf.product["Apple", "Pear"].sales
-print(context.address)
-
-print(context.dsf_asdfsd)
+print(f"{context.address} = {context}")

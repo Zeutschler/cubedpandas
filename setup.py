@@ -16,7 +16,7 @@ from cubedpandas import VERSION as CUBEDPANDAS_VERSION
 # https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
 
 VERSION = CUBEDPANDAS_VERSION
-DESCRIPTION = "CubedPandas - OLAP comfort meets Pandas power!"
+DESCRIPTION = "CubedPandas - Filter faster, analyze smarter – because your DataFrames deserve it!"
 LONG_DESCRIPTION = """
 CubedPandas offer a new ***easy, fast & fun approach to navigate and analyze Pandas dataframes***. 
 CubedPandas is inspired by the powerful concepts of OLAP (Online Analytical Processing) and MDX (Multi-Dimensional
@@ -26,8 +26,6 @@ For novice users, CubedPandas can be a great help to get started with Pandas, as
 of the complexity and verbosity of Pandas dataframes. For experienced users, CubedPandas
 can be a productivity booster, as it allows you to write more compact, readable and
 maintainable code.
-
-Just give it a try...   
 """
 
 setup(
@@ -71,7 +69,7 @@ setup(
         'numpy',
         'pandas',
         'python-dateutil',
-        'datespanlib',
+        'datespan',
     ],
     test_suite="cubedpandas.tests",
     packages=['cubedpandas', 'cubedpandas.context', 'cubedpandas.schema', 'tests'],

@@ -4,7 +4,7 @@ from datetime import date, datetime
 import numpy as np
 import pandas as pd
 
-from datespanlib import DateSpanSet
+from datespan import DateSpanSet, VERSION
 
 class TestDateTextParser(TestCase):
     def setUp(self):

@@ -1,6 +1,6 @@
 # CubedPandas 
 
-## OLAP comfort meets Pandas power!
+## Filter faster, analyze smarter – because your DataFrames deserve it!
 
 ![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas?color=A1C547)
 ![PyPI version](https://img.shields.io/pypi/v/cubedpandas?logo=pypi&logoColor=979DA4&color=A1C547)
@@ -15,33 +15,40 @@
 
 -----------------
 
-CubedPandas offer a new ***easy, fast & fun approach to navigate and analyze Pandas dataframes***.
-CubedPandas is inspired by the powerful concepts of OLAP (Online Analytical Processing) and MDX (Multi-Dimensional
-Expressions) and aims to bring the comfort and power of OLAP to Pandas dataframes.
+CubedPandas offer a new ***easy, fast & fun approach to filter, navigate and analyze Pandas dataframes***.
+CubedPandas is inspired by the concept of [OLAP databases](https://en.wikipedia.org/wiki/Online_analytical_processing)
+and aims to bring add comfort and power to Pandas dataframe handling.
 
-For novice users, CubedPandas can be a great help to get started with Pandas, as it hides some
-of the complexity and verbosity of Pandas dataframes. For experienced users, CubedPandas
-can be a productivity booster, as it allows you to write more compact, readable and
-maintainable code. Just to give you a first idea, this Pandas code
-
-```python
-# Pandas: calculate the total revenue of all hybrid Audi cars
-value = df.loc[(df['make'] == 'Audi') & (df['engine'] == 'hybrid'), 'price'].sum()
-```
-
-turns into this CubedPandas code
+For novice users, CubedPandas can be a great help to get started with Pandas, as it hides
+the complexity and verbosity of Pandas dataframes. For experienced users, CubedPandas
+can be a productivity booster, as it allows you to write more compact, explicit, readable and
+maintainable code, e.g. this Pandas code:
 
 ```python
-# CubedPandas: calculate the total revenue of all hybrid Audi cars
-value = df.cubed.Audi.hybrid.price
+# Pandas: calculate the total revenue of all hybrid Audi cars in September 2024
+value = df.loc[(df['make'] == 'Audi') &
+               (df['engine'] == 'hybrid') &
+               (df['date'] >= '2024-09-01') & (df['date'] <= '2024-09-30'),
+'price'].sum()
 ```
 
-As CubedPandas does not duplicate data or modifies the underlying dataframe and does not add
-any performance penalty - in some cases can even boost Pandas performance by factors - it can be
-used in production without any concerns and should be of great help in many use cases.
+can turn into this equivalent CubedPandas code:
 
-In [Jupyter notebooks](https://jupyter.org), CubedPandas will really start to shine. For further
-information, please visit the [CubedPandas Documentation](https://zeutschler.github.io/cubedpandas/)
+```python
+# CubedPandas: calculate the total revenue of all hybrid Audi cars in September 2024
+value = df.cubed.make.Audi.engine.hybrid.date.september_2024.price.sum
+# or even shorter
+value = df.cubed.Audi.hybrid.sep_2024.price
+```
+
+CubedPandas offers a fluent interface based on the data available in the underlying DataFrame
+for easy filtering, navigation and analysis of Pandas dataframes.
+
+CubedPandas neither duplicates data nor modifies the underlying DataFrame, and it introduces no
+performance penalty. In fact, it can significantly speed up your data processing.
+
+[Jupyter notebooks](https://jupyter.org) is the perfect habitat for CubedPandas.
+For further information, please visit the [CubedPandas Documentation](https://zeutschler.github.io/cubedpandas/)
 or try the included samples.
 
 ### Getting Started

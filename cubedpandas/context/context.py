@@ -196,6 +196,31 @@ class Context(SupportsFloat):
         from cubedpandas.common import cubed as cubed_method
         return cubed_method(self.df)
 
+    def sample(self, n=None, frac=None, replace=False, weights=None, random_state=None):
+        """
+        Return a random sample of items from dimension of the cube.
+        You can use random_state for reproducibility. The call will be delegated to the underlying Pandas
+        dataframe sample method.
+
+        Arguments:
+            n: (optional) Number of items from axis to return. Cannot be used with frac. Default = 1 if frac = None.
+            frac: (optional) Fraction of axis items to return. Cannot be used with n.
+            replace: (optional) Allow or disallow sampling of the same row more than once.
+            weights: (optional) Default ‘None’ results in equal probability weighting. If passed a Series,
+                will align with target object on index. Index values in weights not found in sampled object
+                will be ignored and index values in sampled object not in weights will be assigned weights
+                of zero. If called on a DataFrame, will accept the name of a column when axis = 0. Unless
+                weights are a Series, weights must be same length as axis being sampled. If weights do not sum
+                to 1, they will be normalized to sum to 1. Missing values in the weights column will be treated
+                as zero. Infinite values not allowed.
+            random_state: (optional) int, array-like, BitGenerator, np.random.RandomState, np.random.Generator.
+                If int, array-like, or BitGenerator, seed for random number generator.
+                If np.random.RandomState or np.random.Generator, use as given.
+        """
+        raise NotImplementedError("The sample method is not yet implemented.")
+
+
+
     @property
     def address(self) -> any:
         """
