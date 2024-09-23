@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="datespan added">
+    <list default="true" id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="sample updated">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cubedpandas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,7 +165,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "com.codeium.enabled": "true",
     "git-widget-placeholder": "dev",
-    "last_opened_file_path": "/Users/thomas/Documents/Coding/cubedpandas/tests/datasets",
+    "last_opened_file_path": "/Users/thomas/Documents/Coding/cubedpandas/samples/datasets",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -178,11 +178,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/samples/datasets" />
+      <recent name="$PROJECT_DIR$/samples" />
       <recent name="$PROJECT_DIR$/tests/datasets" />
       <recent name="$PROJECT_DIR$/cubedpandas/datetext/tokenizer" />
       <recent name="$PROJECT_DIR$/tests" />
-      <recent name="$PROJECT_DIR$/.github/workflows" />
-      <recent name="$PROJECT_DIR$/docs/guides" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/tests" />
@@ -363,23 +363,7 @@
       <workItem from="1726858898122" duration="563000" />
       <workItem from="1726859482478" duration="82000" />
       <workItem from="1726909312725" duration="3723000" />
-      <workItem from="1727024561444" duration="16745000" />
-    </task>
-    <task id="LOCAL-00025" summary="slice refactored">
-      <option name="closed" value="true" />
-      <created>1725651492711</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1725651492711</updated>
-    </task>
-    <task id="LOCAL-00026" summary="datetime features">
-      <option name="closed" value="true" />
-      <created>1725809578886</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1725809578886</updated>
+      <workItem from="1727024561444" duration="18045000" />
     </task>
     <task id="LOCAL-00027" summary="datetime features">
       <option name="closed" value="true" />
@@ -757,7 +741,23 @@
       <option name="project" value="LOCAL" />
       <updated>1727090606197</updated>
     </task>
-    <option name="localTasksCounter" value="74" />
+    <task id="LOCAL-00074" summary="datespan added">
+      <option name="closed" value="true" />
+      <created>1727091329583</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1727091329583</updated>
+    </task>
+    <task id="LOCAL-00075" summary="sample updated">
+      <option name="closed" value="true" />
+      <created>1727092062913</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1727092062913</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -789,7 +789,8 @@
     <MESSAGE value="DateSpan &amp; DateFilter added" />
     <MESSAGE value="DateSpan &amp; DateFilter carved out to separate project 'DateSpanLib' https://github.com/Zeutschler/DateSpanLib" />
     <MESSAGE value="datespan added" />
-    <option name="LAST_COMMIT_MESSAGE" value="datespan added" />
+    <MESSAGE value="sample updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="sample updated" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">

@@ -26,31 +26,33 @@ maintainable code, e.g. this Pandas code:
 
 ```python
 # Pandas: calculate the total revenue of all hybrid Audi cars in September 2024
-value = df.loc[(df['make'] == 'Audi') &
-               (df['engine'] == 'hybrid') &
-               (df['date'] >= '2024-09-01') & (df['date'] <= '2024-09-30'),
-'price'].sum()
+value = df.loc[
+    (df['make'] == 'Audi') &
+    (df['engine'] == 'hybrid') &
+    (df['date'] >= '2024-09-01') & (df['date'] <= '2024-09-30'),
+    'revenue'
+].sum()
 ```
 
 can turn into this equivalent CubedPandas code:
 
 ```python
 # ...the same with CubedPandas:
-value = df.cubed.make.Audi.engine.hybrid.date.september_2024.price
+value = df.cubed.make.Audi.engine.hybrid.date.september_2024.revenue
 
-# ...or even shorter
-value = df.cubed.Audi.hybrid.sep_2024.price
+# ...or maybe even shorter:
+value = df.cubed.Audi.hybrid.sep_2024
 ```
 
-CubedPandas offers a fluent interface based on the data available in the underlying DataFrame
-for easy filtering, navigation and analysis of Pandas dataframes.
+CubedPandas offers a fluent interface based on the data available in the underlying DataFrame.
+So, filtering, navigation and analysis of Pandas dataframes becomes more intuitive, more readable and more fun.
 
-CubedPandas neither duplicates data nor modifies the underlying DataFrame, and it introduces no
-performance penalty. In fact, it can significantly speed up your data processing.
+CubedPandas neither duplicates data nor modifies the underlying DataFrame, and it introduces
+no performance penalty. In fact, it can sometimes significantly speed up your data processing.
 
-[Jupyter notebooks](https://jupyter.org) is the perfect habitat for CubedPandas.
-For further information, please visit the [CubedPandas Documentation](https://zeutschler.github.io/cubedpandas/)
-or try the included samples.
+[Jupyter notebooks](https://jupyter.org) is the perfect habitat for CubedPandas. For further information,
+please visit the [CubedPandas Documentation](https://zeutschler.github.io/cubedpandas/)
+or try some of the included samples.
 
 ### Getting Started
 
