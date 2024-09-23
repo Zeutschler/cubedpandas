@@ -16,7 +16,7 @@ from cubedpandas import VERSION as CUBEDPANDAS_VERSION
 # https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
 
 VERSION = CUBEDPANDAS_VERSION
-DESCRIPTION = "CubedPandas - Filter faster, analyze smarter – because your DataFrames deserve it!"
+DESCRIPTION = "CubedPandas - Filter faster, analyze smarter – your DataFrames deserve it!"
 LONG_DESCRIPTION = """
 CubedPandas offer a new ***easy, fast & fun approach to navigate and analyze Pandas dataframes***. 
 CubedPandas is inspired by the powerful concepts of OLAP (Online Analytical Processing) and MDX (Multi-Dimensional

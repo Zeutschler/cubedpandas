@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="leveling up to 'Alpha' status" />
+    <list default="true" id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="readme updated">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cubedpandas/cube.py" beforeDir="false" afterPath="$PROJECT_DIR$/cubedpandas/cube.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -161,7 +164,7 @@
     &quot;Python.tokenizer.executor&quot;: &quot;Debug&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;com.codeium.enabled&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;#93 on dev&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/thomas/Documents/Coding/cubedpandas/samples/datasets&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -361,14 +364,8 @@
       <workItem from="1726859482478" duration="82000" />
       <workItem from="1726909312725" duration="3723000" />
       <workItem from="1727024561444" duration="18477000" />
-    </task>
-    <task id="LOCAL-00029" summary="datetime features">
-      <option name="closed" value="true" />
-      <created>1725824764279</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1725824764279</updated>
+      <workItem from="1727093860789" duration="208000" />
+      <workItem from="1727094072474" duration="341000" />
     </task>
     <task id="LOCAL-00030" summary="docu updated">
       <option name="closed" value="true" />
@@ -754,7 +751,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727092977146</updated>
     </task>
-    <option name="localTasksCounter" value="78" />
+    <task id="LOCAL-00078" summary="leveling up to 'Alpha' status">
+      <option name="closed" value="true" />
+      <created>1727094039863</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1727094039864</updated>
+    </task>
+    <option name="localTasksCounter" value="79" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
