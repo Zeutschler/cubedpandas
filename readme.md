@@ -1,5 +1,3 @@
-from numpy.distutils.system_info import dfftw_info
-
 # CubedPandas 
 
 ## Filter faster, analyze smarter – your DataFrames deserve it!
