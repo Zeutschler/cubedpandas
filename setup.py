@@ -72,7 +72,7 @@ setup(
         'datespan',
     ],
     test_suite="cubedpandas.tests",
-    packages=['cubedpandas', 'cubedpandas.context', 'cubedpandas.schema', 'tests'],
+    packages=['cubedpandas', 'cubedpandas.context', 'cubedpandas.schema'],  # , 'tests'],
     project_urls={
         'Homepage': 'https://zeutschler.github.io/cubedpandas/',
         'Documentation': 'https://zeutschler.github.io/cubedpandas/',

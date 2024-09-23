@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
-from datespan import DateSpanSet
+from datespan import DateSpanSet, DateSpan
 
 from cubedpandas.context.enums import ContextFunction
 from cubedpandas.context.context import Context
@@ -210,78 +210,47 @@ class ContextResolver:
 
                 # special case for datetime dimensions!
                 if dimension is not None and pd.api.types.is_datetime64_any_dtype(dimension.dtype):
-                    # maybe the address is a datetime token like "today", "last week", "next month", etc.
-                    its_a_valid_date = False
+                    # As arbitrary date expressions can be used, we use the datespan package to resolve them.
                     dss: DateSpanSet | None = None
 
-                    if isinstance(address, datetime.datetime):
-                        from_date = to_date = address
-                        its_a_valid_date = True
-                    elif isinstance(address, str):
-                        # NEW Implementation using datespan package (https://github.com/Zeutschler/datespan):
-                        try:
-                            dss = DateSpanSet(address)
-                            its_a_valid_date = True
-                        except ValueError as e:
-                            ValueError(e)
-                            its_a_valid_date = False
+                    try:
+                        if isinstance(address, slice):  # e.g. "2021-01-01":"2021-12-31"
+                            # the 'step' attribute of a slice object will be ignored
+                            start, stop = address.start, address.stop
+                            if start is None and stop is None:
+                                raise ValueError(f"Invalid date range slice '{address}'. "
+                                                 f"Both start and stop of slice are None.")
+                            if start:  # from start to datetime.max
+                                start_date = DateSpanSet(start).start
+                                stop_date = DateSpan.MAX_DATE
+                            elif stop:  # from datetime.min to stop
+                                start_date = DateSpan.MIN_DATE
+                                stop_date = DateSpanSet(stop).end
+                            else:  # from start to stop
+                                start_date = DateSpanSet(start).start
+                                stop_date = DateSpanSet(stop).end
 
-                        # OLD Implementation:
-                        # # We need to parse the date token, either it's a date string, e.g. "2021-01-01"
-                        # # or a date token, e.g. "today", "yesterday", "last week", "next month", etc.
-                        # its_a_valid_date, from_date, to_date = parse_standard_date_token(address)
-                        # if not its_a_valid_date:
-                        #     from_date, to_date = resolve_datetime(address)
-                        #     its_a_valid_date = (from_date, to_date) != (None, None)
-
-                    elif isinstance(address, slice):
-                        # We might have a date range, e.g. "2021-01-01":"2021-12-31" or "last year":"today"
-                        from_date = address.start
-                        to_date = address.stop
-
-                        if isinstance(from_date, datetime.datetime):
-                            its_a_valid_date = True
-                        elif isinstance(from_date, str):
-                            its_a_valid_date, from_date, result_not_of_interest = parse_standard_date_token(from_date)
-                            if not its_a_valid_date:
-                                fd, result_not_of_interest = resolve_datetime(from_date)
-                                its_a_valid_date = (fd, result_not_of_interest) != (None, None)
-                                if its_a_valid_date:
-                                    from_date = fd
-                                else:
-                                    raise ValueError(f"Invalid date token '{from_date}' in address '{address}'.")
-
-                        if isinstance(to_date, datetime.datetime):
-                            its_a_valid_date = True
-                        elif isinstance(to_date, str):
-                            its_a_valid_date, result_not_of_interest, to_date = parse_standard_date_token(to_date)
-                            if not its_a_valid_date:
-                                result_not_of_interest, td = resolve_datetime(to_date)
-                                its_a_valid_date = (result_not_of_interest, td) != (None, None)
-                                if its_a_valid_date:
-                                    to_date = td
-                                else:
-                                    raise ValueError(f"Invalid date token '{to_date}' in address '{address}'.")
-
-                    if its_a_valid_date:
-                        parent_row_mask = parent._get_row_mask(before_dimension=dimension)
-                        if dss is not None:
-                            filter_func = dss.to_df_lambda()
-                            filter_func_Source = dss.to_df_lambda(return_source_code=True)
-                            if parent_row_mask is not None:
-                                series = cube.df[dimension.column][parent_row_mask]
-                                bool_mask = filter_func(series)
-                            else:
-                                series = cube.df[dimension.column]
-                                bool_mask = filter_func(series)
-                            new_row_mask = cube.df[bool_mask].index.to_numpy()
-                            exists = len(new_row_mask) > 0
+                            dss = DateSpanSet(DateSpan(start_date, stop_date))
                         else:
-                            exists, new_row_mask, member_mask = dimension._check_exists_and_resolve_member(
-                                (from_date, to_date), parent_row_mask, member_mask, skip_checks=True,
-                                evaluate_as_range=True)
+                            dss = DateSpanSet(address)
+                    except Exception as e:
+                        raise ValueError(f"Invalid date token '{address}' in address '{address}'. {e}")
 
-                        # let's create a member context, independent of the result
+                    # Filter using the datespan package
+                    parent_row_mask = parent._get_row_mask(before_dimension=dimension)
+                    filter_func = dss.to_df_lambda()
+                    # filter_func_Source = dss.to_df_lambda(return_source_code=True) # for debugging only
+                    # if "year=9999" in filter_func_Source:
+                    #     pass
+                    if parent_row_mask is not None:
+                        series = cube.df[dimension.column][parent_row_mask]
+                        bool_mask = filter_func(series)
+                    else:
+                        series = cube.df[dimension.column]
+                        bool_mask = filter_func(series)
+                    new_row_mask = cube.df[bool_mask].index.to_numpy()
+                    if len(new_row_mask) > 0:
+                        # some records were found
                         from cubedpandas.schema.member import Member, MemberSet
                         member = Member(dim, address)
                         members = MemberSet(dimension=dim, address=address, row_mask=new_row_mask,
@@ -291,13 +260,12 @@ class ContextResolver:
                                                          row_mask=new_row_mask, member_mask=member_mask,
                                                          measure=measure, dimension=dim,
                                                          members=members, resolve=False)
-                        if not exists:
-                            # If no records where found, we will return a context with an empty row mask
-                            from cubedpandas.context.member_not_found_context import MemberNotFoundContext
-                            resolved_context = MemberNotFoundContext(cube=cube, parent=parent, address=address,
-                                                                     dimension=dim)
-
-                        return resolved_context
+                    else:
+                        # no records were found, we will return a context with an empty row mask
+                        from cubedpandas.context.member_not_found_context import MemberNotFoundContext
+                        resolved_context = MemberNotFoundContext(cube=cube, parent=parent, address=address,
+                                                                 dimension=dim)
+                    return resolved_context
 
 
         if not dynamic_attribute:
