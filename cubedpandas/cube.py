@@ -30,7 +30,7 @@ class Cube:
                  exclude: str | list | tuple | None = None,
                  read_only: bool = True,
                  ignore_member_key_errors: bool = True,
-                 ignore_case: bool = True,
+                 ignore_case: bool = False,
                  ignore_key_errors: bool = True,
                  caching: CachingStrategy = CachingStrategy.LAZY
                  ):
@@ -62,10 +62,10 @@ class Cube:
                 Default value is `True`.
 
             ignore_case:
-                (optional) If set to `True`, the case of member names will be ignored, 'Apple' and 'apple'
-                will be treated as the same member. If set to `False`, member names are case-sensitive,
-                'Apple' and 'apple' will be treated as different members.
-                Default value is `True`.
+                (optional) FEATURE NOT YET RELEASED - If set to `True`, the case of member names will be ignored,
+                'Apple' and 'apple' will be treated as the same member. If set to `False`, member names are
+                case-sensitive and 'Apple' and 'apple' will be treated as different members.
+                Default value is `False`.
 
             ignore_key_errors:
                 (optional) If set to `True`, key errors for members of dimensions will be ignored and

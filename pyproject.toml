@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cubedpandas"
-description = "Filter faster, analyze smarter – because your DataFrames deserve it!"
+description = "Filter faster, analyze smarter – your DataFrames deserve it!"
 keywords = ['pandas', 'analysis', 'database', 'olap', 'planning', 'reporting', 'forecasting', 'multidimensional', 'cube', 'data', 'dataframe', 'pivot', 'table']
 classifiers = [
     "Intended Audience :: Science/Research",

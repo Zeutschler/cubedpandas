@@ -2,7 +2,7 @@ from numpy.distutils.system_info import dfftw_info
 
 # CubedPandas 
 
-## Filter faster, analyze smarter – because your DataFrames deserve it!
+## Filter faster, analyze smarter – your DataFrames deserve it!
 
 ![GitHub license](https://img.shields.io/github/license/Zeutschler/cubedpandas?color=A1C547)
 ![PyPI version](https://img.shields.io/pypi/v/cubedpandas?logo=pypi&logoColor=979DA4&color=A1C547)
