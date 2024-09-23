@@ -1,3 +1,5 @@
+from numpy.distutils.system_info import dfftw_info
+
 # CubedPandas 
 
 ## Filter faster, analyze smarter – because your DataFrames deserve it!
@@ -37,11 +39,14 @@ value = df.loc[
 can turn into this equivalent CubedPandas code:
 
 ```python
-# ...the same with CubedPandas:
+# with CubedPandas:
 value = df.cubed.make.Audi.engine.hybrid.date.september_2024.revenue
 
-# ...or maybe even shorter:
+# or maybe even shorter:
 value = df.cubed.Audi.hybrid.sep_2024
+
+# filtering dataframes is as easy as this: just add '.df' at the end
+df = df.cubed.make.Audi.engine.hybrid.df
 ```
 
 CubedPandas offers a fluent interface based on the data available in the underlying DataFrame.
