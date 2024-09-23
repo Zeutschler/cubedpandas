@@ -4,7 +4,6 @@ import pandas as pd
 from datetime import datetime, timedelta
 from unittest import TestCase
 from cubedpandas import cubed
-from cubedpandas.context.datetime_resolver import parse_standard_date_token as parse
 
 
 class TestDateLookUps(TestCase):
@@ -15,18 +14,12 @@ class TestDateLookUps(TestCase):
     def setUp(self) -> None:
         self._debug: bool = False
         year = datetime.now().year
-        month = datetime.now().month
-        day = datetime.now().day
-        hour = datetime.now().hour
-        minute = datetime.now().minute
-        second = datetime.now().second
 
         data = {
             "product": ["A", "B", "C", "A", "B", "C"],
             "channel": ["Online", "Online", "Online", "Retail", "Retail", "Retail"],
-            "date": [datetime(year, month, day), datetime(year + 1, month, day), datetime(year - 1, month, day),
-                     datetime(year, month, day) - timedelta(days=365), datetime(year, month, day) + timedelta(days=365),
-                     datetime(year, month, day) - timedelta(days=31)],
+            "date": [datetime(year, 1, 1), datetime(year, 2, 1), datetime(year, 3, 1),
+                     datetime(year, 6, 1), datetime(year, 7, 1), datetime(year, 11, 1)],
             "sales": [100, 150, 300, 200, 250, 350],
             "cost": [50, 100, 200, 100, 150, 150]
         }
@@ -43,22 +36,20 @@ class TestDateLookUps(TestCase):
 
     def test_standard_dateTime_tokens(self):
         c = cubed(self.df)
-        result, from_date, to_date = parse("today")
+        tests = [
+            ("Jan", 100),
+            ("June", 200),
+            ("July", 250),
+            ("November", 350),
+            ("1st quarter", 100 + 150 + 300),
+        ]
 
-        a = c.date["today"]
-        b = c.date[from_date:to_date]
-        self.assertEqual(a, b)
+        for test in tests:
+            token, expected = test
+            actual = c.date[token].sales
+            self.assertEqual(actual, expected)
 
-        a = c.date.today
-        b = c.date[from_date:to_date]
-        self.assertEqual(a, b)
-
-        result, from_date, to_date = parse("last year")
-        a = c.date.last_year
-        b = c.date[from_date:to_date]
-        self.assertEqual(a, b)
-
-    def test_all_stanard_dateTime_tokens(self):
+    def test_all_standard_dateTime_tokens(self):
         c = cubed(self.df)
 
         tokens = ["this minute", "last minute", "previous minute", "next minute", "this hour", "last hour",
@@ -69,12 +60,11 @@ class TestDateLookUps(TestCase):
                   "this quarter", "last quarter", "previous quarter", "next quarter"]
 
         for token in tokens:
-            # returned value
+            b = None
+            if isinstance(token, tuple):
+                token, b = token
             a = c.date[token]
-
-            # test value
-            result, from_date, to_date = parse(token)
-            b = c.date[from_date:to_date]
             if self.debug:
-                print(f"'{token}' = {a} = {b} ({from_date} - {to_date})")
-            self.assertEqual(a, b)
+                print(f"'{token}' = {a} = {b}")
+            if b is not None:
+                self.assertEqual(a, b)

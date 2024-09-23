@@ -2,7 +2,7 @@
 numpy>=1.26.1
 pandas>=1.5.2
 python-dateutil>=2.8.2
-datespan>=0.2.4
+datespan>=0.2.8
 
 # for future use
 matplotlib
@@ -11,7 +11,7 @@ scikit-learn
 
 
 # for server sample
-fastapi>=0.88.0
+fastapi>=0.109.1
 uvicorn>=0.20.0
 
 

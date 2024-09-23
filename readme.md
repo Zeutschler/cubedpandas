@@ -35,9 +35,10 @@ value = df.loc[(df['make'] == 'Audi') &
 can turn into this equivalent CubedPandas code:
 
 ```python
-# CubedPandas: calculate the total revenue of all hybrid Audi cars in September 2024
-value = df.cubed.make.Audi.engine.hybrid.date.september_2024.price.sum
-# or even shorter
+# ...the same with CubedPandas:
+value = df.cubed.make.Audi.engine.hybrid.date.september_2024.price
+
+# ...or even shorter
 value = df.cubed.Audi.hybrid.sep_2024.price
 ```
 
