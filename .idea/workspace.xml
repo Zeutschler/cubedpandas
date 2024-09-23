@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="sample updated">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
-    </list>
+    <list default="true" id="cbdc4bb4-dd76-47cb-8ea0-4be0a7f6860e" name="Changes" comment="leveling up to 'Alpha' status" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -89,93 +86,93 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python tests.Doctests in common (1).executor": "Run",
-    "Python tests.Doctests in common.executor": "Run",
-    "Python tests.Python tests for datasets.test_datespan.TestDateSpan.test_initialization.executor": "Run",
-    "Python tests.Python tests for test_common.TestPythonizeFunction.executor": "Run",
-    "Python tests.Python tests for test_cube.TestCube.test_boolean_dimension.executor": "Debug",
-    "Python tests.Python tests for test_cube.TestCube.test_cube_access_methods.executor": "Debug",
-    "Python tests.Python tests for test_cube.TestCube.test_cube_address_to_args.executor": "Run",
-    "Python tests.Python tests for test_cube.TestCube.test_cube_primary_aggregation_functions.executor": "Run",
-    "Python tests.Python tests for test_cube.TestCube.test_cube_primary_aggregations.executor": "Run",
-    "Python tests.Python tests for test_cube.TestCube.test_measures_only_cube.executor": "Debug",
-    "Python tests.Python tests for test_cube_aliases.TestCubeAliases.test_cube_aliases.executor": "Run",
-    "Python tests.Python tests for test_cube_context.TestCubeContext.test_context_address.executor": "Debug",
-    "Python tests.Python tests for test_cube_context.TestCubeContext.test_dimension_context_methods.executor": "Debug",
-    "Python tests.Python tests for test_cube_context.TestCubeContext.test_member_context_in_operator.executor": "Debug",
-    "Python tests.Python tests for test_cube_with_dates.TestCubeWithDates.executor": "Run",
-    "Python tests.Python tests for test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates.executor": "Debug",
-    "Python tests.Python tests for test_date_lookups.TestDateLookUps.test_all_stanard_dateTime_tokens.executor": "Debug",
-    "Python tests.Python tests for test_date_lookups.TestDateLookUps.test_all_standard_dateTime_tokens.executor": "Run",
-    "Python tests.Python tests for test_date_lookups.TestDateLookUps.test_standard_dateTime_tokens.executor": "Debug",
-    "Python tests.Python tests for test_datespan.TestDateSpan.test_methods.executor": "Debug",
-    "Python tests.Python tests for test_datetext.TestDateTextParser.test_Creation.executor": "Run",
-    "Python tests.Python tests for test_datetext_parser.TestDateTextParser.executor": "Run",
-    "Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_Creation.executor": "Run",
-    "Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word.executor": "Debug",
-    "Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word_month.executor": "Run",
-    "Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_to_lambda_sql_function.executor": "Run",
-    "Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_tokenizer.executor": "Debug",
-    "Python tests.Python tests for test_datetext_parsing.TestDateTextParser.executor": "Run",
-    "Python tests.Python tests for test_datetext_parsing.TestDateTextParser.test_initial_parse_using_dateutil.executor": "Run",
-    "Python tests.Python tests for test_datetext_parsing.TestDateTextParser.test_single_word.executor": "Run",
-    "Python tests.Python tests for test_measures.TestMeasures.test_measure_methods.executor": "Run",
-    "Python tests.Python tests for test_random_dataframes.TestCube.test_measures_only_cube.executor": "Debug",
-    "Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets.executor": "Debug",
-    "Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube.executor": "Debug",
-    "Python tests.Python tests for test_schema.TestSchema.test_infer_schema.executor": "Debug",
-    "Python tests.Python tests for test_schema.TestSchema.test_invalid_schema_duplicate_dimension.executor": "Run",
-    "Python tests.Python tests for test_schema.TestSchema.test_schema_parameters.executor": "Run",
-    "Python tests.Python tests for test_slice.TestSlice.executor": "Run",
-    "Python tests.Python tests for test_slice.TestSlice.test_custom_slice.executor": "Run",
-    "Python tests.Python tests for test_slice.TestSlice.test_default_slice.executor": "Run",
-    "Python tests.Python tests for test_slice.TestSlice.test_filter_slice.executor": "Run",
-    "Python tests.Python tests in test_date_lookups.py.executor": "Debug",
-    "Python tests.Python tests in test_datespan.py.executor": "Debug",
-    "Python tests.Python tests in test_datetext_parser.py.executor": "Debug",
-    "Python tests.Python tests in test_real_world_datasets.py.executor": "Debug",
-    "Python tests.Python tests in tests.executor": "Run",
-    "Python tests.pytest for tests.datasets.test_datespan.TestDateSpan.test_initialization.executor": "Debug",
-    "Python tests.pytest for tests.executor": "Run",
-    "Python tests.pytest for tests.test_cube.TestCube.test_boolean_dimension.executor": "Run",
-    "Python tests.pytest for tests.test_cube.TestCube.test_cube_address_to_args.executor": "Run",
-    "Python tests.pytest for tests.test_cube_context.TestCubeContext.test_context_address.executor": "Run",
-    "Python tests.pytest for tests.test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates.executor": "Run",
-    "Python tests.pytest for tests.test_datetext_parser.TestDateTextParser.test_initial_parse_using_dateutil.executor": "Run",
-    "Python tests.pytest for tests.test_datetext_parser.TestDateTextParser.test_single_word_month.executor": "Debug",
-    "Python tests.pytest for tests.test_measures.TestMeasures.test_measure_methods.executor": "Debug",
-    "Python tests.pytest for tests.test_real_world_datasets.TestRealWorldDatasets.executor": "Debug",
-    "Python tests.pytest for tests.test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube.executor": "Debug",
-    "Python tests.pytest for tests.test_real_world_datasets.executor": "Debug",
-    "Python tests.pytest for tests.test_slice.TestSlice.test_default_slice.executor": "Debug",
-    "Python.00_playground.executor": "Run",
-    "Python.01_basic_usage.executor": "Run",
-    "Python.01a_basic_usage.executor": "Run",
-    "Python.02_direct_member_access.executor": "Run",
-    "Python.04_simple_slice.executor": "Run",
-    "Python.05_large_slice.executor": "Run",
-    "Python.99_benchmark_01.executor": "Run",
-    "Python.app (1).executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.rounding.executor": "Run",
-    "Python.testing_dates.executor": "Run",
-    "Python.tokenizer.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "com.codeium.enabled": "true",
-    "git-widget-placeholder": "dev",
-    "last_opened_file_path": "/Users/thomas/Documents/Coding/cubedpandas/samples/datasets",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Doctests in common (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Doctests in common.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for datasets.test_datespan.TestDateSpan.test_initialization.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_common.TestPythonizeFunction.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_boolean_dimension.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_cube_access_methods.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_cube_address_to_args.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_cube_primary_aggregation_functions.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_cube_primary_aggregations.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cube.TestCube.test_measures_only_cube.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube_aliases.TestCubeAliases.test_cube_aliases.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cube_context.TestCubeContext.test_context_address.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube_context.TestCubeContext.test_dimension_context_methods.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube_context.TestCubeContext.test_member_context_in_operator.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_cube_with_dates.TestCubeWithDates.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_date_lookups.TestDateLookUps.test_all_stanard_dateTime_tokens.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_date_lookups.TestDateLookUps.test_all_standard_dateTime_tokens.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_date_lookups.TestDateLookUps.test_standard_dateTime_tokens.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_datespan.TestDateSpan.test_methods.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_datetext.TestDateTextParser.test_Creation.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_datetext_parser.TestDateTextParser.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_Creation.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_single_word_month.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_to_lambda_sql_function.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_datetext_parser.TestDateTextParser.test_tokenizer.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_datetext_parsing.TestDateTextParser.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_datetext_parsing.TestDateTextParser.test_initial_parse_using_dateutil.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_datetext_parsing.TestDateTextParser.test_single_word.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_measures.TestMeasures.test_measure_methods.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_random_dataframes.TestCube.test_measures_only_cube.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_schema.TestSchema.test_infer_schema.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests for test_schema.TestSchema.test_invalid_schema_duplicate_dimension.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_schema.TestSchema.test_schema_parameters.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_slice.TestSlice.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_slice.TestSlice.test_custom_slice.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_slice.TestSlice.test_default_slice.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_slice.TestSlice.test_filter_slice.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_date_lookups.py.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests in test_datespan.py.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests in test_datetext_parser.py.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests in test_real_world_datasets.py.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.datasets.test_datespan.TestDateSpan.test_initialization.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.test_cube.TestCube.test_boolean_dimension.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.test_cube.TestCube.test_cube_address_to_args.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.test_cube_context.TestCubeContext.test_context_address.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.test_cube_with_dates.TestCubeWithDates.test_slicing_with_exact_dates.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.test_datetext_parser.TestDateTextParser.test_initial_parse_using_dateutil.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for tests.test_datetext_parser.TestDateTextParser.test_single_word_month.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.test_measures.TestMeasures.test_measure_methods.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.test_real_world_datasets.TestRealWorldDatasets.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.test_real_world_datasets.TestRealWorldDatasets.test_measures_only_cube.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.test_real_world_datasets.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.pytest for tests.test_slice.TestSlice.test_default_slice.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.00_playground.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01_basic_usage.executor&quot;: &quot;Run&quot;,
+    &quot;Python.01a_basic_usage.executor&quot;: &quot;Run&quot;,
+    &quot;Python.02_direct_member_access.executor&quot;: &quot;Run&quot;,
+    &quot;Python.04_simple_slice.executor&quot;: &quot;Run&quot;,
+    &quot;Python.05_large_slice.executor&quot;: &quot;Run&quot;,
+    &quot;Python.99_benchmark_01.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.rounding.executor&quot;: &quot;Run&quot;,
+    &quot;Python.testing_dates.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tokenizer.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;#93 on dev&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/thomas/Documents/Coding/cubedpandas/samples/datasets&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/samples/datasets" />
@@ -363,23 +360,7 @@
       <workItem from="1726858898122" duration="563000" />
       <workItem from="1726859482478" duration="82000" />
       <workItem from="1726909312725" duration="3723000" />
-      <workItem from="1727024561444" duration="18045000" />
-    </task>
-    <task id="LOCAL-00027" summary="datetime features">
-      <option name="closed" value="true" />
-      <created>1725809852599</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1725809852599</updated>
-    </task>
-    <task id="LOCAL-00028" summary="datetime features">
-      <option name="closed" value="true" />
-      <created>1725810049228</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1725810049228</updated>
+      <workItem from="1727024561444" duration="18477000" />
     </task>
     <task id="LOCAL-00029" summary="datetime features">
       <option name="closed" value="true" />
@@ -757,7 +738,23 @@
       <option name="project" value="LOCAL" />
       <updated>1727092062913</updated>
     </task>
-    <option name="localTasksCounter" value="76" />
+    <task id="LOCAL-00076" summary="readme updated">
+      <option name="closed" value="true" />
+      <created>1727092636483</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1727092636483</updated>
+    </task>
+    <task id="LOCAL-00077" summary="leveling up to 'Alpha' status">
+      <option name="closed" value="true" />
+      <created>1727092977146</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1727092977146</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -790,7 +787,9 @@
     <MESSAGE value="DateSpan &amp; DateFilter carved out to separate project 'DateSpanLib' https://github.com/Zeutschler/DateSpanLib" />
     <MESSAGE value="datespan added" />
     <MESSAGE value="sample updated" />
-    <option name="LAST_COMMIT_MESSAGE" value="sample updated" />
+    <MESSAGE value="readme updated" />
+    <MESSAGE value="leveling up to 'Alpha' status" />
+    <option name="LAST_COMMIT_MESSAGE" value="leveling up to 'Alpha' status" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
